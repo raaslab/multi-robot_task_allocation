@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<!--
+  The complete turtlebot library of xacros for easy reference
+ -->
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+  <!-- General -->
+  <xacro:include filename="$(find turtlebot_description)/urdf/common_properties.urdf.xacro"/>
+  <xacro:include filename="$(find turtlebot_description)/urdf/turtlebot_properties.urdf.xacro"/>
+  <!-- Bases -->
+  <xacro:include filename="$(find create_description)/urdf/create.urdf.xacro"/>
+  <xacro:include filename="$(find max_min_lp_simulation)/urdf/kobuki.urdf.xacro" />
+</robot>

@@ -1,0 +1,117 @@
+#Setting for the global graph
+num_r: 6
+num_p: 12
+num_t: 5
+
+#Setting for the robot nodes
+r1_deg: 2
+r1_neighbor: [1, 2]
+r1_edge_weight: [1, 1]
+r2_deg: 2
+r2_neighbor: [3, 4]
+r2_edge_weight: [1, 1]
+r3_deg: 2
+r3_neighbor: [5, 6]
+r3_edge_weight: [1, 1]
+r4_deg: 2
+r4_neighbor: [7, 8]
+r4_edge_weight: [1, 1]
+r5_deg: 2
+r5_neighbor: [9, 10]
+r5_edge_weight: [1, 1]
+r6_deg: 2
+r6_neighbor: [11, 12]
+r6_edge_weight: [1, 1]
+
+#Setting for the motion primitives to robot nodes
+p1_r_deg: 1
+p1_r_neighbor: [1]
+p1_r_edge_weight: [1]
+p2_r_deg: 1
+p2_r_neighbor: [1]
+p2_r_edge_weight: [1]
+p3_r_deg: 1
+p3_r_neighbor: [2]
+p3_r_edge_weight: [1]
+p4_r_deg: 1
+p4_r_neighbor: [2]
+p4_r_edge_weight: [1]
+p5_r_deg: 1
+p5_r_neighbor: [3]
+p5_r_edge_weight: [1]
+p6_r_deg: 1
+p6_r_neighbor: [3]
+p6_r_edge_weight: [1]
+p7_r_deg: 1
+p7_r_neighbor: [4]
+p7_r_edge_weight: [1]
+p8_r_deg: 1
+p8_r_neighbor: [4]
+p8_r_edge_weight: [1]
+p9_r_deg: 1
+p9_r_neighbor: [5]
+p9_r_edge_weight: [1]
+p10_r_deg: 1
+p10_r_neighbor: [5]
+p10_r_edge_weight: [1]
+p11_r_deg: 1
+p11_r_neighbor: [6]
+p11_r_edge_weight: [1]
+p12_r_deg: 1
+p12_r_neighbor: [6]
+p12_r_edge_weight: [1]
+
+#Setting for the motion primitives to target nodes
+p1_t_deg: 1
+p1_t_neighbor: [1]
+p1_t_edge_weight: [1]
+p2_t_deg: 2
+p2_t_neighbor: [1, 2]
+p2_t_edge_weight: [1, 1]
+p3_t_deg: 1
+p3_t_neighbor: [2]
+p3_t_edge_weight: [1]
+p4_t_deg: 2
+p4_t_neighbor: [1, 2]
+p4_t_edge_weight: [1, 1]
+p5_t_deg: 1
+p5_t_neighbor: [1]
+p5_t_edge_weight: [1]
+p6_t_deg: 1
+p6_t_neighbor: [3]
+p6_t_edge_weight: [1]
+p7_t_deg: 1
+p7_t_neighbor: [3]
+p7_t_edge_weight: [1]
+p8_t_deg: 2
+p8_t_neighbor: [2, 4]
+p8_t_edge_weight: [1, 1]
+p9_t_deg: 1
+p9_t_neighbor: [4]
+p9_t_edge_weight: [1]
+p10_t_deg: 1
+p10_t_neighbor: [5]
+p10_t_edge_weight: [1]
+p11_t_deg: 1
+p11_t_neighbor: [4]
+p11_t_edge_weight: [1]
+p12_t_deg: 1
+p12_t_neighbor: [5]
+p12_t_edge_weight: [1]
+
+#Setting for the targets nodes
+t1_deg: 4
+t1_neighbor: [1, 2, 4, 5]
+t1_edge_weight: [1, 1, 1, 1]
+t2_deg: 4
+t2_neighbor: [2, 3, 4, 8]
+t2_edge_weight: [1, 1, 1, 1]
+t3_deg: 2
+t3_neighbor: [6, 7]
+t3_edge_weight: [1, 1]
+t4_deg: 3
+t4_neighbor: [8, 9, 11]
+t4_edge_weight: [1, 1, 1]
+t5_deg: 2
+t5_neighbor: [10, 12]
+t5_edge_weight: [1, 1]

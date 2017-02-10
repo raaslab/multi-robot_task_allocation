@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>max_min_lp_msgs</name>
+  <version>0.0.0</version>
+  <description>The max_min_lp_msgs package</description>
+  <maintainer email="yooncs8@vt.edu">Yoonchang Sung</maintainer>
+  <license>TODO</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <depend>roscpp</depend>
+  <depend>message_generation</depend>
+  <depend>std_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <exec_depend>message_runtime</exec_depend>
+</package>

@@ -1,0 +1,10 @@
+<launch>
+
+  <node type="max_min_lp_demo_node" pkg="max_min_lp_demo" name="max_min_lp_demo_node" output="screen">
+    <param name="num_layer" type="int" value="2" />
+    <param name="verbal_flag" type="bool" value="false" />
+    <param name="epsilon" type="double" value="0.1" />
+    <rosparam file="$(find max_min_lp_demo)/yaml/test_example.yaml" command="load" />
+  </node>
+
+</launch>

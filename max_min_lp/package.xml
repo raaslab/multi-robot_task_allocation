@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>max_min_lp</name>
+  <version>0.0.0</version>
+  <description>The max_min_lp package</description>
+  <maintainer email="yooncs8@vt.edu">Yoonchang Sung</maintainer>
+  <license>TODO</license>
+  <buildtool_depend>catkin</buildtool_depend>
+  <exec_depend>max_min_lp_core</exec_depend>
+  <exec_depend>max_min_lp_msgs</exec_depend>
+  <exec_depend>max_min_lp_demo</exec_depend>
+  <exec_depend>max_min_lp_simulation</exec_depend>
+  <exec_depend>max_min_lp_visualization</exec_depend>
+  <export>
+    <metapackage />
+  </export>
+</package>
