@@ -1,0 +1,30 @@
+<launch>
+  <arg name="num_robot" default="2"/>
+
+  <arg name="num_layer" default="2"/>
+  <arg name="verbal_flag" default="false"/>
+  <arg name="epsilon" default="0.1"/>
+
+  <node type="max_min_lp_simulation_central_node" pkg="max_min_lp_simulation" name="max_min_lp_simulation_central_node" output="screen">
+    <param name="num_robot" type="int" value="$(arg num_robot)" />
+  </node>
+
+  <group ns="robot_1">
+    <node type="max_min_lp_simulation_robot_node" pkg="max_min_lp_simulation" name="max_min_lp_simulation_robot_node" output="screen">
+      <param name="robot_id" type="int" value="1" />
+      <param name="robot_name" type="str" value="robot_1" />
+      <param name="num_layer" type="int" value="$(arg num_layer)" />
+      <param name="verbal_flag" type="bool" value="$(arg verbal_flag)" />
+      <param name="epsilon" type="double" value="$(arg epsilon)" />
+    </node>
+  </group>
+  <group ns="robot_2">
+    <node type="max_min_lp_simulation_robot_node" pkg="max_min_lp_simulation" name="max_min_lp_simulation_robot_node" output="screen">
+      <param name="robot_id" type="int" value="2" />
+      <param name="robot_name" type="str" value="robot_2" />
+      <param name="num_layer" type="int" value="$(arg num_layer)" />
+      <param name="verbal_flag" type="bool" value="$(arg verbal_flag)" />
+      <param name="epsilon" type="double" value="$(arg epsilon)" />
+    </node>
+  </group>
+</launch>

@@ -1,0 +1,5 @@
+string state_check
+int8 robot_id
+---
+string state_answer
+#service_to_robots_array neighbor_info

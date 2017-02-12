@@ -1,0 +1,11 @@
+Header header
+int16 robot_id
+float64 r_x_pos
+float64 r_y_pos
+int16[] primitive_id
+float64[] p_x_pos
+float64[] p_y_pos
+float64[] p_t_weight
+int16[] target_id
+float64[] t_x_pos
+float64[] t_y_pos

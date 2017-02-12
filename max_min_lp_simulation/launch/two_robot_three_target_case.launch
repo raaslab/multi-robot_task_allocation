@@ -13,7 +13,7 @@
   </include>
   
   <!-- Robots --> 
-  <group ns="turtlebot_1">
+  <group ns="robot_1">
     <include file="$(find max_min_lp_simulation)/launch/includes/$(arg robot_base).launch.xml">
       <arg name="base" value="kobuki"/>
       <arg name="stacks" value="$(arg stacks)"/>
@@ -22,7 +22,7 @@
       <arg name="robot_name"  value="Robot1"/>
     </include>
   </group>
-  <group ns="turtlebot_2">
+  <group ns="robot_2">
     <include file="$(find max_min_lp_simulation)/launch/includes/$(arg robot_base).launch.xml">
       <arg name="base" value="kobuki"/>
       <arg name="stacks" value="$(arg stacks)"/>

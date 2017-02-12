@@ -14,6 +14,8 @@ add_message_files(
   general_node_array.msg
   layered_node.msg
   layered_node_array.msg
+  server_to_robots.msg
+  server_to_robots_array.msg
 )
 
 generate_messages(
