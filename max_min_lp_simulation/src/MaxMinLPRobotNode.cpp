@@ -8,13 +8,15 @@
 #include "max_min_lp_simulation/MaxMinLPRobotNode.hpp"
 
 MaxMinLPRobotNode::MaxMinLPRobotNode() :
-m_robot_id(1), m_robot_name(string("robot_1")), m_num_layer(2), m_verbal_flag(false), m_epsilon(0.1), m_private_nh("~")
+m_robot_id(1), m_robot_name(string("robot_1")), m_num_layer(2), m_num_motion_primitive(10),
+m_verbal_flag(false), m_epsilon(0.1), m_private_nh("~")
 {
 	m_private_nh.getParam("robot_id", m_robot_id);
 	m_private_nh.getParam("robot_name", m_robot_name);
 	m_private_nh.getParam("num_layer", m_num_layer);
 	m_private_nh.getParam("verbal_flag", m_verbal_flag);
 	m_private_nh.getParam("epsilon", m_epsilon);
+	m_private_nh.getParam("num_motion_primitive", m_num_motion_primitive);
 
 	bool result_success = initialize();
 
@@ -30,10 +32,7 @@ m_robot_id(1), m_robot_name(string("robot_1")), m_num_layer(2), m_verbal_flag(fa
 }
 
 void MaxMinLPRobotNode::updateOdom(const nav_msgs::Odometry::ConstPtr& msg) {
-	//Compute motion primitives
-}
-
-void MaxMinLPRobotNode::updateGraph() {
+	m_odom = *msg;
 }
 
 bool MaxMinLPRobotNode::initialize() {
@@ -42,6 +41,7 @@ bool MaxMinLPRobotNode::initialize() {
 	srv.request.robot_id = m_robot_id;
 	srv.request.state_check = "ready";
 	// My info
+	// Compute motion primitives. Make function
 	if (m_client.call(srv)) {
 		if (strcmp(srv.response.state_answer.c_str(), "start") == 0) {
 			// m_local_info
@@ -55,6 +55,12 @@ bool MaxMinLPRobotNode::initialize() {
 		ROS_INFO("Fail to communicate with the server.");
 		return false;
 	}
+}
+
+void MaxMinLPRobotNode::computeMotionPrimitives(const ros::TimerEvent& event) {
+}
+
+void MaxMinLPRobotNode::updateGraph() {
 }
 
 int main(int argc, char **argv) {

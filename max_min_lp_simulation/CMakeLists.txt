@@ -31,8 +31,8 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
-add_executable(max_min_lp_simulation src/max_min_lp_simulation.cpp)
-target_link_libraries(max_min_lp_simulation ${catkin_LIBRARIES})
+add_executable(motion_primitive_generator src/motion_primitive_generator.cpp)
+target_link_libraries(motion_primitive_generator ${catkin_LIBRARIES})
 add_executable(max_min_lp_simulation_central_node src/MaxMinLPCentralNode.cpp)
 target_link_libraries(max_min_lp_simulation_central_node ${catkin_LIBRARIES})
 add_dependencies(max_min_lp_simulation_central_node max_min_lp_simulation_gencpp)

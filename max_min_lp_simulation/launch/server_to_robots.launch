@@ -4,6 +4,7 @@
   <arg name="num_layer" default="2"/>
   <arg name="verbal_flag" default="false"/>
   <arg name="epsilon" default="0.1"/>
+  <arg name="num_motion_primitive" default="50"/>
 
   <node type="max_min_lp_simulation_central_node" pkg="max_min_lp_simulation" name="max_min_lp_simulation_central_node" output="screen">
     <param name="num_robot" type="int" value="$(arg num_robot)" />
@@ -16,6 +17,7 @@
       <param name="num_layer" type="int" value="$(arg num_layer)" />
       <param name="verbal_flag" type="bool" value="$(arg verbal_flag)" />
       <param name="epsilon" type="double" value="$(arg epsilon)" />
+      <param name="num_motion_primitive" type="int" value="$(arg num_motion_primitive)" />
     </node>
   </group>
   <group ns="robot_2">
@@ -25,6 +27,7 @@
       <param name="num_layer" type="int" value="$(arg num_layer)" />
       <param name="verbal_flag" type="bool" value="$(arg verbal_flag)" />
       <param name="epsilon" type="double" value="$(arg epsilon)" />
+      <param name="num_motion_primitive" type="int" value="$(arg num_motion_primitive)" />
     </node>
   </group>
 </launch>

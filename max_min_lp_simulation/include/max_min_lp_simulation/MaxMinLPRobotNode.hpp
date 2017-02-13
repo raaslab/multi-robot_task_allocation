@@ -49,12 +49,17 @@ private:
   int m_num_layer; // Number of layers in the layered model
   bool m_verbal_flag;
   double m_epsilon;
+  int m_num_motion_primitive;
+
+  // Odom info
+  nav_msgs::Odometry m_odom;
 
 public:
   MaxMinLPRobotNode(); // Constructor
 
   void updateOdom(const nav_msgs::Odometry::ConstPtr& msg); // Update odometry information by subscribing to /robot/odom
   bool initialize();
+  void computeMotionPrimitives(const ros::TimerEvent& event);
   void updateGraph();
 };
 
