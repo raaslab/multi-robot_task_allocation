@@ -6,7 +6,7 @@
  * Copyright 2017. All Rights Reserved.
  */
 
-#include "max_min_lp_simulation/MaxMinLPCentralNode.hpp"
+#include "max_min_lp_simulation/MaxMinLPCentralNodeGreedy.hpp"
 
 MaxMinLPCentralNode::MaxMinLPCentralNode() :
 m_num_robot(1), m_num_target(1), m_fov(10), m_num_motion_primitive(10), m_private_nh("~")

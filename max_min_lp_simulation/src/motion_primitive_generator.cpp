@@ -1,7 +1,7 @@
 /**
- * Simulate turtlebot robots with moving objects
+ * Generating and testing motion primitives of a robot
  * \Author Yoonchang Sung <yooncs8@vt.edu>
- * \12/09/2016
+ * \02/13/2017
  * Copyright 2016. All Rights Reserved.
  */
 

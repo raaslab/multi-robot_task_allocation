@@ -1,5 +1,6 @@
 string state_check
 int8 robot_id
+geometry_msgs/Pose[] motion_primitive_info
 ---
 string state_answer
-#service_to_robots_array neighbor_info
+max_min_lp_msgs/server_to_robots neighbor_info

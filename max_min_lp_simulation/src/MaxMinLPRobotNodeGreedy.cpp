@@ -5,7 +5,7 @@
  * Copyright 2017. All Rights Reserved.
  */
 
-#include "max_min_lp_simulation/MaxMinLPRobotNode.hpp"
+#include "max_min_lp_simulation/MaxMinLPRobotNodeGreedy.hpp"
 
 #define PHI 3.141592
 

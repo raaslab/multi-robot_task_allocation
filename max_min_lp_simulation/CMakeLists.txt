@@ -7,6 +7,8 @@ find_package(catkin REQUIRED COMPONENTS
   max_min_lp_msgs
   max_min_lp_core
   genmsg
+  tf
+  gazebo_msgs
 )
 
 add_service_files(
@@ -17,6 +19,8 @@ add_service_files(
 generate_messages(
   DEPENDENCIES
   std_msgs
+  geometry_msgs
+  max_min_lp_msgs
 )
 
 catkin_package(
@@ -33,9 +37,17 @@ include_directories(
 
 add_executable(motion_primitive_generator src/motion_primitive_generator.cpp)
 target_link_libraries(motion_primitive_generator ${catkin_LIBRARIES})
+
 add_executable(max_min_lp_simulation_central_node src/MaxMinLPCentralNode.cpp)
 target_link_libraries(max_min_lp_simulation_central_node ${catkin_LIBRARIES})
 add_dependencies(max_min_lp_simulation_central_node max_min_lp_simulation_gencpp)
 add_executable(max_min_lp_simulation_robot_node src/MaxMinLPRobotNode.cpp)
 target_link_libraries(max_min_lp_simulation_robot_node ${catkin_LIBRARIES})
 add_dependencies(max_min_lp_simulation_robot_node max_min_lp_simulation_gencpp)
+
+add_executable(max_min_lp_simulation_central_node_greedy src/MaxMinLPCentralNodeGreedy.cpp)
+target_link_libraries(max_min_lp_simulation_central_node_greedy ${catkin_LIBRARIES})
+add_dependencies(max_min_lp_simulation_central_node_greedy max_min_lp_simulation_greedy_gencpp)
+add_executable(max_min_lp_simulation_robot_node_greedy src/MaxMinLPRobotNodeGreedy.cpp)
+target_link_libraries(max_min_lp_simulation_robot_node_greedy ${catkin_LIBRARIES})
+add_dependencies(max_min_lp_simulation_robot_node_greedy max_min_lp_simulation_greedy_gencpp)

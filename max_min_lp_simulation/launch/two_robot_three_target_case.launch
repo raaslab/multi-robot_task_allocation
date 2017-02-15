@@ -18,8 +18,8 @@
       <arg name="base" value="kobuki"/>
       <arg name="stacks" value="$(arg stacks)"/>
       <arg name="3d_sensor" value="$(arg 3d_sensor)"/>
-      <arg name="init_pose" value="-x 1 -y 1 -z 0"/>
-      <arg name="robot_name"  value="Robot1"/>
+      <arg name="init_pose" value="-x 0 -y 0 -z 0 -R 0 -P 0 -Y 0"/>
+      <arg name="robot_name"  value="robot_1"/>
     </include>
   </group>
   <group ns="robot_2">
@@ -27,8 +27,8 @@
       <arg name="base" value="kobuki"/>
       <arg name="stacks" value="$(arg stacks)"/>
       <arg name="3d_sensor" value="$(arg 3d_sensor)"/>
-      <arg name="init_pose" value="-x -1 -y -1 -z 0"/>
-      <arg name="robot_name"  value="Robot2"/>
+      <arg name="init_pose" value="-x -1 -y -1 -z 0 -R 0 -P 0 -Y 0"/>
+      <arg name="robot_name"  value="robot_2"/>
     </include>
   </group>
 
@@ -38,8 +38,8 @@
       <arg name="base" value="box"/>
       <arg name="stacks" value="$(arg stacks)"/>
       <arg name="3d_sensor" value="$(arg 3d_sensor)"/>
-      <arg name="init_pose" value="-x 1 -y -1 -z 0"/>
-      <arg name="robot_name"  value="Target1"/>
+      <arg name="init_pose" value="-x 1 -y -1 -z 0 -R 0 -P 0 -Y 0"/>
+      <arg name="robot_name"  value="target_1"/>
     </include>
   </group>
   <group ns="target_2">
@@ -47,8 +47,8 @@
       <arg name="base" value="box"/>
       <arg name="stacks" value="$(arg stacks)"/>
       <arg name="3d_sensor" value="$(arg 3d_sensor)"/>
-      <arg name="init_pose" value="-x 2 -y 2 -z 0"/>
-      <arg name="robot_name"  value="Target2"/>
+      <arg name="init_pose" value="-x 2 -y 2 -z 0 -R 0 -P 0 -Y 0"/>
+      <arg name="robot_name"  value="target_2"/>
     </include>
   </group>
   <group ns="target_3">
@@ -56,8 +56,8 @@
       <arg name="base" value="box"/>
       <arg name="stacks" value="$(arg stacks)"/>
       <arg name="3d_sensor" value="$(arg 3d_sensor)"/>
-      <arg name="init_pose" value="-x 0 -y 2 -z 0"/>
-      <arg name="robot_name"  value="Target3"/>
+      <arg name="init_pose" value="-x 0 -y 2 -z 0 -R 0 -P 0 -Y 0"/>
+      <arg name="robot_name"  value="target_3"/>
     </include>
   </group>
 </launch>
