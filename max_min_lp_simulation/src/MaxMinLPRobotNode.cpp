@@ -23,6 +23,8 @@ m_verbal_flag(false), m_epsilon(0.1), m_num_motion_primitive(10), m_time_interva
 	m_private_nh.getParam("num_motion_primitive", m_num_motion_primitive);
 	m_private_nh.getParam("time_interval", m_time_interval);
 
+	m_num_constraints = 1; // When the |V_i| <= 2, the reduction is not required. Therefore, the number of constraints is one.
+
 	request_sub = m_nh.subscribe("/robot_status", 1000, &MaxMinLPRobotNode::applyMotionPrimitives, this);
 
 	// Publishers
@@ -63,6 +65,10 @@ bool MaxMinLPRobotNode::initialize() {
 	srv.request.motion_primitive_info = motion_primitive_pose;
 
 	// Apply the reduction when |V_i| is greater than 2.
+	if (m_num_motion_primitive > 2) {
+		m_num_constraints = m_num_motion_primitive * (m_num_motion_primitive - 1) / 2;
+		srv.request.num_constraints = m_num_constraints;
+	}
 
 	if (m_client.call(srv)) {
 		if (strcmp(srv.response.state_answer.c_str(), "start") == 0) {

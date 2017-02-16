@@ -60,7 +60,8 @@ private:
   // Robot info
   geometry_msgs::Pose m_pos;
 
-  // int m_motion_case_rotation[];
+  // For reduction
+  int m_num_constraints;
 
 public:
   MaxMinLPRobotNode(); // Constructor

@@ -23,6 +23,8 @@ m_num_robot(1), m_num_target(1), m_fov(10), m_num_motion_primitive(10), m_privat
 	m_send_robot_id = 1;
 	m_check_request_send = true;
 
+	m_num_constraints = 1;
+
 	// // Subscribers
 	geometry_msgs::Pose dummy_target_pos;
 	for (int i = 0; i < m_num_target; i++) {
@@ -38,6 +40,10 @@ bool MaxMinLPCentralNode::initialize(max_min_lp_simulation::MessageRequest::Requ
 	if (strcmp(req.state_check.c_str(), "ready") == 0) {
 		if (m_request_robot_id == req.robot_id) {
 			m_robot_info.robot_status.push_back(boost::lexical_cast<string>("initialized"));
+
+			if (m_num_motion_primitive > 2) {
+				m_num_constraints = req.num_constraints;
+			}
 			
 			max_min_lp_msgs::server_to_robots temp_server_to_robots;
 			temp_server_to_robots.robot_id = req.robot_id;
@@ -49,7 +55,7 @@ bool MaxMinLPCentralNode::initialize(max_min_lp_simulation::MessageRequest::Requ
 				temp_server_to_robots.p_y_pos.push_back(req.motion_primitive_info[i].position.y);
 			}
 
-			m_robot_info.robot_neighbor.push_back(temp_server_to_robots);
+			m_robot_info.each_robot.push_back(temp_server_to_robots);
 			
 			res.state_answer = "wait";
 			m_request_robot_id += 1;
@@ -69,7 +75,7 @@ bool MaxMinLPCentralNode::initialize(max_min_lp_simulation::MessageRequest::Requ
 				// Obtain neighbor primitive information.
 				// Firstly, see all motion primitives to pair each with targets that are in the FoV.
 				int count_num_total_primitives = 0;
-				for (vector<max_min_lp_msgs::server_to_robots>::iterator it = m_robot_info.robot_neighbor.begin(); it != m_robot_info.robot_neighbor.end(); ++it) {
+				for (vector<max_min_lp_msgs::server_to_robots>::iterator it = m_robot_info.each_robot.begin(); it != m_robot_info.each_robot.end(); ++it) {
 					for (int i = 0; i < it->primitive_id.size(); i ++) {
 						m_primitive_id.push_back(count_num_total_primitives+1);
 						m_primitive_x_pos.push_back(it->p_x_pos[i]);
@@ -104,8 +110,8 @@ bool MaxMinLPCentralNode::initialize(max_min_lp_simulation::MessageRequest::Requ
 				}
 
 				// Get ready to send local information to each corresponding robot using the above relationships between motion primitives and targets.
-				for (vector<max_min_lp_msgs::server_to_robots>::iterator it = m_robot_info.robot_neighbor.begin(); it != m_robot_info.robot_neighbor.end(); ++it) {
-					for(int i = 0; i < it->primitive_id.size(); i++) {
+				for (vector<max_min_lp_msgs::server_to_robots>::iterator it = m_robot_info.each_robot.begin(); it != m_robot_info.each_robot.end(); ++it) { // For each robot
+					for(int i = 0; i < it->primitive_id.size(); i++) { // For each motion primitive
 						if (m_primitives_to_targets[i].size() == 0) { // No targets are connected to this motion primitive.
 							it->target_exist.push_back(false);
 						}
@@ -113,7 +119,7 @@ bool MaxMinLPCentralNode::initialize(max_min_lp_simulation::MessageRequest::Requ
 							it->target_exist.push_back(true);
 							max_min_lp_msgs::target_node temp_target_node;
 							
-							for (vector<int>::iterator itt = m_primitives_to_targets[i].begin(); itt != m_primitives_to_targets[i].end(); ++itt) {
+							for (vector<int>::iterator itt = m_primitives_to_targets[i].begin(); itt != m_primitives_to_targets[i].end(); ++itt) { // For each target
 								temp_target_node.target_id.push_back(*itt);
 								temp_target_node.t_x_pos.push_back(m_target_x_pos[*itt - 1]);
 								temp_target_node.t_y_pos.push_back(m_target_y_pos[*itt - 1]);
@@ -126,7 +132,7 @@ bool MaxMinLPCentralNode::initialize(max_min_lp_simulation::MessageRequest::Requ
 								else {
 									temp_target_node.neighbor_primitive_exist.push_back(true);
 
-									for (vector<int>::iterator ittt = m_targets_to_primitives[*itt - 1].begin(); ittt != m_targets_to_primitives[*itt - 1].end(); ++ittt) {
+									for (vector<int>::iterator ittt = m_targets_to_primitives[*itt - 1].begin(); ittt != m_targets_to_primitives[*itt - 1].end(); ++ittt) { // For each connected neighbor motion primitive
 										if (*ittt == it->primitive_id[i]) { // Array of targets to primitives include all possible primitives so the primitive we are looking at now must not be taken into consideration.
 											continue;
 										}
@@ -151,7 +157,7 @@ bool MaxMinLPCentralNode::initialize(max_min_lp_simulation::MessageRequest::Requ
 				res.state_answer = "start";
 				m_send_robot_id += 1;
 
-				for (vector<max_min_lp_msgs::server_to_robots>::iterator it = m_robot_info.robot_neighbor.begin(); it != m_robot_info.robot_neighbor.end(); ++it) {
+				for (vector<max_min_lp_msgs::server_to_robots>::iterator it = m_robot_info.each_robot.begin(); it != m_robot_info.each_robot.end(); ++it) {
 					if (it->robot_id == req.robot_id) {
 						res.neighbor_info = *it; // Send the corresponding local info to the robot requested.
 					}

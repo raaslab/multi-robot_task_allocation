@@ -49,6 +49,9 @@ private:
   int m_request_robot_id;
   bool m_check_request_send;
 
+  // For reduction
+  int m_num_constraints;
+
   // Motion primitives info
   vector<int> m_primitive_id;
   vector<float> m_primitive_x_pos;

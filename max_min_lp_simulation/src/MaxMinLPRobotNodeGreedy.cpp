@@ -25,9 +25,6 @@ m_verbal_flag(false), m_epsilon(0.1), m_num_motion_primitive(10), m_time_interva
 
 	request_sub = m_nh.subscribe("/robot_status", 1000, &MaxMinLPRobotNode::applyMotionPrimitives, this);
 
-	// Publishers
-	// m_request_pub = m_nh.advertise<std_msgs::String>("/max_min_lp_robot_node/"+m_robot_name+"/request", 1);
-
 	// Subscribers
 	m_odom_sub = m_nh.subscribe("/gazebo/model_states", 1000, &MaxMinLPRobotNode::updateOdom, this);
 }
@@ -61,8 +58,6 @@ bool MaxMinLPRobotNode::initialize() {
   	vector<geometry_msgs::Pose> motion_primitive_pose;
 	motion_primitive_pose = computeMotionPrimitives();
 	srv.request.motion_primitive_info = motion_primitive_pose;
-
-	// Apply the reduction when |V_i| is greater than 2.
 
 	if (m_client.call(srv)) {
 		if (strcmp(srv.response.state_answer.c_str(), "start") == 0) {

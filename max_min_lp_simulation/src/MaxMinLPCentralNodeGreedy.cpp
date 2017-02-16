@@ -49,7 +49,7 @@ bool MaxMinLPCentralNode::initialize(max_min_lp_simulation::MessageRequest::Requ
 				temp_server_to_robots.p_y_pos.push_back(req.motion_primitive_info[i].position.y);
 			}
 
-			m_robot_info.robot_neighbor.push_back(temp_server_to_robots);
+			m_robot_info.each_robot.push_back(temp_server_to_robots);
 			
 			res.state_answer = "wait";
 			m_request_robot_id += 1;
@@ -69,7 +69,7 @@ bool MaxMinLPCentralNode::initialize(max_min_lp_simulation::MessageRequest::Requ
 				// Obtain neighbor primitive information.
 				// Firstly, see all motion primitives to pair each with targets that are in the FoV.
 				int count_num_total_primitives = 0;
-				for (vector<max_min_lp_msgs::server_to_robots>::iterator it = m_robot_info.robot_neighbor.begin(); it != m_robot_info.robot_neighbor.end(); ++it) {
+				for (vector<max_min_lp_msgs::server_to_robots>::iterator it = m_robot_info.each_robot.begin(); it != m_robot_info.each_robot.end(); ++it) {
 					for (int i = 0; i < it->primitive_id.size(); i ++) {
 						m_primitive_id.push_back(count_num_total_primitives+1);
 						m_primitive_x_pos.push_back(it->p_x_pos[i]);
@@ -104,7 +104,7 @@ bool MaxMinLPCentralNode::initialize(max_min_lp_simulation::MessageRequest::Requ
 				}
 
 				// Get ready to send local information to each corresponding robot using the above relationships between motion primitives and targets.
-				for (vector<max_min_lp_msgs::server_to_robots>::iterator it = m_robot_info.robot_neighbor.begin(); it != m_robot_info.robot_neighbor.end(); ++it) {
+				for (vector<max_min_lp_msgs::server_to_robots>::iterator it = m_robot_info.each_robot.begin(); it != m_robot_info.each_robot.end(); ++it) {
 					for(int i = 0; i < it->primitive_id.size(); i++) {
 						if (m_primitives_to_targets[i].size() == 0) { // No targets are connected to this motion primitive.
 							it->target_exist.push_back(false);
@@ -151,7 +151,7 @@ bool MaxMinLPCentralNode::initialize(max_min_lp_simulation::MessageRequest::Requ
 				res.state_answer = "start";
 				m_send_robot_id += 1;
 
-				for (vector<max_min_lp_msgs::server_to_robots>::iterator it = m_robot_info.robot_neighbor.begin(); it != m_robot_info.robot_neighbor.end(); ++it) {
+				for (vector<max_min_lp_msgs::server_to_robots>::iterator it = m_robot_info.each_robot.begin(); it != m_robot_info.each_robot.end(); ++it) {
 					if (it->robot_id == req.robot_id) {
 						res.neighbor_info = *it; // Send the corresponding local info to the robot requested.
 					}
