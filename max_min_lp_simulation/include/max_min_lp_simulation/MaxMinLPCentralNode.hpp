@@ -44,6 +44,7 @@ private:
   int m_num_target;
   int m_fov;
   int m_num_motion_primitive;
+  bool m_verbal_flag;
 
   int m_send_robot_id;
   int m_request_robot_id;
@@ -51,21 +52,27 @@ private:
 
   // For reduction
   int m_num_constraints;
+  float m_constraint_value;
+
+  // Robot info
+  vector<int> m_robot_id;
 
   // Motion primitives info
   vector<int> m_primitive_id;
   vector<float> m_primitive_x_pos;
   vector<float> m_primitive_y_pos;
 
-  // Target info of each time-step
-  vector<geometry_msgs::Pose> m_target_pos;
-  vector<string> m_target_name;
+  // Target info of each time-step obtained from gazebo
+  vector<geometry_msgs::Pose> m_temp_target_pos;
+  vector<string> m_temp_target_name;
 
   // Target info when consensus of robots is fulfilled
   vector<int> m_target_id;
   vector<float> m_target_x_pos;
   vector<float> m_target_y_pos;
 
+  vector<vector<int> > m_robots_to_primitives; // Robots to motion primitives
+  vector<vector<int> > m_primitives_to_robots; // Motion primitives to robots
   vector<vector<int> > m_primitives_to_targets; // Motion primitives to targets
   vector<vector<int> > m_targets_to_primitives; // Targets to motion primitives
 

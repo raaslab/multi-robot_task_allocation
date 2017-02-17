@@ -1,6 +1,7 @@
 string state_check
 int8 robot_id
 int8 num_constraints
+float64 constraint_value
 geometry_msgs/Pose[] motion_primitive_info
 ---
 string state_answer

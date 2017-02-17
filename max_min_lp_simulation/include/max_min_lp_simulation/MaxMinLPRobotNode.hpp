@@ -62,6 +62,7 @@ private:
 
   // For reduction
   int m_num_constraints;
+  float m_constraint_value;
 
 public:
   MaxMinLPRobotNode(); // Constructor

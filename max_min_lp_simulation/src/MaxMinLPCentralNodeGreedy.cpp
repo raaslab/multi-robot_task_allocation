@@ -2,7 +2,7 @@
  * Central node for the simulation
  * Central node only links between a set of motion primitives and a set of targets.
  * \Author Yoonchang Sung <yooncs8@vt.edu>
- * \02/10/2017
+ * \02/15/2017
  * Copyright 2017. All Rights Reserved.
  */
 
@@ -26,8 +26,8 @@ m_num_robot(1), m_num_target(1), m_fov(10), m_num_motion_primitive(10), m_privat
 	// // Subscribers
 	geometry_msgs::Pose dummy_target_pos;
 	for (int i = 0; i < m_num_target; i++) {
-		m_target_name.push_back("target_"+boost::lexical_cast<string>(i+1));
-		m_target_pos.push_back(dummy_target_pos);
+		m_temp_target_name.push_back("target_"+boost::lexical_cast<string>(i+1));
+		m_temp_target_pos.push_back(dummy_target_pos);
 	}
 	m_target_1_sub = m_nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1000, boost::bind(&MaxMinLPCentralNode::updatePose, this, _1, 0));
 	m_target_2_sub = m_nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1000, boost::bind(&MaxMinLPCentralNode::updatePose, this, _1, 1));
@@ -62,15 +62,15 @@ bool MaxMinLPCentralNode::initialize(max_min_lp_simulation::MessageRequest::Requ
 				// Obtain target information.
 				for (int i = 0; i < m_num_target; i++) {
 					m_target_id.push_back(i+1);
-					m_target_x_pos.push_back(m_target_pos[i].position.x);
-					m_target_y_pos.push_back(m_target_pos[i].position.y);
+					m_target_x_pos.push_back(m_temp_target_pos[i].position.x);
+					m_target_y_pos.push_back(m_temp_target_pos[i].position.y);
 				}
 
 				// Obtain neighbor primitive information.
 				// Firstly, see all motion primitives to pair each with targets that are in the FoV.
 				int count_num_total_primitives = 0;
 				for (vector<max_min_lp_msgs::server_to_robots>::iterator it = m_robot_info.each_robot.begin(); it != m_robot_info.each_robot.end(); ++it) {
-					for (int i = 0; i < it->primitive_id.size(); i ++) {
+					for (int i = 0; i < it->primitive_id.size(); i++) {
 						m_primitive_id.push_back(count_num_total_primitives+1);
 						m_primitive_x_pos.push_back(it->p_x_pos[i]);
 						m_primitive_y_pos.push_back(it->p_y_pos[i]);
@@ -91,16 +91,15 @@ bool MaxMinLPCentralNode::initialize(max_min_lp_simulation::MessageRequest::Requ
 
 				// Then this time see all targets to pair each with motion primitives that are in the FoV.
 				for (int i = 0; i < m_target_id.size(); i++) {
+					vector<int> temp_targets_to_primitives;
 					for (int j = 0; j < m_primitive_id.size(); j++) {
 						float dist_primitive_to_target = sqrt(pow((m_target_x_pos[i] - m_primitive_x_pos[j]), 2) + pow((m_target_y_pos[i] - m_primitive_y_pos[j]), 2));
-						vector<int> temp_targets_to_primitives;
-
+						
 						if (dist_primitive_to_target <= m_fov) {
 							temp_targets_to_primitives.push_back(m_primitive_id[j]);
 						}
-
-						m_targets_to_primitives.push_back(temp_targets_to_primitives);
 					}
+					m_targets_to_primitives.push_back(temp_targets_to_primitives);
 				}
 
 				// Get ready to send local information to each corresponding robot using the above relationships between motion primitives and targets.
@@ -171,12 +170,12 @@ void MaxMinLPCentralNode::updatePose(const gazebo_msgs::ModelStates::ConstPtr& m
 	int size_msg = m_num_robot + m_num_target + 1; // 1 is for 'ground plane' in gazebo.
 	int id;
 	for (int i = 0; i < size_msg; i++) {
-		if (strcmp(msg->name[i].c_str(), m_target_name[target_id].c_str()) == 0) {
+		if (strcmp(msg->name[i].c_str(), m_temp_target_name[target_id].c_str()) == 0) {
 			id = i;
 		}
 	}
 
-	m_target_pos[target_id] = msg->pose[id];
+	m_temp_target_pos[target_id] = msg->pose[id];
 }
 
 int main(int argc, char **argv) {

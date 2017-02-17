@@ -24,6 +24,7 @@ m_verbal_flag(false), m_epsilon(0.1), m_num_motion_primitive(10), m_time_interva
 	m_private_nh.getParam("time_interval", m_time_interval);
 
 	m_num_constraints = 1; // When the |V_i| <= 2, the reduction is not required. Therefore, the number of constraints is one.
+	m_constraint_value = 1;
 
 	request_sub = m_nh.subscribe("/robot_status", 1000, &MaxMinLPRobotNode::applyMotionPrimitives, this);
 
@@ -68,6 +69,8 @@ bool MaxMinLPRobotNode::initialize() {
 	if (m_num_motion_primitive > 2) {
 		m_num_constraints = m_num_motion_primitive * (m_num_motion_primitive - 1) / 2;
 		srv.request.num_constraints = m_num_constraints;
+		m_constraint_value = 1 / m_num_motion_primitive;
+		srv.request.constraint_value = m_constraint_value;
 	}
 
 	if (m_client.call(srv)) {

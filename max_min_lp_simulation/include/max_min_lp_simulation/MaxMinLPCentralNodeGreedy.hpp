@@ -55,8 +55,8 @@ private:
   vector<float> m_primitive_y_pos;
 
   // Target info of each time-step
-  vector<geometry_msgs::Pose> m_target_pos;
-  vector<string> m_target_name;
+  vector<geometry_msgs::Pose> m_temp_target_pos;
+  vector<string> m_temp_target_name;
 
   // Target info when consensus of robots is fulfilled
   vector<int> m_target_id;
