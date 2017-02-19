@@ -11,3 +11,4 @@ max_min_lp_msgs/general_node[] gen_p_r_node
 max_min_lp_msgs/general_node[] gen_p_t_node
 max_min_lp_msgs/general_node[] gen_t_node
 int8 max_neighbor
+int8 num_neighbors_at_each_layer

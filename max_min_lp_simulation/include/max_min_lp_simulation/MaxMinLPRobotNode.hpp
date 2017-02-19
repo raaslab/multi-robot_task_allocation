@@ -20,7 +20,7 @@
 #include <max_min_lp_msgs/layered_node_array.h>
 #include <max_min_lp_msgs/server_to_robots.h>
 #include <max_min_lp_msgs/server_to_robots_array.h>
-#include <max_min_lp_core/MaxMinLPCore.hpp>
+#include <max_min_lp_core/MaxMinLPDecentralizedCore.hpp>
 #include <max_min_lp_simulation/MessageRequest.h>
 
 using namespace std;
@@ -58,15 +58,12 @@ private:
 
   // Local info
   int m_max_neighbor;
+  vector<int> num_neighbors_at_each_layer;
 
   vector<max_min_lp_msgs::general_node> m_gen_r_node;
-  int m_num_r_nodes;
   vector<max_min_lp_msgs::general_node> m_gen_p_r_node;
-  int m_num_p_r_nodes;
   vector<max_min_lp_msgs::general_node> m_gen_p_t_node;
-  int m_num_p_t_nodes;
   vector<max_min_lp_msgs::general_node> m_gen_t_node;
-  int m_num_t_nodes;
 
 public:
   MaxMinLPRobotNode(); // Constructor

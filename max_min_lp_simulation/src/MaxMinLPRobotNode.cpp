@@ -81,6 +81,8 @@ bool MaxMinLPRobotNode::initialize() {
 			m_gen_p_t_node = srv.response.gen_p_t_node;
 			m_gen_t_node = srv.response.gen_t_node;
 
+			num_neighbors_at_each_layer.push_back(srv.response.num_neighbors_at_each_layer);
+
 			return true;
 		}
 		else {

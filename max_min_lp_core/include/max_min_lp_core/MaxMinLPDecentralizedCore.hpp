@@ -1,5 +1,5 @@
-#ifndef MAXMINLPCORE_HPP_
-#define MAXMINLPCORE_HPP_
+#ifndef MAXMINLPDECENTRALIZEDCORE_HPP_
+#define MAXMINLPDECENTRALIZEDCORE_HPP_
 
 #include <iostream>
 #include <sstream>
@@ -50,7 +50,7 @@ public:
   }
 };
 
-class MaxMinLPCore {  
+class MaxMinLPDecentralizedCore {  
 private:
   // General node values
   vector<max_min_lp_msgs::general_node> m_gen_r_node;
@@ -77,12 +77,12 @@ private:
 
 public:
   // Constructor
-  MaxMinLPCore();
-  MaxMinLPCore(vector<max_min_lp_msgs::general_node>& _gen_r_node, vector<max_min_lp_msgs::general_node>& _gen_p_r_node, 
+  MaxMinLPDecentralizedCore();
+  MaxMinLPDecentralizedCore(vector<max_min_lp_msgs::general_node>& _gen_r_node, vector<max_min_lp_msgs::general_node>& _gen_p_r_node, 
     vector<max_min_lp_msgs::general_node>& _gen_p_t_node, vector<max_min_lp_msgs::general_node>& _gen_t_node, 
     int _num_layer, bool _verbal_flag, double _epsilon);
   // Destructor
-  ~MaxMinLPCore() {
+  ~MaxMinLPDecentralizedCore() {
     delete[] m_red_tree;
   }
 

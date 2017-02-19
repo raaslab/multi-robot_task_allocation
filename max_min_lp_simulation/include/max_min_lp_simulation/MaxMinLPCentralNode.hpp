@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 #include <math.h>
+#include <max_min_lp_core/MaxMinLPCore.hpp>
 #include <max_min_lp_msgs/general_node.h>
 #include <max_min_lp_msgs/general_node_array.h>
 #include <max_min_lp_msgs/server_to_robots.h>
