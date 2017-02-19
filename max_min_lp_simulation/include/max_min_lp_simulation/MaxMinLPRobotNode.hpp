@@ -38,14 +38,6 @@ private:
   // Clients
   ros::ServiceClient m_client;
 
-  // General node values
-  vector<max_min_lp_msgs::general_node> m_gen_r_node;
-  vector<max_min_lp_msgs::general_node> m_gen_p_r_node;
-  vector<max_min_lp_msgs::general_node> m_gen_p_t_node;
-  vector<max_min_lp_msgs::general_node> m_gen_t_node;
-
-  max_min_lp_msgs::server_to_robots_array m_local_info;
-
   // Variables from the launch file
   int m_num_robot;
   int m_num_target;
@@ -63,6 +55,18 @@ private:
   // For reduction
   int m_num_constraints;
   float m_constraint_value;
+
+  // Local info
+  int m_max_neighbor;
+
+  vector<max_min_lp_msgs::general_node> m_gen_r_node;
+  int m_num_r_nodes;
+  vector<max_min_lp_msgs::general_node> m_gen_p_r_node;
+  int m_num_p_r_nodes;
+  vector<max_min_lp_msgs::general_node> m_gen_p_t_node;
+  int m_num_p_t_nodes;
+  vector<max_min_lp_msgs::general_node> m_gen_t_node;
+  int m_num_t_nodes;
 
 public:
   MaxMinLPRobotNode(); // Constructor

@@ -421,16 +421,10 @@ bool MaxMinLPCentralNode::initialize(max_min_lp_simulation::MessageRequest::Requ
 					}
 				}
 
-				// General node values
-				vector<max_min_lp_msgs::general_node> gen_r_node;
-				vector<max_min_lp_msgs::general_node> gen_p_r_node;
-				vector<max_min_lp_msgs::general_node> gen_p_t_node;
-				vector<max_min_lp_msgs::general_node> gen_t_node;
-
-				gen_r_node = buildGeneralNode("r");
-				gen_p_r_node = buildGeneralNode("p_r");
-				gen_p_t_node = buildGeneralNode("p_t");
-				gen_t_node = buildGeneralNode("t");
+				m_gen_r_node = buildGeneralNode("r");
+				m_gen_p_r_node = buildGeneralNode("p_r");
+				m_gen_p_t_node = buildGeneralNode("p_t");
+				m_gen_t_node = buildGeneralNode("t");
 
 				m_check_request_send = false;
 			} // if (m_check_request_send)
@@ -439,7 +433,61 @@ bool MaxMinLPCentralNode::initialize(max_min_lp_simulation::MessageRequest::Requ
 				res.state_answer = "start";
 				m_send_robot_id += 1;
 
+				for (int i = 0; i < m_primitive_id.size() / m_num_motion_primitive; i++) {
+					if (i == req.robot_id - 1) {
+						vector<max_min_lp_msgs::general_node> temp_gen_r_node;
+						vector<max_min_lp_msgs::general_node> temp_gen_p_r_node;
+						vector<max_min_lp_msgs::general_node> temp_gen_p_t_node;
+						vector<max_min_lp_msgs::general_node> temp_gen_t_node;
 
+						vector<int> check_target_overlapped; // This is required because multiple ROBOTs have the same targets.
+
+						// Information of the corresponding ROBOT.
+						temp_gen_r_node.push_back(m_gen_r_node[i]);
+						for (int j = i * m_num_motion_primitive; j < (i + 1) * m_num_motion_primitive; j++) {
+							temp_gen_p_r_node.push_back(m_gen_p_r_node[j]);
+							temp_gen_p_t_node.push_back(m_gen_p_t_node[j]);
+						}
+						for (vector<int>::iterator it = m_ROBOT_assign_targets[i].begin(); it != m_ROBOT_assign_targets[i].end(); ++it) {
+							check_target_overlapped.push_back(*it);
+							temp_gen_t_node.push_back(m_gen_t_node[*it-1]);
+						}
+
+						// Information of neighbor ROBOTs with respect to the corresponding ROBOT.
+						if (m_max_neighbor[i] > 0) {
+							for (int j = 1; j < m_max_neighbor[i]; j++) { // Number of maximum layer that the corresponding ROBOT can reach.
+								for (int k = 0; k < m_ROBOT_neighbor[i][j-1].size(); k++) {
+									temp_gen_r_node.push_back(m_gen_r_node[m_ROBOT_neighbor[i][j-1][k]-1]);
+									for (int l = (m_ROBOT_neighbor[i][j-1][k]-1) * m_num_motion_primitive; l < m_ROBOT_neighbor[i][j-1][k] * m_num_motion_primitive; l++) {
+										temp_gen_p_r_node.push_back(m_gen_p_r_node[l]);
+										temp_gen_p_t_node.push_back(m_gen_p_t_node[l]);
+									}
+									for (vector<int>::iterator it = m_ROBOT_assign_targets[m_ROBOT_neighbor[i][j-1][k]-1].begin(); it != m_ROBOT_assign_targets[m_ROBOT_neighbor[i][j-1][k]-1].end(); ++it) {
+										bool check_previously_included = false;
+
+										for (vector<int>::iterator itt = check_target_overlapped.begin(); itt != check_target_overlapped.end(); ++itt) {
+											if (*itt == *it) { // Previously included already. Thus, this target won't be included.
+												check_previously_included = true;
+											}
+										}
+
+										if (!check_previously_included) {
+											check_target_overlapped.push_back(*it);
+											temp_gen_t_node.push_back(m_gen_t_node[*it-1]);
+										}
+									}
+								}
+							}
+						}
+
+						// Responses
+						res.max_neighbor = m_max_neighbor[i];
+						res.gen_r_node = temp_gen_r_node;
+						res.gen_p_r_node = temp_gen_p_r_node;
+						res.gen_p_t_node = temp_gen_p_t_node;
+						res.gen_t_node = temp_gen_t_node;
+					}
+				}
 
 				if (m_send_robot_id == (m_num_robot+1)) {
 					m_request_robot_id = 1;

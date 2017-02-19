@@ -6,3 +6,8 @@ geometry_msgs/Pose[] motion_primitive_info
 ---
 string state_answer
 max_min_lp_msgs/server_to_robots neighbor_info
+max_min_lp_msgs/general_node[] gen_r_node
+max_min_lp_msgs/general_node[] gen_p_r_node
+max_min_lp_msgs/general_node[] gen_p_t_node
+max_min_lp_msgs/general_node[] gen_t_node
+int8 max_neighbor

@@ -89,6 +89,12 @@ private:
   vector<vector<float> > m_primitives_to_targets_weight; // Weights of motion primitives to targets
   vector<vector<float> > m_targets_to_primitives_weight; // Weights of targets to motion primitives
 
+  // General node values
+  vector<max_min_lp_msgs::general_node> m_gen_r_node;
+  vector<max_min_lp_msgs::general_node> m_gen_p_r_node;
+  vector<max_min_lp_msgs::general_node> m_gen_p_t_node;
+  vector<max_min_lp_msgs::general_node> m_gen_t_node;
+
 public:
   MaxMinLPCentralNode(); // Constructor
 

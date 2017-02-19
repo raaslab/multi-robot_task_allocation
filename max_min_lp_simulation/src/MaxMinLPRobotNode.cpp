@@ -75,7 +75,12 @@ bool MaxMinLPRobotNode::initialize() {
 
 	if (m_client.call(srv)) {
 		if (strcmp(srv.response.state_answer.c_str(), "start") == 0) {
-			// m_local_info
+			m_max_neighbor = srv.response.max_neighbor;
+			m_gen_r_node = srv.response.gen_r_node;
+			m_gen_p_r_node = srv.response.gen_p_r_node;
+			m_gen_p_t_node = srv.response.gen_p_t_node;
+			m_gen_t_node = srv.response.gen_t_node;
+
 			return true;
 		}
 		else {
