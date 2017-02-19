@@ -62,7 +62,7 @@ private:
   // ROBOT neighbor hop info
   vector<vector<vector<int> > > m_ROBOT_neighbor;
   vector<vector<int> > m_ROBOT_assign_targets;
-  vector<int> m_max_neighbor;
+  vector<int> m_max_neighbor_hop;
 
   // Robot info
   vector<int> m_robot_id;

@@ -346,7 +346,7 @@ bool MaxMinLPCentralNode::initialize(max_min_lp_simulation::MessageRequest::Requ
 					}
 
 					m_ROBOT_neighbor.push_back(temp_ROBOT_neighbor);
-					m_max_neighbor.push_back(temp_layer_count);
+					m_max_neighbor_hop.push_back(temp_layer_count);
 				}
 
 				if (m_verbal_flag) {
@@ -407,11 +407,11 @@ bool MaxMinLPCentralNode::initialize(max_min_lp_simulation::MessageRequest::Requ
 							ROS_INFO("     targets observed id = %d", *it);
 						}
 						ROS_INFO("     layer = 0 :");
-						if (m_max_neighbor[i] == 0) {
+						if (m_max_neighbor_hop[i] == 0) {
 							continue;
 						}
 						for (int j = 1; j < m_num_layer; j++) {
-							if (m_max_neighbor[i] >= j) {
+							if (m_max_neighbor_hop[i] >= j) {
 								ROS_INFO("     layer = %d :", j);
 								for (vector<int>::iterator it = m_ROBOT_neighbor[i][j-1].begin(); it != m_ROBOT_neighbor[i][j-1].end(); ++it) {
 									ROS_INFO("          neighbor ROBOT id = %d", *it);
@@ -453,11 +453,11 @@ bool MaxMinLPCentralNode::initialize(max_min_lp_simulation::MessageRequest::Requ
 							temp_gen_t_node.push_back(m_gen_t_node[*it-1]);
 						}
 
-						res.max_neighbor = m_max_neighbor[i];
+						res.max_neighbor = m_max_neighbor_hop[i];
 
 						// Information of neighbor ROBOTs with respect to the corresponding ROBOT.
-						if (m_max_neighbor[i] > 0) {
-							for (int j = 0; j < m_max_neighbor[i]; j++) { // Number of maximum layer that the corresponding ROBOT can reach.
+						if (m_max_neighbor_hop[i] > 0) {
+							for (int j = 0; j < m_max_neighbor_hop[i]; j++) { // Number of maximum layer that the corresponding ROBOT can reach.
 								res.num_neighbors_at_each_layer = (int)m_ROBOT_neighbor[i][j].size();
 
 								for (int k = 0; k < m_ROBOT_neighbor[i][j].size(); k++) {

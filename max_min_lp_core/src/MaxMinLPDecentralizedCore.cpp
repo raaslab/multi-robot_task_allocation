@@ -13,11 +13,25 @@
 namespace max_min_lp_core {
 
 MaxMinLPDecentralizedCore::MaxMinLPDecentralizedCore(vector<max_min_lp_msgs::general_node>& _gen_r_node, vector<max_min_lp_msgs::general_node>& _gen_p_r_node, 
-	vector<max_min_lp_msgs::general_node>& _gen_p_t_node, vector<max_min_lp_msgs::general_node>& _gen_t_node, 
-	int _num_layer, bool _verbal_flag, double _epsilon) :
-m_gen_r_node(_gen_r_node), m_gen_p_r_node(_gen_p_r_node), m_gen_p_t_node(_gen_p_t_node), m_gen_t_node(_gen_t_node),
-m_num_layer(_num_layer), m_verbal_flag(_verbal_flag), m_epsilon(_epsilon) {
+	vector<max_min_lp_msgs::general_node>& _gen_p_t_node, vector<max_min_lp_msgs::general_node>& _gen_t_node, int _num_layer, 
+	bool _verbal_flag, double _epsilon, int _num_motion_primivie, int _max_neighbor_hop, vector<int> _num_neighbors_at_each_layer, float _constraint_value) :
+m_gen_r_node(_gen_r_node), m_gen_p_r_node(_gen_p_r_node), m_gen_p_t_node(_gen_p_t_node), m_gen_t_node(_gen_t_node), m_num_layer(_num_layer),
+m_verbal_flag(_verbal_flag), m_epsilon(_epsilon), m_num_motion_primitive(_num_motion_primivie), m_max_neighbor_hop(_max_neighbor_hop),
+m_num_neighbors_at_each_layer(_num_neighbors_at_each_layer), m_constraint_value(_constraint_value) {
 }
+
+// void MaxMinLPDecentralizedCore::convertLayeredMaxMinLP() {
+// 	//Initialization
+// 	m_lay_robot_node.clear();
+// 	m_lay_red_node.clear();
+// 	m_lay_blue_node.clear();
+// 	m_lay_target_node.clear();
+
+// 	// When layer = 0 (Red->Robot->Blue)
+// 	// Red nodes
+// 	for (vector<max_min_lp_msgs::general_node>::iterator it = m_gen_p_r_node.begin(); it != m_gen_p_r_node.end(); ++it) {
+// 	}
+// }
 
 void MaxMinLPDecentralizedCore::convertLayeredMaxMinLP() {
 	//Initialization

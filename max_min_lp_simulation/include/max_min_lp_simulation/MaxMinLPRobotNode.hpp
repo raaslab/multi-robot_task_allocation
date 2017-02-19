@@ -57,8 +57,8 @@ private:
   float m_constraint_value;
 
   // Local info
-  int m_max_neighbor;
-  vector<int> num_neighbors_at_each_layer;
+  int m_max_neighbor_hop;
+  vector<int> m_num_neighbors_at_each_layer;
 
   vector<max_min_lp_msgs::general_node> m_gen_r_node;
   vector<max_min_lp_msgs::general_node> m_gen_p_r_node;

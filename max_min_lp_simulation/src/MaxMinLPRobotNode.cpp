@@ -51,6 +51,10 @@ void MaxMinLPRobotNode::applyMotionPrimitives(const std_msgs::String::ConstPtr& 
 
 	if (result_success) {
 		ROS_INFO("The %s is initiated.", m_robot_name.c_str());
+
+		// Local algorithm is applied from here.
+		max_min_lp_core::MaxMinLPDecentralizedCore lpc(m_gen_r_node, m_gen_p_r_node, m_gen_p_t_node, m_gen_t_node,
+			m_num_layer, m_verbal_flag, m_epsilon, m_num_motion_primitive, m_max_neighbor_hop, m_num_neighbors_at_each_layer, m_constraint_value);
 	}
 }
 
@@ -75,13 +79,13 @@ bool MaxMinLPRobotNode::initialize() {
 
 	if (m_client.call(srv)) {
 		if (strcmp(srv.response.state_answer.c_str(), "start") == 0) {
-			m_max_neighbor = srv.response.max_neighbor;
+			m_max_neighbor_hop = srv.response.max_neighbor;
 			m_gen_r_node = srv.response.gen_r_node;
 			m_gen_p_r_node = srv.response.gen_p_r_node;
 			m_gen_p_t_node = srv.response.gen_p_t_node;
 			m_gen_t_node = srv.response.gen_t_node;
 
-			num_neighbors_at_each_layer.push_back(srv.response.num_neighbors_at_each_layer);
+			m_num_neighbors_at_each_layer.push_back(srv.response.num_neighbors_at_each_layer);
 
 			return true;
 		}
@@ -90,7 +94,7 @@ bool MaxMinLPRobotNode::initialize() {
 		}
 	}
 	else {
-		ROS_INFO("Fail to communicate with the server.");
+		ROS_INFO("Fail to communicate with the server. The %s is lost.", m_robot_name.c_str());
 		return false;
 	}
 }
