@@ -466,53 +466,81 @@ void MaxMinLPCentralNode::updatePose(const gazebo_msgs::ModelStates::ConstPtr& m
 vector<max_min_lp_msgs::general_node> MaxMinLPCentralNode::buildGeneralNode(string option) {
 	vector<max_min_lp_msgs::general_node> gen_return_node;
 
-	// for (int i = 0; i < temp_num; i++) {
-	// 	max_min_lp_msgs::general_node temp_node;
-	// 	vector<int> temp_neighbor;
-	// 	vector<float> temp_loc_edge_weight;
-	// 	string temp_index = boost::lexical_cast<string>(i+1);
-	// 	if (ros::param::get("/max_min_lp_demo_node/r"+temp_index+"_deg", temp_deg)) {
-	// 		temp_node.loc_deg = temp_deg;
-	// 		temp_node.type = "robot";
-	// 		temp_node.id = i+1;
-
-	// 		if (ros::param::get("/max_min_lp_demo_node/r"+temp_index+"_neighbor", temp_neighbor) &&
-	// 			ros::param::get("/max_min_lp_demo_node/r"+temp_index+"_edge_weight", temp_loc_edge_weight)) {
-	// 			for (int j = i * m_num_motion_primitive; j < (i + 1) * m_num_motion_primitive; j++) {
-	// 				temp_node.loc_neighbor.push_back(j + 1);
-	// 				temp_node.loc_edge_weight.push_back(1/temp_loc_edge_weight[j]);
-	// 			}
-	// 		}
-	// 		else {
-	// 			ROS_WARN("Didn't find r%d_neighbor or r%d_edge_weight", i+1, i+1);
-	// 		}
-	// 	}
-	// 	else {
-	// 		ROS_WARN("Didn't find r%d_deg", i+1);
-	// 	}
-	// 	m_gen_r_node.push_back(temp_node);
-	// }
-
+	// Robot nodes
 	if (strcmp(option.c_str(),"r") == 0) {
 		for (int i = 0; i < m_robot_id.size(); i++) {
 			max_min_lp_msgs::general_node temp_node;
-			temp_node.id = i + 1;
+			temp_node.id = m_robot_id[i];
 			temp_node.loc_deg = m_num_motion_primitive;
 			temp_node.type = "robot";
 			for (int j = i * m_num_motion_primitive; j < (i + 1) * m_num_motion_primitive; j++) {
 				temp_node.loc_neighbor.push_back(j + 1);
+				temp_node.loc_edge_weight.push_back(m_constraint_value);
 			}
+
+			gen_return_node.push_back(temp_node);
 		}
-		ROS_INFO("Building the general node for robots");
+
+		if (m_verbal_flag) {
+			ROS_INFO("Building the general node for robots");
+		}
 	}
+	// Red nodes
 	else if (strcmp(option.c_str(),"p_r") == 0) {
-		ROS_INFO("Building the general node for primitives to robots");
+		for (int i = 0; i < m_primitive_id.size(); i++) {
+			max_min_lp_msgs::general_node temp_node;
+			temp_node.id = m_primitive_id[i];
+			temp_node.loc_deg = (int)m_primitives_to_robots[i].size();
+			temp_node.type = "red";
+			for (vector<int>::iterator it = m_primitives_to_robots[i].begin(); it != m_primitives_to_robots[i].end(); ++it) {
+				temp_node.loc_neighbor.push_back(*it);
+				temp_node.loc_edge_weight.push_back(m_constraint_value);
+			}
+
+			gen_return_node.push_back(temp_node);
+		}
+
+		if (m_verbal_flag) {
+			ROS_INFO("Building the general node for primitives to robots");
+		}
 	}
+	// Blue nodes
 	else if (strcmp(option.c_str(),"p_t") == 0) {
-		ROS_INFO("Building the general node for primitives to targets");
+		for (int i = 0; i < m_primitive_id.size(); i++) {
+			max_min_lp_msgs::general_node temp_node;
+			temp_node.id = m_primitive_id[i];
+			temp_node.loc_deg = (int)m_primitives_to_targets[i].size();
+			temp_node.type = "blue";
+			for (int j = 0; j < m_primitives_to_targets[i].size(); j++) {
+				temp_node.loc_neighbor.push_back(m_primitives_to_targets[i][j]);
+				temp_node.loc_edge_weight.push_back(m_primitives_to_targets_weight[i][j]);
+			}
+
+			gen_return_node.push_back(temp_node);
+		}
+
+		if (m_verbal_flag) {
+			ROS_INFO("Building the general node for primitives to targets");
+		}
 	}
+	// Target nodes
 	else if (strcmp(option.c_str(),"t") == 0) {
-		ROS_INFO("Building the general node for targets");
+		for (int i = 0; i < m_target_id.size(); i++) {
+			max_min_lp_msgs::general_node temp_node;
+			temp_node.id = m_target_id[i];
+			temp_node.loc_deg = (int)m_targets_to_primitives[i].size();
+			temp_node.type = "target";
+			for (int j = 0; j < m_targets_to_primitives[i].size(); j++) {
+				temp_node.loc_neighbor.push_back(m_targets_to_primitives[i][j]);
+				temp_node.loc_edge_weight.push_back(m_targets_to_primitives_weight[i][j]);
+			}
+
+			gen_return_node.push_back(temp_node);
+		}
+
+		if (m_verbal_flag) {
+			ROS_INFO("Building the general node for targets");
+		}
 	}
 
 	return gen_return_node;

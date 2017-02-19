@@ -56,7 +56,7 @@ private:
 
   // For reduction
   int m_num_constraints;
-  float m_constraint_value;
+  float m_constraint_value; // This value is used for weights between targets and primitives. (A_tp)
 
   // ROBOT neighbor hop info
   vector<vector<vector<int> > > m_ROBOT_neighbor;
