@@ -443,7 +443,9 @@ bool MaxMinLPCentralNode::initialize(max_min_lp_simulation::MessageRequest::Requ
 						vector<int> check_target_overlapped; // This is required because multiple ROBOTs have the same targets.
 
 						// Information of the corresponding ROBOT.
-						temp_gen_r_node.push_back(m_gen_r_node[i]);
+						for (int j = i * m_num_constraints; j < (i + 1) * m_num_constraints; j++) {
+							temp_gen_r_node.push_back(m_gen_r_node[j]);
+						}
 						for (int j = i * m_num_motion_primitive; j < (i + 1) * m_num_motion_primitive; j++) {
 							temp_gen_p_r_node.push_back(m_gen_p_r_node[j]);
 							temp_gen_p_t_node.push_back(m_gen_p_t_node[j]);
@@ -461,7 +463,10 @@ bool MaxMinLPCentralNode::initialize(max_min_lp_simulation::MessageRequest::Requ
 								res.num_neighbors_at_each_layer = (int)m_ROBOT_neighbor[i][j].size();
 
 								for (int k = 0; k < m_ROBOT_neighbor[i][j].size(); k++) {
-									temp_gen_r_node.push_back(m_gen_r_node[m_ROBOT_neighbor[i][j][k]-1]);
+									for (int l = (m_ROBOT_neighbor[i][j][k]-1) * m_num_constraints; l < m_ROBOT_neighbor[i][j][k] * m_num_constraints; l++) {
+										temp_gen_r_node.push_back(m_gen_r_node[l]);
+									}
+
 									for (int l = (m_ROBOT_neighbor[i][j][k]-1) * m_num_motion_primitive; l < m_ROBOT_neighbor[i][j][k] * m_num_motion_primitive; l++) {
 										temp_gen_p_r_node.push_back(m_gen_p_r_node[l]);
 										temp_gen_p_t_node.push_back(m_gen_p_t_node[l]);
@@ -522,10 +527,10 @@ vector<max_min_lp_msgs::general_node> MaxMinLPCentralNode::buildGeneralNode(stri
 		for (int i = 0; i < m_robot_id.size(); i++) {
 			max_min_lp_msgs::general_node temp_node;
 			temp_node.id = m_robot_id[i];
-			temp_node.loc_deg = m_num_motion_primitive;
+			temp_node.loc_deg = (int)m_robots_to_primitives.size();
 			temp_node.type = "robot";
-			for (int j = i * m_num_motion_primitive; j < (i + 1) * m_num_motion_primitive; j++) {
-				temp_node.loc_neighbor.push_back(j + 1);
+			for (vector<int>::iterator it = m_robots_to_primitives[i].begin(); it != m_robots_to_primitives[i].end(); ++it) {
+				temp_node.loc_neighbor.push_back(*it);
 				temp_node.loc_edge_weight.push_back(m_constraint_value);
 			}
 

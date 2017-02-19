@@ -77,6 +77,7 @@ private:
   int m_num_motion_primitive;
   int m_max_neighbor_hop;
   vector<int> m_num_neighbors_at_each_layer;
+  int m_num_constraints;
   float m_constraint_value;
 
 public:
@@ -85,7 +86,7 @@ public:
   MaxMinLPDecentralizedCore(vector<max_min_lp_msgs::general_node>& _gen_r_node, vector<max_min_lp_msgs::general_node>& _gen_p_r_node, 
     vector<max_min_lp_msgs::general_node>& _gen_p_t_node, vector<max_min_lp_msgs::general_node>& _gen_t_node, 
     int _num_layer, bool _verbal_flag, double _epsilon, int _num_motion_primivie, int _max_neighbor_hop, 
-    vector<int> _num_neighbors_at_each_layer, float _constraint_value);
+    vector<int> _num_neighbors_at_each_layer, int _num_constraints, float _constraint_value);
   // Destructor
   ~MaxMinLPDecentralizedCore() {
     delete[] m_red_tree;

@@ -56,7 +56,7 @@ private:
   bool m_check_request_send;
 
   // For reduction
-  int m_num_constraints;
+  int m_num_constraints; // This corresponds to the number of robot nodes that are assigned to the corresonding ROBOT.
   float m_constraint_value; // This value is used for weights between targets and primitives. (A_tp)
 
   // ROBOT neighbor hop info
