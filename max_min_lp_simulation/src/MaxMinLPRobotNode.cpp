@@ -69,7 +69,7 @@ bool MaxMinLPRobotNode::initialize() {
 	if (m_num_motion_primitive > 2) {
 		m_num_constraints = m_num_motion_primitive * (m_num_motion_primitive - 1) / 2;
 		srv.request.num_constraints = m_num_constraints;
-		m_constraint_value = 1 / m_num_motion_primitive;
+		m_constraint_value = float(1) / m_num_motion_primitive;
 		srv.request.constraint_value = m_constraint_value;
 	}
 
