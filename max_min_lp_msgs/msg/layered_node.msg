@@ -3,6 +3,8 @@ int16 id
 int16 layer
 int16 connected_id
 string state
+bool red_tree_candidate
+
 float32 x_v # For red and blue nodes
 float32 f_r # For robot nodes
 float32 g_t # For target nodes

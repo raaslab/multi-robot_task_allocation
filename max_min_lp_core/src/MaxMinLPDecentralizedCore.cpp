@@ -12,13 +12,13 @@
 
 namespace max_min_lp_core {
 
-MaxMinLPDecentralizedCore::MaxMinLPDecentralizedCore(vector<max_min_lp_msgs::general_node>& _gen_r_node, vector<max_min_lp_msgs::general_node>& _gen_p_r_node, 
+MaxMinLPDecentralizedCore::MaxMinLPDecentralizedCore(int _ROBOT_id, vector<max_min_lp_msgs::general_node>& _gen_r_node, vector<max_min_lp_msgs::general_node>& _gen_p_r_node, 
 	vector<max_min_lp_msgs::general_node>& _gen_p_t_node, vector<max_min_lp_msgs::general_node>& _gen_t_node, int _num_layer, 
-	bool _verbal_flag, double _epsilon, int _num_motion_primivie, int _max_neighbor_hop, vector<int> _num_neighbors_at_each_layer, 
+	bool _verbal_flag, double _epsilon, int _num_motion_primivie, int _max_neighbor_hop, vector<int> _num_neighbors_at_each_hop, 
 	int _num_constraints, float _constraint_value) :
-m_gen_r_node(_gen_r_node), m_gen_p_r_node(_gen_p_r_node), m_gen_p_t_node(_gen_p_t_node), m_gen_t_node(_gen_t_node), m_num_layer(_num_layer),
+m_ROBOT_id(_ROBOT_id), m_gen_r_node(_gen_r_node), m_gen_p_r_node(_gen_p_r_node), m_gen_p_t_node(_gen_p_t_node), m_gen_t_node(_gen_t_node), m_num_layer(_num_layer),
 m_verbal_flag(_verbal_flag), m_epsilon(_epsilon), m_num_motion_primitive(_num_motion_primivie), m_max_neighbor_hop(_max_neighbor_hop),
-m_num_neighbors_at_each_layer(_num_neighbors_at_each_layer), m_num_constraints(_num_constraints), m_constraint_value(_constraint_value) {
+m_num_neighbors_at_each_hop(_num_neighbors_at_each_hop), m_num_constraints(_num_constraints), m_constraint_value(_constraint_value) {
 }
 
 void MaxMinLPDecentralizedCore::convertDecentralizedLayeredMaxMinLP() {
@@ -28,26 +28,10 @@ void MaxMinLPDecentralizedCore::convertDecentralizedLayeredMaxMinLP() {
 	m_lay_blue_node.clear();
 	m_lay_target_node.clear();
 
-	// ROBOT of interest info.
-	int ROBOT_id = ceil(double(m_gen_r_node[0].id) / m_num_constraints);
-
-	// When layer = 0 (Red->Robot->Blue)
-	// Red nodes
-	for (vector<max_min_lp_msgs::general_node>::iterator it = m_gen_p_r_node.begin(); it != m_gen_p_r_node.end(); ++it) {
-	}
-}
-
-void MaxMinLPDecentralizedCore::convertLayeredMaxMinLP() {
-	//Initialization
-	m_lay_robot_node.clear();
-	m_lay_red_node.clear();
-	m_lay_blue_node.clear();
-	m_lay_target_node.clear();
-
 	// Robot nodes
 	int count_robot_nodes = 0;
 	for (vector<max_min_lp_msgs::general_node>::iterator it = m_gen_r_node.begin(); it != m_gen_r_node.end(); ++it) {
-		for (int i = 0; i <= m_num_layer; i++) {
+		for (int i = 0; i <= m_max_neighbor_hop; i++) {
 			for (int j = 0; j < it->loc_deg; j++) {
 				max_min_lp_msgs::layered_node temp_lay_node;
 				vector<int> temp_neighbor;
@@ -110,9 +94,8 @@ void MaxMinLPDecentralizedCore::convertLayeredMaxMinLP() {
 
 	// Red nodes (Motion primitive nodes)
 	int count_red_nodes = 0;
-	m_num_red_layer_zero = 0;
 	for (vector<max_min_lp_msgs::general_node>::iterator it = m_gen_p_r_node.begin(); it != m_gen_p_r_node.end(); ++it) {
-		for (int i = 0; i <= m_num_layer; i++) {
+		for (int i = 0; i <= m_max_neighbor_hop; i++) {
 			max_min_lp_msgs::layered_node temp_lay_node;
 
 			temp_lay_node.id = it->id;
@@ -136,6 +119,14 @@ void MaxMinLPDecentralizedCore::convertLayeredMaxMinLP() {
 				}
 			}
 
+			// Used to construct red trees R[0] later.
+			if ((temp_lay_node.layer == 0) && (it->id > (m_ROBOT_id - 1) * m_num_motion_primitive) && (it->id <= m_ROBOT_id * m_num_motion_primitive)) {
+				temp_lay_node.red_tree_candidate = true;
+			}
+			else {
+				temp_lay_node.red_tree_candidate = false;
+			}
+
 			string temp_current = "p"+boost::lexical_cast<string>(temp_lay_node.id);
 			string temp_state = "red";
 
@@ -144,10 +135,6 @@ void MaxMinLPDecentralizedCore::convertLayeredMaxMinLP() {
 			delete temp_class;
 
 			m_lay_red_node.push_back(temp_lay_node);
-
-			if (temp_lay_node.layer == 0) {
-				m_num_red_layer_zero += 1;
-			}
 
 			if (m_verbal_flag) {
 				count_red_nodes += 1;
@@ -170,7 +157,7 @@ void MaxMinLPDecentralizedCore::convertLayeredMaxMinLP() {
 	// Blue nodes (Motion primitive nodes)
 	int count_blue_nodes = 0;
 	for (vector<max_min_lp_msgs::general_node>::iterator it = m_gen_p_t_node.begin(); it != m_gen_p_t_node.end(); ++it) {
-		for (int i = 0; i <= m_num_layer; i++) {
+		for (int i = 0; i <= m_max_neighbor_hop; i++) {
 			max_min_lp_msgs::layered_node temp_lay_node;
 
 			temp_lay_node.id = it->id;
@@ -223,7 +210,7 @@ void MaxMinLPDecentralizedCore::convertLayeredMaxMinLP() {
 	// Target nodes
 	int count_target_nodes = 0;
 	for (vector<max_min_lp_msgs::general_node>::iterator it = m_gen_t_node.begin(); it != m_gen_t_node.end(); ++it) {
-		for (int i = 1; i <= m_num_layer; i++) {
+		for (int i = 1; i <= m_max_neighbor_hop; i++) {
 			for (int j = 0; j < it->loc_deg; j++) {
 				max_min_lp_msgs::layered_node temp_lay_node;
 				vector<int> temp_neighbor;
@@ -249,7 +236,7 @@ void MaxMinLPDecentralizedCore::convertLayeredMaxMinLP() {
 							continue;
 						}
 						if (it->loc_deg == 1) {
-							temp_lay_node.edge_weight.push_back((it->loc_edge_weight[l])/2);
+							temp_lay_node.edge_weight.push_back(it->loc_edge_weight[l]/2);
 						}
 						else {
 							temp_lay_node.edge_weight.push_back(it->loc_edge_weight[l]);
@@ -356,7 +343,7 @@ void MaxMinLPDecentralizedCore::applyLocalAlgorithm() {
 	cout<<"Construct red trees (S*(r))"<<endl;
 	int count_red_layer_zero = 0;
 	for (vector<max_min_lp_msgs::layered_node>::iterator it = m_lay_red_node.begin(); it != m_lay_red_node.end(); ++it) {
-		if (it->layer == 0) {
+		if (it->red_tree_candidate) {
 			getRedTreeStruct(&m_red_tree[count_red_layer_zero], "p"+boost::lexical_cast<string>(it->id), it->layer, "red");
 
 			if (m_verbal_flag) {

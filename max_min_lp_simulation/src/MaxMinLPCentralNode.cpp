@@ -441,6 +441,7 @@ bool MaxMinLPCentralNode::initialize(max_min_lp_simulation::MessageRequest::Requ
 						vector<max_min_lp_msgs::general_node> temp_gen_t_node;
 
 						vector<int> check_target_overlapped; // This is required because multiple ROBOTs have the same targets.
+						int count_new_targets_at_each_hop = 0;
 
 						// Information of the corresponding ROBOT.
 						for (int j = i * m_num_constraints; j < (i + 1) * m_num_constraints; j++) {
@@ -453,14 +454,17 @@ bool MaxMinLPCentralNode::initialize(max_min_lp_simulation::MessageRequest::Requ
 						for (vector<int>::iterator it = m_ROBOT_assign_targets[i].begin(); it != m_ROBOT_assign_targets[i].end(); ++it) {
 							check_target_overlapped.push_back(*it);
 							temp_gen_t_node.push_back(m_gen_t_node[*it-1]);
+							count_new_targets_at_each_hop += 1;
 						}
 
-						res.max_neighbor = m_max_neighbor_hop[i];
+						res.max_neighbor_hop = m_max_neighbor_hop[i];
+						res.num_new_targets_at_each_hop = count_new_targets_at_each_hop;
 
 						// Information of neighbor ROBOTs with respect to the corresponding ROBOT.
 						if (m_max_neighbor_hop[i] > 0) {
-							for (int j = 0; j < m_max_neighbor_hop[i]; j++) { // Number of maximum layer that the corresponding ROBOT can reach.
-								res.num_neighbors_at_each_layer = (int)m_ROBOT_neighbor[i][j].size();
+							for (int j = 0; j < m_max_neighbor_hop[i]; j++) { // Maximum number of hops that the corresponding ROBOT can reach.
+								res.num_neighbors_at_each_hop = (int)m_ROBOT_neighbor[i][j].size();
+								count_new_targets_at_each_hop = 0;
 
 								for (int k = 0; k < m_ROBOT_neighbor[i][j].size(); k++) {
 									for (int l = (m_ROBOT_neighbor[i][j][k]-1) * m_num_constraints; l < m_ROBOT_neighbor[i][j][k] * m_num_constraints; l++) {
@@ -483,9 +487,12 @@ bool MaxMinLPCentralNode::initialize(max_min_lp_simulation::MessageRequest::Requ
 										if (!check_previously_included) {
 											check_target_overlapped.push_back(*it);
 											temp_gen_t_node.push_back(m_gen_t_node[*it-1]);
+											count_new_targets_at_each_hop += 1;
 										}
 									}
 								}
+
+								res.num_new_targets_at_each_hop = count_new_targets_at_each_hop;
 							}
 						}
 

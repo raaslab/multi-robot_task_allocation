@@ -58,7 +58,8 @@ private:
 
   // Local info
   int m_max_neighbor_hop;
-  vector<int> m_num_neighbors_at_each_layer;
+  vector<int> m_num_neighbors_at_each_hop;
+  vector<int> m_num_new_targets_at_each_hop;
 
   vector<max_min_lp_msgs::general_node> m_gen_r_node;
   vector<max_min_lp_msgs::general_node> m_gen_p_r_node;

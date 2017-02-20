@@ -71,29 +71,29 @@ private:
   int m_num_red_layer_zero;
 
   // Variables from the launch file
+  int m_ROBOT_id;
   int m_num_layer; // Number of layers in the layered model
   bool m_verbal_flag;
   double m_epsilon;
   int m_num_motion_primitive;
   int m_max_neighbor_hop;
-  vector<int> m_num_neighbors_at_each_layer;
+  vector<int> m_num_neighbors_at_each_hop;
   int m_num_constraints;
   float m_constraint_value;
 
 public:
   // Constructor
   MaxMinLPDecentralizedCore();
-  MaxMinLPDecentralizedCore(vector<max_min_lp_msgs::general_node>& _gen_r_node, vector<max_min_lp_msgs::general_node>& _gen_p_r_node, 
+  MaxMinLPDecentralizedCore(int _ROBOT_id, vector<max_min_lp_msgs::general_node>& _gen_r_node, vector<max_min_lp_msgs::general_node>& _gen_p_r_node, 
     vector<max_min_lp_msgs::general_node>& _gen_p_t_node, vector<max_min_lp_msgs::general_node>& _gen_t_node, 
     int _num_layer, bool _verbal_flag, double _epsilon, int _num_motion_primivie, int _max_neighbor_hop, 
-    vector<int> _num_neighbors_at_each_layer, int _num_constraints, float _constraint_value);
+    vector<int> _num_neighbors_at_each_hop, int _num_constraints, float _constraint_value);
   // Destructor
   ~MaxMinLPDecentralizedCore() {
-    delete[] m_red_tree;
+    // delete[] m_red_tree;
   }
 
-  void convertLayeredMaxMinLP(); // Converting the general graph into the layered graph. Step 2
-  void convertDecentralizedLayeredMaxMinLP(); // // Converting the general graph into the layered graph for the decentralized approach.
+  void convertDecentralizedLayeredMaxMinLP(); // Converting the general graph into the layered graph for the decentralized approach. (Step 2)
   void applyLocalAlgorithm(); // Step 3
 
   map<LayeredClass, max_min_lp_msgs::layered_node>::iterator getMapPointer(string _current, int _layer, string _state);
