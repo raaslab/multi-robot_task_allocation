@@ -119,14 +119,14 @@ bool MaxMinLPCentralNode::initialize(max_min_lp_simulation::MessageRequest::Requ
 									temp_primitives_to_targets_weight.push_back(1);
 								}
 							}
-							else { // Not observed by the corresponding motion primitive.
-								if (strcmp(m_objective_option.c_str(), "quality_of_tracking") == 0) {
-									temp_primitives_to_targets_weight.push_back(0);
-								}
-								else if (strcmp(m_objective_option.c_str(), "number_of_targets") == 0) {
-									temp_primitives_to_targets_weight.push_back(0);
-								}
-							}
+							// else { // Not observed by the corresponding motion primitive.
+							// 	if (strcmp(m_objective_option.c_str(), "quality_of_tracking") == 0) {
+							// 		temp_primitives_to_targets_weight.push_back(0);
+							// 	}
+							// 	else if (strcmp(m_objective_option.c_str(), "number_of_targets") == 0) {
+							// 		temp_primitives_to_targets_weight.push_back(0);
+							// 	}
+							// }
 						}
 
 						m_primitives_to_targets.push_back(temp_primitives_to_targets);
@@ -220,14 +220,14 @@ bool MaxMinLPCentralNode::initialize(max_min_lp_simulation::MessageRequest::Requ
 								temp_targets_to_primitives_weight.push_back(1);
 							}
 						}
-						else { // Not observed by the corresponding motion primitive.
-							if (strcmp(m_objective_option.c_str(), "quality_of_tracking") == 0) {
-								temp_targets_to_primitives_weight.push_back(0);
-							}
-							else if (strcmp(m_objective_option.c_str(), "number_of_targets") == 0) {
-								temp_targets_to_primitives_weight.push_back(0);
-							}
-						}
+						// else { // Not observed by the corresponding motion primitive.
+						// 	if (strcmp(m_objective_option.c_str(), "quality_of_tracking") == 0) {
+						// 		temp_targets_to_primitives_weight.push_back(0);
+						// 	}
+						// 	else if (strcmp(m_objective_option.c_str(), "number_of_targets") == 0) {
+						// 		temp_targets_to_primitives_weight.push_back(0);
+						// 	}
+						// }
 					}
 
 					m_targets_to_primitives.push_back(temp_targets_to_primitives);
@@ -350,14 +350,14 @@ bool MaxMinLPCentralNode::initialize(max_min_lp_simulation::MessageRequest::Requ
 				}
 
 				if (m_verbal_flag) {
-					ROS_INFO("\nNew target information after the removal");
+					ROS_INFO("\n\nNew target information after the removal");
 					for (int i = 0; i < m_target_id.size(); i++) {
 						if (m_target_observed[i]) {
 							ROS_INFO("target id = %d, (x, y) = (%f, %f)", m_target_id[i], m_target_x_pos[i], m_target_y_pos[i]);
 						}
 					}
 
-					ROS_INFO("\nRobots to primitives");
+					ROS_INFO("\n\nRobots to primitives");
 					for (int i = 0; i < m_robot_id.size(); i++) {
 						ROS_INFO("robot id = %d :", m_robot_id[i]);
 						int temp_count = 0;
@@ -367,7 +367,7 @@ bool MaxMinLPCentralNode::initialize(max_min_lp_simulation::MessageRequest::Requ
 						}
 					}
 
-					ROS_INFO("\nPrimitives to robots");
+					ROS_INFO("\n\nPrimitives to robots");
 					for (int i = 0; i < m_primitive_id.size(); i++) {
 						ROS_INFO("primitive id = %d :", m_primitive_id[i]);
 						int temp_count = 0;
@@ -377,7 +377,7 @@ bool MaxMinLPCentralNode::initialize(max_min_lp_simulation::MessageRequest::Requ
 						}
 					}
 
-					ROS_INFO("\nPrimitives to targets");
+					ROS_INFO("\n\nPrimitives to targets");
 					for (int i = 0; i < m_primitive_id.size(); i++) {
 						ROS_INFO("primitive id = %d :", m_primitive_id[i]);
 						int temp_count = 0;
@@ -387,7 +387,7 @@ bool MaxMinLPCentralNode::initialize(max_min_lp_simulation::MessageRequest::Requ
 						}
 					}
 
-					ROS_INFO("\nTargets to primitives");
+					ROS_INFO("\n\nTargets to primitives");
 					for (int i = 0; i < m_target_id.size(); i++) {
 						if (m_target_observed[i]) {
 							ROS_INFO("target id = %d :", m_target_id[i]);
@@ -399,7 +399,7 @@ bool MaxMinLPCentralNode::initialize(max_min_lp_simulation::MessageRequest::Requ
 						}
 					}
 
-					ROS_INFO("\nNeighbor hops of each ROBOT");
+					ROS_INFO("\n\nNeighbor hops of each ROBOT");
 					for (int i = 0; i < m_primitive_id.size() / m_num_motion_primitive; i++) { // m_primitive_id.size() / m_num_motion_primitive = the number of ROBOTs.
 						ROS_INFO("ROBOT id = %d :", i+1);
 						ROS_INFO("     number of targets observed = %d", (int)m_ROBOT_assign_targets[i].size());
@@ -501,6 +501,44 @@ bool MaxMinLPCentralNode::initialize(max_min_lp_simulation::MessageRequest::Requ
 						res.gen_p_r_node = temp_gen_p_r_node;
 						res.gen_p_t_node = temp_gen_p_t_node;
 						res.gen_t_node = temp_gen_t_node;
+
+						if (m_verbal_flag) {
+							ROS_INFO("\n\nROBOT %d's local general graph information.", i + 1);
+							ROS_INFO("    maximum number of hops = %d", m_max_neighbor_hop[i]);
+							if (m_max_neighbor_hop[i] > 0) {
+								for (int j = 0; j < m_max_neighbor_hop[i]; j++) { // Maximum number of hops that the corresponding ROBOT can reach.
+									ROS_INFO("      number of neighbors at hop %d = %d", j + 1, (int)m_ROBOT_neighbor[i][j].size());
+								}
+							}
+							ROS_INFO("    robot nodes");
+							for (vector<max_min_lp_msgs::general_node>::iterator it = temp_gen_r_node.begin(); it != temp_gen_r_node.end(); ++it) {
+								ROS_INFO("        type = %s, id = %d, loc_deg = %d", it->type.c_str(), it->id, it->loc_deg);
+								for (int j = 0; j < it->loc_deg; j++) {
+									ROS_INFO("            loc_id = %d, loc_edge_weight = %f", it->loc_neighbor[j], it->loc_edge_weight[j]);
+								}
+							}
+							ROS_INFO("    red nodes");
+							for (vector<max_min_lp_msgs::general_node>::iterator it = temp_gen_p_r_node.begin(); it != temp_gen_p_r_node.end(); ++it) {
+								ROS_INFO("        type = %s, id = %d, loc_deg = %d", it->type.c_str(), it->id, it->loc_deg);
+								for (int j = 0; j < it->loc_deg; j++) {
+									ROS_INFO("            loc_id = %d, loc_edge_weight = %f", it->loc_neighbor[j], it->loc_edge_weight[j]);
+								}
+							}
+							ROS_INFO("    blue nodes");
+							for (vector<max_min_lp_msgs::general_node>::iterator it = temp_gen_p_t_node.begin(); it != temp_gen_p_t_node.end(); ++it) {
+								ROS_INFO("        type = %s, id = %d, loc_deg = %d", it->type.c_str(), it->id, it->loc_deg);
+								for (int j = 0; j < it->loc_deg; j++) {
+									ROS_INFO("            loc_id = %d, loc_edge_weight = %f", it->loc_neighbor[j], it->loc_edge_weight[j]);
+								}
+							}
+							ROS_INFO("    target nodes");
+							for (vector<max_min_lp_msgs::general_node>::iterator it = temp_gen_t_node.begin(); it != temp_gen_t_node.end(); ++it) {
+								ROS_INFO("        type = %s, id = %d, loc_deg = %d", it->type.c_str(), it->id, it->loc_deg);
+								for (int j = 0; j < it->loc_deg; j++) {
+									ROS_INFO("            loc_id = %d, loc_edge_weight = %f", it->loc_neighbor[j], it->loc_edge_weight[j]);
+								}
+							}
+						}
 					}
 				}
 
@@ -529,12 +567,19 @@ void MaxMinLPCentralNode::updatePose(const gazebo_msgs::ModelStates::ConstPtr& m
 vector<max_min_lp_msgs::general_node> MaxMinLPCentralNode::buildGeneralNode(string option) {
 	vector<max_min_lp_msgs::general_node> gen_return_node;
 
+	if (m_verbal_flag) {
+		ROS_INFO("\n\nGeneral nodes information");
+	}
+
 	// Robot nodes
 	if (strcmp(option.c_str(),"r") == 0) {
+		if (m_verbal_flag) {
+			ROS_INFO("Building the general node for robots");
+		}
 		for (int i = 0; i < m_robot_id.size(); i++) {
 			max_min_lp_msgs::general_node temp_node;
 			temp_node.id = m_robot_id[i];
-			temp_node.loc_deg = (int)m_robots_to_primitives.size();
+			temp_node.loc_deg = (int)m_robots_to_primitives[i].size();
 			temp_node.type = "robot";
 			for (vector<int>::iterator it = m_robots_to_primitives[i].begin(); it != m_robots_to_primitives[i].end(); ++it) {
 				temp_node.loc_neighbor.push_back(*it);
@@ -542,14 +587,21 @@ vector<max_min_lp_msgs::general_node> MaxMinLPCentralNode::buildGeneralNode(stri
 			}
 
 			gen_return_node.push_back(temp_node);
-		}
 
-		if (m_verbal_flag) {
-			ROS_INFO("Building the general node for robots");
+			if (m_verbal_flag) {
+				ROS_INFO("        type = %s, id = %d, loc_deg = %d", "robot", m_robot_id[i], (int)m_robots_to_primitives[i].size());
+				for (vector<int>::iterator it = m_robots_to_primitives[i].begin(); it != m_robots_to_primitives[i].end(); ++it) {
+					ROS_INFO("            loc_id = %d, loc_edge_weight = %f", *it, m_constraint_value);
+				}
+			}
 		}
 	}
+
 	// Red nodes
 	else if (strcmp(option.c_str(),"p_r") == 0) {
+		if (m_verbal_flag) {
+			ROS_INFO("Building the general node for primitives to robots (Red nodes)");
+		}
 		for (int i = 0; i < m_primitive_id.size(); i++) {
 			max_min_lp_msgs::general_node temp_node;
 			temp_node.id = m_primitive_id[i];
@@ -561,48 +613,75 @@ vector<max_min_lp_msgs::general_node> MaxMinLPCentralNode::buildGeneralNode(stri
 			}
 
 			gen_return_node.push_back(temp_node);
-		}
 
-		if (m_verbal_flag) {
-			ROS_INFO("Building the general node for primitives to robots");
+			if (m_verbal_flag) {
+				ROS_INFO("        type = %s, id = %d, loc_deg = %d", "red", m_primitive_id[i], (int)m_primitives_to_robots[i].size());
+				for (vector<int>::iterator it = m_primitives_to_robots[i].begin(); it != m_primitives_to_robots[i].end(); ++it) {
+					ROS_INFO("            loc_id = %d, loc_edge_weight = %f", *it, m_constraint_value);
+				}
+			}
 		}
 	}
+
 	// Blue nodes
 	else if (strcmp(option.c_str(),"p_t") == 0) {
+		if (m_verbal_flag) {
+			ROS_INFO("Building the general node for primitives to targets (Blue nodes)");
+		}
 		for (int i = 0; i < m_primitive_id.size(); i++) {
 			max_min_lp_msgs::general_node temp_node;
 			temp_node.id = m_primitive_id[i];
 			temp_node.loc_deg = (int)m_primitives_to_targets[i].size();
 			temp_node.type = "blue";
-			for (int j = 0; j < m_primitives_to_targets[i].size(); j++) {
-				temp_node.loc_neighbor.push_back(m_primitives_to_targets[i][j]);
-				temp_node.loc_edge_weight.push_back(m_primitives_to_targets_weight[i][j]);
+			for (vector<int>::iterator it = m_primitives_to_targets[i].begin(); it != m_primitives_to_targets[i].end(); ++it) {
+				temp_node.loc_neighbor.push_back(*it);
+			}
+			for (vector<float>::iterator it = m_primitives_to_targets_weight[i].begin(); it != m_primitives_to_targets_weight[i].end(); ++it) {
+				temp_node.loc_edge_weight.push_back(*it);
 			}
 
 			gen_return_node.push_back(temp_node);
-		}
 
-		if (m_verbal_flag) {
-			ROS_INFO("Building the general node for primitives to targets");
+			if (m_verbal_flag) {
+				ROS_INFO("        type = %s, id = %d, loc_deg = %d", "red", m_primitive_id[i], (int)m_primitives_to_targets[i].size());
+				for (vector<int>::iterator it = m_primitives_to_targets[i].begin(); it != m_primitives_to_targets[i].end(); ++it) {
+					ROS_INFO("            loc_id = %d", *it);
+				}
+				for (vector<float>::iterator it = m_primitives_to_targets_weight[i].begin(); it != m_primitives_to_targets_weight[i].end(); ++it) {
+					ROS_INFO("                         loc_edge_weight = %f", *it);
+				}
+			}
 		}
 	}
+
 	// Target nodes
 	else if (strcmp(option.c_str(),"t") == 0) {
+		if (m_verbal_flag) {
+			ROS_INFO("Building the general node for targets");
+		}
 		for (int i = 0; i < m_target_id.size(); i++) {
 			max_min_lp_msgs::general_node temp_node;
 			temp_node.id = m_target_id[i];
 			temp_node.loc_deg = (int)m_targets_to_primitives[i].size();
 			temp_node.type = "target";
-			for (int j = 0; j < m_targets_to_primitives[i].size(); j++) {
-				temp_node.loc_neighbor.push_back(m_targets_to_primitives[i][j]);
-				temp_node.loc_edge_weight.push_back(m_targets_to_primitives_weight[i][j]);
+			for (vector<int>::iterator it = m_targets_to_primitives[i].begin(); it != m_targets_to_primitives[i].end(); ++it) {
+				temp_node.loc_neighbor.push_back(*it);
+			}
+			for (vector<float>::iterator it = m_targets_to_primitives_weight[i].begin(); it != m_targets_to_primitives_weight[i].end(); ++it) {
+				temp_node.loc_edge_weight.push_back(*it);
 			}
 
 			gen_return_node.push_back(temp_node);
-		}
 
-		if (m_verbal_flag) {
-			ROS_INFO("Building the general node for targets");
+			if (m_verbal_flag) {
+				ROS_INFO("        type = %s, id = %d, loc_deg = %d", "red", m_target_id[i], (int)m_targets_to_primitives[i].size());
+				for (vector<int>::iterator it = m_targets_to_primitives[i].begin(); it != m_targets_to_primitives[i].end(); ++it) {
+					ROS_INFO("            loc_id = %d", *it);
+				}
+				for (vector<float>::iterator it = m_targets_to_primitives_weight[i].begin(); it != m_targets_to_primitives_weight[i].end(); ++it) {
+					ROS_INFO("                         loc_edge_weight = %f", *it);
+				}
+			}
 		}
 	}
 

@@ -267,7 +267,7 @@ void MaxMinLPDecentralizedCore::convertDecentralizedLayeredMaxMinLP() {
 	}
 }
 
-void MaxMinLPDecentralizedCore::applyLocalAlgorithm() {
+void MaxMinLPDecentralizedCore::applyLocalAlgorithmPhase1and2() {
 	////////////////////////////// Phase 1 //////////////////////////////
 	// Set x_v with minimum of 1 / a_{r,v} for all agents which are red and blue nodes
 	cout<<endl;
@@ -475,19 +475,21 @@ void MaxMinLPDecentralizedCore::applyLocalAlgorithm() {
 	// Iteratively check if t is a valid local estimate or not until the two conditions of the paper meet. 
 	//(1) t_r is a valid local estimate and 2) either (1+e)t_r is not a valid local estimate or (1+e)t_r > t_r)
 	cout<<"Phase 2 starts."<<endl;
-	vector<float> t_r(count_red_layer_zero); // t_r
+	for (int i = 0; i < count_red_layer_zero; i++) {
+		m_t_r.push_back(0); // t_r
+	}
 
 	for (int i = 0; i < count_red_layer_zero; i++) {
 		int count_recursive = 0;
 		float init_minimum_g_t = minimum_g_t[i];
-		t_r.at(i) = minimum_g_t[i];
+		m_t_r.at(i) = minimum_g_t[i];
 
 		while(1) {
 			count_recursive += 1;
 			if (computeRecursive(i, minimum_g_t[i]) == true) {
 				//if (computeRecursive(i, (1 + m_epsilon) * minimum_g_t[i]) == false) {
 				//if (computeRecursive(i, m_epsilon + minimum_g_t[i]) == false) {
-				t_r.at(i) = minimum_g_t[i];
+				m_t_r.at(i) = minimum_g_t[i];
 				break;
 				//}
 				//else if ((1 + m_epsilon) * minimum_g_t[i] > init_minimum_g_t) {
@@ -511,14 +513,16 @@ void MaxMinLPDecentralizedCore::applyLocalAlgorithm() {
 
 	if (m_verbal_flag) {
 		int temp_count = 0;
-		for (vector<float>::iterator it = t_r.begin(); it != t_r.end(); ++it) {
+		for (vector<float>::iterator it = m_t_r.begin(); it != m_t_r.end(); ++it) {
 			temp_count += 1;
 			cout<<"t_r at "<<temp_count<<"'s red tree is "<<*it<<endl;
 		}
 	}
 
 	cout<<"Phase 2 is done."<<endl;
+}
 
+void MaxMinLPDecentralizedCore::applyLocalAlgorithmPhase3() {
 	////////////////////////////// Phase 3 //////////////////////////////
 	cout<<"Phase 3 starts."<<endl;
 
@@ -639,7 +643,7 @@ void MaxMinLPDecentralizedCore::applyLocalAlgorithm() {
 			if (i == 0) {
 				vector<float> temp_min_t_r;
 				for (vector<string>::iterator itt = temp_red_node_id.begin(); itt != temp_red_node_id.end(); ++itt) {
-					temp_min_t_r.push_back(t_r[boost::lexical_cast<int>(itt->at(2)) - 1]);
+					temp_min_t_r.push_back(m_t_r[boost::lexical_cast<int>(itt->at(2)) - 1]);
 
 					if (m_verbal_flag) {
 						map<LayeredClass, max_min_lp_msgs::layered_node>::iterator temp_blue_pointer = 

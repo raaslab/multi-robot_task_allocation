@@ -67,6 +67,7 @@ private:
   map<LayeredClass, max_min_lp_msgs::layered_node> m_layered_map;
 
   TreeStruct * m_red_tree;
+  vector<float> m_t_r;
 
   int m_num_red_layer_zero;
 
@@ -94,7 +95,8 @@ public:
   }
 
   void convertDecentralizedLayeredMaxMinLP(); // Converting the general graph into the layered graph for the decentralized approach. (Step 2)
-  void applyLocalAlgorithm(); // Step 3
+  void applyLocalAlgorithmPhase1and2(); // Phase 1 and 2 of Step 3
+  void applyLocalAlgorithmPhase3(); // Phase 3 of Step 3
 
   map<LayeredClass, max_min_lp_msgs::layered_node>::iterator getMapPointer(string _current, int _layer, string _state);
   void getRedTreeStruct(TreeStruct * _red_tree, string _current, int _layer, string _state);

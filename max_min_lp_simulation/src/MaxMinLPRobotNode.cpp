@@ -56,6 +56,13 @@ void MaxMinLPRobotNode::applyMotionPrimitives(const std_msgs::String::ConstPtr& 
 		max_min_lp_core::MaxMinLPDecentralizedCore lpc(m_robot_id, m_gen_r_node, m_gen_p_r_node, m_gen_p_t_node, m_gen_t_node,
 			m_num_layer, m_verbal_flag, m_epsilon, m_num_motion_primitive, m_max_neighbor_hop, m_num_neighbors_at_each_hop, 
 			m_num_constraints, m_constraint_value);
+
+		// Step 2
+		// lpc.convertDecentralizedLayeredMaxMinLP();
+
+		// Step 3
+		//   Phase 1 and 2
+		// lpc.applyLocalAlgorithmPhase1and2();
 	}
 }
 
