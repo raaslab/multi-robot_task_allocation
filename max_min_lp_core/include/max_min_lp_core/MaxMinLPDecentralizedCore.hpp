@@ -91,7 +91,7 @@ public:
     vector<int> _num_neighbors_at_each_hop, int _num_constraints, float _constraint_value);
   // Destructor
   ~MaxMinLPDecentralizedCore() {
-    // delete[] m_red_tree;
+    delete[] m_red_tree;
   }
 
   void convertDecentralizedLayeredMaxMinLP(); // Converting the general graph into the layered graph for the decentralized approach. (Step 2)

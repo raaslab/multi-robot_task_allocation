@@ -32,6 +32,10 @@ private:
 
   ros::Subscriber request_sub;
 
+  // Publishers
+  ros::Publisher m_general_node_pub;
+  ros::Publisher m_layered_node_pub;
+
   // Subscriber
   ros::Subscriber m_odom_sub;
 
@@ -73,7 +77,6 @@ public:
   bool initialize();
   vector<geometry_msgs::Pose> computeMotionPrimitives();
   void applyMotionPrimitives(const std_msgs::String::ConstPtr& msg);
-  void updateGraph();
 };
 
 #endif

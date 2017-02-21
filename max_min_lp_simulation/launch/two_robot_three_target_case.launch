@@ -51,4 +51,13 @@
       <arg name="robot_name"  value="target_2"/>
     </include>
   </group>
+  <group ns="target_3">
+    <include file="$(find max_min_lp_simulation)/launch/includes/$(arg target_base).launch.xml">
+      <arg name="base" value="box"/>
+      <arg name="stacks" value="$(arg stacks)"/>
+      <arg name="3d_sensor" value="$(arg 3d_sensor)"/>
+      <arg name="init_pose" value="-x 3 -y 7 -z 0 -R 0 -P 0 -Y 0"/>
+      <arg name="robot_name"  value="target_3"/>
+    </include>
+  </group>
 </launch>

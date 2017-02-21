@@ -26,12 +26,12 @@ m_verbal_flag(false), m_epsilon(0.1), m_num_motion_primitive(10), m_time_interva
 	m_num_constraints = 1; // When the |V_i| <= 2, the reduction is not required. Therefore, the number of constraints is one.
 	m_constraint_value = 1;
 
-	request_sub = m_nh.subscribe("/robot_status", 1000, &MaxMinLPRobotNode::applyMotionPrimitives, this);
-
 	// Publishers
-	// m_request_pub = m_nh.advertise<std_msgs::String>("/max_min_lp_robot_node/"+m_robot_name+"/request", 1);
+	m_general_node_pub = m_nh.advertise<max_min_lp_msgs::general_node_array>("/max_min_lp_msgs/general_node_array", 1);
+	m_layered_node_pub = m_nh.advertise<max_min_lp_msgs::layered_node_array>("/max_min_lp_msgs/layered_node_array", 1);
 
 	// Subscribers
+	request_sub = m_nh.subscribe("/robot_status", 1000, &MaxMinLPRobotNode::applyMotionPrimitives, this);
 	m_odom_sub = m_nh.subscribe("/gazebo/model_states", 1000, &MaxMinLPRobotNode::updateOdom, this);
 }
 
@@ -52,17 +52,61 @@ void MaxMinLPRobotNode::applyMotionPrimitives(const std_msgs::String::ConstPtr& 
 	if (result_success) {
 		ROS_INFO("The %s is initiated.", m_robot_name.c_str());
 
+		// Publisher for general nodes
+		max_min_lp_msgs::general_node_array temp_msg;
+		// Robot nodes
+		for (int i = 0; i < m_gen_r_node.size(); i++) {
+			temp_msg.gen_nodes.push_back(m_gen_r_node[i]);
+		}
+		// Motion primitive to robot nodes
+		for (int i = 0; i < m_gen_p_r_node.size(); i++) {
+			temp_msg.gen_nodes.push_back(m_gen_p_r_node[i]);
+		}
+		// Motion primitive to target nodes
+		for (int i = 0; i < m_gen_p_t_node.size(); i++) {
+			temp_msg.gen_nodes.push_back(m_gen_p_t_node[i]);
+		}
+		// Target nodes
+		for (int i = 0; i < m_gen_t_node.size(); i++) {
+			temp_msg.gen_nodes.push_back(m_gen_t_node[i]);
+		}
+
+		m_general_node_pub.publish(temp_msg);
+
 		// Local algorithm is applied from here.
 		max_min_lp_core::MaxMinLPDecentralizedCore lpc(m_robot_id, m_gen_r_node, m_gen_p_r_node, m_gen_p_t_node, m_gen_t_node,
 			m_num_layer, m_verbal_flag, m_epsilon, m_num_motion_primitive, m_max_neighbor_hop, m_num_neighbors_at_each_hop, 
 			m_num_constraints, m_constraint_value);
 
 		// Step 2
-		// lpc.convertDecentralizedLayeredMaxMinLP();
+		lpc.convertDecentralizedLayeredMaxMinLP();
 
 		// Step 3
 		//   Phase 1 and 2
-		// lpc.applyLocalAlgorithmPhase1and2();
+		lpc.applyLocalAlgorithmPhase1and2();
+
+		// Publisher for layered nodes
+		max_min_lp_msgs::layered_node_array temp_layered_msg;
+
+		vector<max_min_lp_msgs::layered_node> lay_robot_node = lpc.getRobotLayeredNode();
+		vector<max_min_lp_msgs::layered_node> lay_red_node = lpc.getRedLayeredNode();
+		vector<max_min_lp_msgs::layered_node> lay_blue_node = lpc.getBlueLayeredNode();
+		vector<max_min_lp_msgs::layered_node> lay_target_node = lpc.getTargetLayeredNode();
+
+		for (int i = 0; i < lay_robot_node.size(); i++) {
+			temp_layered_msg.lay_nodes.push_back(lay_robot_node[i]);
+		}
+		for (int i = 0; i < lay_red_node.size(); i++) {
+			temp_layered_msg.lay_nodes.push_back(lay_red_node[i]);
+		}
+		for (int i = 0; i < lay_blue_node.size(); i++) {
+			temp_layered_msg.lay_nodes.push_back(lay_blue_node[i]);
+		}
+		for (int i = 0; i < lay_target_node.size(); i++) {
+			temp_layered_msg.lay_nodes.push_back(lay_target_node[i]);
+		}
+
+		m_layered_node_pub.publish(temp_layered_msg);
 	}
 }
 
@@ -81,7 +125,7 @@ bool MaxMinLPRobotNode::initialize() {
 	if (m_num_motion_primitive > 2) {
 		m_num_constraints = m_num_motion_primitive * (m_num_motion_primitive - 1) / 2;
 		srv.request.num_constraints = m_num_constraints;
-		m_constraint_value = float(1) / m_num_motion_primitive;
+		m_constraint_value = float(2) / m_num_motion_primitive;
 		srv.request.constraint_value = m_constraint_value;
 	}
 
@@ -114,7 +158,8 @@ vector<geometry_msgs::Pose> MaxMinLPRobotNode::computeMotionPrimitives() {
 	vector<geometry_msgs::Pose> temp_motion_primitive;
 
 	// This is hard-coded.
-	int m_motion_case_rotation[m_num_motion_primitive] = {4, 2, 0, -2, -4};
+	// int m_motion_case_rotation[m_num_motion_primitive] = {4, 2, 0, -2, -4};
+	int m_motion_case_rotation[m_num_motion_primitive] = {2, 0, -2};
 
 	tf::Quaternion q(m_pos.orientation.x, m_pos.orientation.y, m_pos.orientation.z, m_pos.orientation.w);
 	tf::Matrix3x3 m(q);
@@ -154,15 +199,14 @@ vector<geometry_msgs::Pose> MaxMinLPRobotNode::computeMotionPrimitives() {
 		temp_motion_primitive_instance.position.x = x_new;
 		temp_motion_primitive_instance.position.y = y_new;
 
-		ROS_INFO("%s: %d'th motion primitiv = (%f, %f)", m_robot_name.c_str(), i+1, x_new, y_new);
+		if (m_verbal_flag) {
+			ROS_INFO("%s: %d'th motion primitiv = (%f, %f)", m_robot_name.c_str(), i+1, x_new, y_new);
+		}
 
 		temp_motion_primitive.push_back(temp_motion_primitive_instance);
 	}
 
 	return temp_motion_primitive;
-}
-
-void MaxMinLPRobotNode::updateGraph() {
 }
 
 int main(int argc, char **argv) {
