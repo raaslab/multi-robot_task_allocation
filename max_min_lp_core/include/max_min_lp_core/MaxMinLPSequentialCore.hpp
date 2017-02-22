@@ -1,5 +1,5 @@
-#ifndef MAXMINLPDECENTRALIZEDCORE_HPP_
-#define MAXMINLPDECENTRALIZEDCORE_HPP_
+#ifndef MAXMINLPCORE_HPP_
+#define MAXMINLPCORE_HPP_
 
 #include <iostream>
 #include <sstream>
@@ -24,7 +24,6 @@ struct TreeStruct {
   vector< vector<string> > red_node_id;
   vector< vector<string> > blue_node_id;
   vector< vector<string> > target_node_id;
-  int tree_depth;
 };
 
 class LayeredClass {
@@ -51,7 +50,7 @@ public:
   }
 };
 
-class MaxMinLPDecentralizedCore {  
+class MaxMinLPSequentialCore {  
 private:
   // General node values
   vector<max_min_lp_msgs::general_node> m_gen_r_node;
@@ -68,36 +67,28 @@ private:
   map<LayeredClass, max_min_lp_msgs::layered_node> m_layered_map;
 
   TreeStruct * m_red_tree;
-  vector<float> m_t_r;
 
   int m_num_red_layer_zero;
 
   // Variables from the launch file
-  int m_ROBOT_id;
   int m_num_layer; // Number of layers in the layered model
   bool m_verbal_flag;
   double m_epsilon;
-  int m_num_motion_primitive;
-  int m_max_neighbor_hop;
-  vector<int> m_num_neighbors_at_each_hop;
-  int m_num_constraints;
-  float m_constraint_value;
 
 public:
   // Constructor
-  MaxMinLPDecentralizedCore();
-  MaxMinLPDecentralizedCore(int _ROBOT_id, vector<max_min_lp_msgs::general_node>& _gen_r_node, vector<max_min_lp_msgs::general_node>& _gen_p_r_node, 
+  MaxMinLPSequentialCore();
+  MaxMinLPSequentialCore(vector<max_min_lp_msgs::general_node>& _gen_r_node, vector<max_min_lp_msgs::general_node>& _gen_p_r_node, 
     vector<max_min_lp_msgs::general_node>& _gen_p_t_node, vector<max_min_lp_msgs::general_node>& _gen_t_node, 
-    int _num_layer, bool _verbal_flag, double _epsilon, int _num_motion_primivie, int _max_neighbor_hop, 
-    vector<int> _num_neighbors_at_each_hop, int _num_constraints, float _constraint_value);
+    int _num_layer, bool _verbal_flag, double _epsilon);
   // Destructor
-  ~MaxMinLPDecentralizedCore() {
+  ~MaxMinLPSequentialCore() {
     delete[] m_red_tree;
   }
 
-  void convertDecentralizedLayeredMaxMinLP(); // Converting the general graph into the layered graph for the decentralized approach. (Step 2)
-  void applyLocalAlgorithmPhase1and2(); // Phase 1 and 2 of Step 3
-  void applyLocalAlgorithmPhase3(); // Phase 3 of Step 3
+  void convertLayeredMaxMinLP(); // Converting the general graph into the layered graph. Step 2
+  void convertDecentralizedLayeredMaxMinLP(); // // Converting the general graph into the layered graph for the decentralized approach.
+  void applyLocalAlgorithm(); // Step 3
 
   map<LayeredClass, max_min_lp_msgs::layered_node>::iterator getMapPointer(string _current, int _layer, string _state);
   void getRedTreeStruct(TreeStruct * _red_tree, string _current, int _layer, string _state);

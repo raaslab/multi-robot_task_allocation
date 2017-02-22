@@ -35,6 +35,7 @@ private:
   // Publishers
   ros::Publisher m_general_node_pub;
   ros::Publisher m_layered_node_pub;
+  ros::Publisher m_response_to_server_pub;
 
   // Subscriber
   ros::Subscriber m_odom_sub;

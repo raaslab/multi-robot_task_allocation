@@ -2,26 +2,24 @@
  * Finds the motion primitive that optimally allocates tracking targets
  * given motion primitives of multiple robots.
  * \Author Yoonchang Sung <yooncs8@vt.edu>
- * \02/19/2017
- * Copyright 2017. All Rights Reserved.
+ * \11/22/2016
+ * Copyright 2016. All Rights Reserved.
  */
 
-#include "max_min_lp_core/MaxMinLPDecentralizedCore.hpp"
+#include "max_min_lp_core/MaxMinLPCore.hpp"
 
 #define MAX_VALUE 10000
 
 namespace max_min_lp_core {
 
-MaxMinLPDecentralizedCore::MaxMinLPDecentralizedCore(int _ROBOT_id, vector<max_min_lp_msgs::general_node>& _gen_r_node, vector<max_min_lp_msgs::general_node>& _gen_p_r_node, 
-	vector<max_min_lp_msgs::general_node>& _gen_p_t_node, vector<max_min_lp_msgs::general_node>& _gen_t_node, int _num_layer, 
-	bool _verbal_flag, double _epsilon, int _num_motion_primivie, int _max_neighbor_hop, vector<int> _num_neighbors_at_each_hop, 
-	int _num_constraints, float _constraint_value) :
-m_ROBOT_id(_ROBOT_id), m_gen_r_node(_gen_r_node), m_gen_p_r_node(_gen_p_r_node), m_gen_p_t_node(_gen_p_t_node), m_gen_t_node(_gen_t_node), m_num_layer(_num_layer),
-m_verbal_flag(_verbal_flag), m_epsilon(_epsilon), m_num_motion_primitive(_num_motion_primivie), m_max_neighbor_hop(_max_neighbor_hop),
-m_num_neighbors_at_each_hop(_num_neighbors_at_each_hop), m_num_constraints(_num_constraints), m_constraint_value(_constraint_value) {
+MaxMinLPCore::MaxMinLPCore(vector<max_min_lp_msgs::general_node>& _gen_r_node, vector<max_min_lp_msgs::general_node>& _gen_p_r_node, 
+	vector<max_min_lp_msgs::general_node>& _gen_p_t_node, vector<max_min_lp_msgs::general_node>& _gen_t_node, 
+	int _num_layer, bool _verbal_flag, double _epsilon) :
+m_gen_r_node(_gen_r_node), m_gen_p_r_node(_gen_p_r_node), m_gen_p_t_node(_gen_p_t_node), m_gen_t_node(_gen_t_node),
+m_num_layer(_num_layer), m_verbal_flag(_verbal_flag), m_epsilon(_epsilon) {
 }
 
-void MaxMinLPDecentralizedCore::convertDecentralizedLayeredMaxMinLP() {
+void MaxMinLPCore::convertLayeredMaxMinLP() {
 	//Initialization
 	m_lay_robot_node.clear();
 	m_lay_red_node.clear();
@@ -120,15 +118,6 @@ void MaxMinLPDecentralizedCore::convertDecentralizedLayeredMaxMinLP() {
 				}
 			}
 
-			// Used to construct red trees R[0] later.
-			if ((temp_lay_node.layer == 0) && (it->id > (m_ROBOT_id - 1) * m_num_motion_primitive) && (it->id <= m_ROBOT_id * m_num_motion_primitive)) {
-				temp_lay_node.red_tree_candidate = true;
-				m_num_red_layer_zero += 1;
-			}
-			else {
-				temp_lay_node.red_tree_candidate = false;
-			}
-
 			string temp_current = "p"+boost::lexical_cast<string>(temp_lay_node.id);
 			string temp_state = "red";
 
@@ -137,6 +126,10 @@ void MaxMinLPDecentralizedCore::convertDecentralizedLayeredMaxMinLP() {
 			delete temp_class;
 
 			m_lay_red_node.push_back(temp_lay_node);
+
+			if (temp_lay_node.layer == 0) {
+				m_num_red_layer_zero += 1;
+			}
 
 			if (m_verbal_flag) {
 				count_red_nodes += 1;
@@ -238,7 +231,7 @@ void MaxMinLPDecentralizedCore::convertDecentralizedLayeredMaxMinLP() {
 							continue;
 						}
 						if (it->loc_deg == 1) {
-							temp_lay_node.edge_weight.push_back(it->loc_edge_weight[l]/2);
+							temp_lay_node.edge_weight.push_back((it->loc_edge_weight[l])/2);
 						}
 						else {
 							temp_lay_node.edge_weight.push_back(it->loc_edge_weight[l]);
@@ -269,16 +262,14 @@ void MaxMinLPDecentralizedCore::convertDecentralizedLayeredMaxMinLP() {
 	}
 }
 
-void MaxMinLPDecentralizedCore::applyLocalAlgorithmPhase1and2() {
+void MaxMinLPCore::applyLocalAlgorithm() {
 	////////////////////////////// Phase 1 //////////////////////////////
 	// Set x_v with minimum of 1 / a_{r,v} for all agents which are red and blue nodes
-	if (m_verbal_flag) {
-		cout<<endl;
-		cout<<"***********************************************************"<<endl;
-		cout<<"Step 3 starts."<<endl;
-		cout<<"***********************************************************"<<endl;
-		cout<<"Phase 1 starts."<<endl;
-	}
+	cout<<endl;
+	cout<<"***********************************************************"<<endl;
+	cout<<"Step 3 starts."<<endl;
+	cout<<"***********************************************************"<<endl;
+	cout<<"Phase 1 starts."<<endl;
 	// Red nodes
 	for (vector<max_min_lp_msgs::layered_node>::iterator it = m_lay_red_node.begin(); it != m_lay_red_node.end(); ++it) {
 		float temp_max = 0;
@@ -294,7 +285,7 @@ void MaxMinLPDecentralizedCore::applyLocalAlgorithmPhase1and2() {
 		temp_red_pointer->second.x_v = it->x_v;
 
 		if (m_verbal_flag) {
-			cout<<"ROBOT "<<m_ROBOT_id<<": (p"<<it->id<<", "<<it->layer<<", "<<it->state.c_str()<<"), x_v = "<<it->x_v<<endl;
+			cout<<"(p"<<it->id<<", "<<it->layer<<", "<<it->state.c_str()<<"), x_v = "<<it->x_v<<endl;
 		}
 	}
 
@@ -320,7 +311,7 @@ void MaxMinLPDecentralizedCore::applyLocalAlgorithmPhase1and2() {
 		temp_blue_pointer->second.x_v = it->x_v;
 
 		if (m_verbal_flag) {
-			cout<<"ROBOT "<<m_ROBOT_id<<": (p"<<it->id<<", "<<it->layer<<", "<<it->state.c_str()<<"), x_v = "<<it->x_v<<endl;
+			cout<<"(p"<<it->id<<", "<<it->layer<<", "<<it->state.c_str()<<"), x_v = "<<it->x_v<<endl;
 		}
 	}
 
@@ -344,16 +335,13 @@ void MaxMinLPDecentralizedCore::applyLocalAlgorithmPhase1and2() {
 	// Find the minimum of the values g_t(x) in S*(red) intersection with T for each agent red subset of R[0]
 	m_red_tree = new TreeStruct[m_num_red_layer_zero];
 
-	if (m_verbal_flag) {
-		cout<<"Construct red trees (S*(r))"<<endl;
-	}
+	cout<<"Construct red trees (S*(r))"<<endl;
 	int count_red_layer_zero = 0;
 	for (vector<max_min_lp_msgs::layered_node>::iterator it = m_lay_red_node.begin(); it != m_lay_red_node.end(); ++it) {
-		if (it->red_tree_candidate) {
+		if (it->layer == 0) {
 			getRedTreeStruct(&m_red_tree[count_red_layer_zero], "p"+boost::lexical_cast<string>(it->id), it->layer, "red");
 
 			if (m_verbal_flag) {
-				cout<<"ROBOT "<<m_ROBOT_id<<endl;
 				cout<<count_red_layer_zero+1<<"'s tree"<<endl;
 
 				for (int i = 0; i < m_red_tree[count_red_layer_zero].red_node_id.size(); i++) {
@@ -382,10 +370,8 @@ void MaxMinLPDecentralizedCore::applyLocalAlgorithmPhase1and2() {
 		}
 	}
 
-	if (m_verbal_flag) {
-		cout<<endl;
-		cout<<"Find the minimum g_t(x) in S*(r) intersection with T"<<endl;
-	}
+	cout<<endl;
+	cout<<"Find the minimum g_t(x) in S*(r) intersection with T"<<endl;
 
 	vector<float> minimum_g_t(count_red_layer_zero, MAX_VALUE); // g_t(x)
 	for (int i = 0; i < count_red_layer_zero; i++) {
@@ -478,31 +464,25 @@ void MaxMinLPDecentralizedCore::applyLocalAlgorithmPhase1and2() {
 		}
 	}
 
-	if (m_verbal_flag) {
-		cout<<"Phase 1 is done."<<endl;
-	}
+	cout<<"Phase 1 is done."<<endl;
 
 	////////////////////////////// Phase 2 //////////////////////////////
 	// Iteratively check if t is a valid local estimate or not until the two conditions of the paper meet. 
 	//(1) t_r is a valid local estimate and 2) either (1+e)t_r is not a valid local estimate or (1+e)t_r > t_r)
-	if (m_verbal_flag) {
-		cout<<"Phase 2 starts."<<endl;
-	}
-	for (int i = 0; i < count_red_layer_zero; i++) {
-		m_t_r.push_back(0); // t_r
-	}
+	cout<<"Phase 2 starts."<<endl;
+	vector<float> t_r(count_red_layer_zero); // t_r
 
 	for (int i = 0; i < count_red_layer_zero; i++) {
 		int count_recursive = 0;
 		float init_minimum_g_t = minimum_g_t[i];
-		m_t_r.at(i) = minimum_g_t[i];
-if (m_verbal_flag) {cout<<"1111"<<endl;}
+		t_r.at(i) = minimum_g_t[i];
+
 		while(1) {
 			count_recursive += 1;
 			if (computeRecursive(i, minimum_g_t[i]) == true) {
 				//if (computeRecursive(i, (1 + m_epsilon) * minimum_g_t[i]) == false) {
 				//if (computeRecursive(i, m_epsilon + minimum_g_t[i]) == false) {
-				m_t_r.at(i) = minimum_g_t[i];
+				t_r.at(i) = minimum_g_t[i];
 				break;
 				//}
 				//else if ((1 + m_epsilon) * minimum_g_t[i] > init_minimum_g_t) {
@@ -526,20 +506,16 @@ if (m_verbal_flag) {cout<<"1111"<<endl;}
 
 	if (m_verbal_flag) {
 		int temp_count = 0;
-		for (vector<float>::iterator it = m_t_r.begin(); it != m_t_r.end(); ++it) {
+		for (vector<float>::iterator it = t_r.begin(); it != t_r.end(); ++it) {
 			temp_count += 1;
 			cout<<"t_r at "<<temp_count<<"'s red tree is "<<*it<<endl;
 		}
-
-		cout<<"Phase 2 is done."<<endl;
 	}
-}
 
-void MaxMinLPDecentralizedCore::applyLocalAlgorithmPhase3() {
+	cout<<"Phase 2 is done."<<endl;
+
 	////////////////////////////// Phase 3 //////////////////////////////
-	if (m_verbal_flag) {
-		cout<<"Phase 3 starts."<<endl;
-	}
+	cout<<"Phase 3 starts."<<endl;
 
 	// Each blue agent finds the minimum of the values t_r in P*(b) intersection with R[0]
 	for (vector<max_min_lp_msgs::layered_node>::iterator it = m_lay_blue_node.begin(); it != m_lay_blue_node.end(); ++it) {
@@ -658,7 +634,7 @@ void MaxMinLPDecentralizedCore::applyLocalAlgorithmPhase3() {
 			if (i == 0) {
 				vector<float> temp_min_t_r;
 				for (vector<string>::iterator itt = temp_red_node_id.begin(); itt != temp_red_node_id.end(); ++itt) {
-					temp_min_t_r.push_back(m_t_r[boost::lexical_cast<int>(itt->at(2)) - 1]);
+					temp_min_t_r.push_back(t_r[boost::lexical_cast<int>(itt->at(2)) - 1]);
 
 					if (m_verbal_flag) {
 						map<LayeredClass, max_min_lp_msgs::layered_node>::iterator temp_blue_pointer = 
@@ -685,10 +661,8 @@ void MaxMinLPDecentralizedCore::applyLocalAlgorithmPhase3() {
 	}
 
 	// Compute recursively z(s) using equations (13)-(15) and each agent v outputs the value z_v(s)
-	if (m_verbal_flag) {
-		cout<<endl;
-		cout<<"Obtain z_v's for all red and blue nodes"<<endl;
-	}
+	cout<<endl;
+	cout<<"Obtain z_v's for all red and blue nodes"<<endl;
 	for (int i = m_num_layer; i >= 0; i--) {
 		// Blue nodes
 		if (i == m_num_layer) { // Blue nodes in the last layer
@@ -817,14 +791,10 @@ void MaxMinLPDecentralizedCore::applyLocalAlgorithmPhase3() {
 		}
 	}
 
-	if (m_verbal_flag) {
-		cout<<"Phase 3 is done."<<endl;
-	}
+	cout<<"Phase 3 is done."<<endl;
 
 	////////////////////////////// Step 4 //////////////////////////////
-	if (m_verbal_flag) {
-		cout<<"Step 4 starts."<<endl;
-	}
+	cout<<"Step 4 starts."<<endl;
 
 	// Map the solution of the layered max-min LP to a solution of the original max-min LP
 	for (vector<max_min_lp_msgs::general_node>::iterator it = m_gen_p_r_node.begin(); it != m_gen_p_r_node.end(); ++it) {
@@ -864,12 +834,12 @@ void MaxMinLPDecentralizedCore::applyLocalAlgorithmPhase3() {
 		for (vector<max_min_lp_msgs::general_node>::iterator it = m_gen_p_r_node.begin(); it != m_gen_p_r_node.end(); ++it) {
 			cout<<"Agent "<<it->id<<": z_v = "<<it->z_v<<endl;
 		}
-
-		cout<<"Step 4 is done."<<endl;
 	}
+
+	cout<<"Step 4 is done."<<endl;
 }
 
-map<LayeredClass, max_min_lp_msgs::layered_node>::iterator MaxMinLPDecentralizedCore::getMapPointer(string _current, int _layer, string _state) {
+map<LayeredClass, max_min_lp_msgs::layered_node>::iterator MaxMinLPCore::getMapPointer(string _current, int _layer, string _state) {
 	LayeredClass * temp_class = new LayeredClass(_current, _layer, _state);
 
 	if(m_layered_map.find(*temp_class) != m_layered_map.end()) {
@@ -884,12 +854,11 @@ map<LayeredClass, max_min_lp_msgs::layered_node>::iterator MaxMinLPDecentralized
 	}
 }
 
-void MaxMinLPDecentralizedCore::getRedTreeStruct(TreeStruct * _red_tree, string _current, int _layer, string _state) {
+void MaxMinLPCore::getRedTreeStruct(TreeStruct * _red_tree, string _current, int _layer, string _state) {
 	vector<string> temp_robot_node_id;
 	vector<string> temp_red_node_id;
 	vector<string> temp_blue_node_id;
 	vector<string> temp_target_node_id;
-	int temp_tree_depth = 0;
 
 	// Construct the tree structure
 	// Layer 0
@@ -904,6 +873,7 @@ void MaxMinLPDecentralizedCore::getRedTreeStruct(TreeStruct * _red_tree, string 
 			temp_red_pointer->second.layer, "p"+boost::lexical_cast<string>(temp_red_pointer->second.id));
 		temp_robot_node_id.push_back("(r"+boost::lexical_cast<string>(temp_robot_pointer->second.id)+", "+
 			boost::lexical_cast<string>(temp_robot_pointer->second.layer)+", p"+boost::lexical_cast<string>(temp_red_pointer->second.id)+")");
+		_red_tree->robot_node_id.push_back(temp_robot_node_id);
 
 		for (int j = 0; j < temp_robot_pointer->second.loc_deg; j++) {
 			map<LayeredClass, max_min_lp_msgs::layered_node>::iterator temp_blue_pointer = 
@@ -911,10 +881,9 @@ void MaxMinLPDecentralizedCore::getRedTreeStruct(TreeStruct * _red_tree, string 
 				temp_robot_pointer->second.layer, "blue");
 			temp_blue_node_id.push_back("(p"+boost::lexical_cast<string>(temp_blue_pointer->second.id)+", "+
 				boost::lexical_cast<string>(temp_blue_pointer->second.layer)+", blue)");
+			_red_tree->blue_node_id.push_back(temp_blue_node_id);
 		}
 	}
-	_red_tree->robot_node_id.push_back(temp_robot_node_id);
-	_red_tree->blue_node_id.push_back(temp_blue_node_id);
 
 	temp_robot_node_id.clear();
 	temp_red_node_id.clear();
@@ -923,8 +892,6 @@ void MaxMinLPDecentralizedCore::getRedTreeStruct(TreeStruct * _red_tree, string 
 
 	// Next layers
 	for (int i = 1; i <= m_num_layer; i++) {
-		bool check_next_layer_reach = false; // Check if this particular red tree of R[0] is able to reach the next layer. That is because it is also possible that the next layer cannot be reached.
-
 		// Target nodes (Only target starts from index 1)
 		for (vector<string>::iterator it = _red_tree->blue_node_id[i-1].begin(); it != _red_tree->blue_node_id[i-1].end(); ++it) {
 			map<LayeredClass, max_min_lp_msgs::layered_node>::iterator temp_blue_pointer = 
@@ -962,8 +929,6 @@ void MaxMinLPDecentralizedCore::getRedTreeStruct(TreeStruct * _red_tree, string 
 								i, "blue");
 							temp_blue_node_id.push_back("(p"+boost::lexical_cast<string>(temp_blue_pointer->second.id)+", "+
 								boost::lexical_cast<string>(temp_blue_pointer->second.layer)+", blue)");
-
-							check_next_layer_reach = true;
 						}
 					}
 				}
@@ -1013,19 +978,13 @@ void MaxMinLPDecentralizedCore::getRedTreeStruct(TreeStruct * _red_tree, string 
 		}
 		_red_tree->blue_node_id.push_back(temp_blue_node_id);
 		temp_blue_node_id.clear();
-
-		if (check_next_layer_reach) {
-			temp_tree_depth += 1;
-		}
 	}
-
-	_red_tree->tree_depth = temp_tree_depth;
 }
 
-bool MaxMinLPDecentralizedCore::computeRecursive(int _count_red_layer_zero, float _minimum_g_t) {
+bool MaxMinLPCore::computeRecursive(int _count_red_layer_zero, float _minimum_g_t) {
 	bool check_z_negative = false; // True means that either z_r or z_b is negative
-if (m_verbal_flag) {cout<<"_minimum_g_t = "<<_minimum_g_t<<endl;}if (m_verbal_flag) {cout<<"m_red_tree[_count_red_layer_zero].tree_depth = "<<m_red_tree[_count_red_layer_zero].tree_depth<<endl;}
-	for (int i = m_red_tree[_count_red_layer_zero].tree_depth; i >= 0; i--) {
+
+	for (int i = m_num_layer; i >= 0; i--) {
 		for (vector<string>::iterator it = m_red_tree[_count_red_layer_zero].blue_node_id[i].begin(); 
 			it != m_red_tree[_count_red_layer_zero].blue_node_id[i].end(); ++it) {
 
@@ -1033,41 +992,32 @@ if (m_verbal_flag) {cout<<"_minimum_g_t = "<<_minimum_g_t<<endl;}if (m_verbal_fl
 			map<LayeredClass, max_min_lp_msgs::layered_node>::iterator temp_blue_pointer = 
 				getMapPointer("p"+boost::lexical_cast<string>(it->at(2)), i, "blue");
 
-			if (m_verbal_flag) {
-				cout<<"(p"<<boost::lexical_cast<string>(it->at(2))<<", "<<i<<", "<<"blue)"<<endl;
-			}
-
 			if (temp_blue_pointer->second.layer == i) {
-				if (i == m_red_tree[_count_red_layer_zero].tree_depth) { // B[h]
+				if (i == m_num_layer) { // B[h]
 					temp_blue_pointer->second.z_b = 0;
 				}
 				else { // B \ B[h]
-					// There might be some disconnected branches in the tree. It always corresponds to blue nodes and they must be handled properly.
-					if (temp_blue_pointer->second.loc_deg == 0) {
-						temp_blue_pointer->second.z_b = 0;
-					}
-					else { // Find the maximum z_b(q)
-						for (int j = 0; j < temp_blue_pointer->second.loc_deg; j++) {
-							float temp_c_k_r_z_r = 0;
+					// Find the maximum z_b(q)
+					for (int j = 0; j < temp_blue_pointer->second.loc_deg; j++) {
+						float temp_c_k_r_z_r = 0;
 
-							map<LayeredClass, max_min_lp_msgs::layered_node>::iterator temp_target_pointer = 
-								getMapPointer("t"+boost::lexical_cast<string>(temp_blue_pointer->second.loc_neighbor_id[j]), 
-								i+1, "p"+boost::lexical_cast<string>(it->at(2)));
+						map<LayeredClass, max_min_lp_msgs::layered_node>::iterator temp_target_pointer = 
+							getMapPointer("t"+boost::lexical_cast<string>(temp_blue_pointer->second.loc_neighbor_id[j]), 
+							i+1, "p"+boost::lexical_cast<string>(it->at(2)));
 
-							for (int k = 0; k < temp_target_pointer->second.loc_deg; k++) {
-								map<LayeredClass, max_min_lp_msgs::layered_node>::iterator temp_red_pointer = 
-									getMapPointer("p"+boost::lexical_cast<string>(temp_target_pointer->second.loc_neighbor_id[k]), i+1, "red");
+						for (int k = 0; k < temp_target_pointer->second.loc_deg; k++) {
+							map<LayeredClass, max_min_lp_msgs::layered_node>::iterator temp_red_pointer = 
+								getMapPointer("p"+boost::lexical_cast<string>(temp_target_pointer->second.loc_neighbor_id[k]), i+1, "red");
 
-								temp_c_k_r_z_r += temp_target_pointer->second.edge_weight[k] * temp_red_pointer->second.z_r;
-							}
-
-							temp_z_b.push_back((_minimum_g_t - temp_c_k_r_z_r) / temp_blue_pointer->second.edge_weight[j]);
+							temp_c_k_r_z_r += temp_target_pointer->second.edge_weight[k] * temp_red_pointer->second.z_r;
 						}
 
-						vector<float>::iterator temp_max_iterator = max_element(temp_z_b.begin(), temp_z_b.end());
-						int temp_max_index = distance(temp_z_b.begin(), temp_max_iterator);
-						temp_blue_pointer->second.z_b = max((float)0, temp_z_b[temp_max_index]);
+						temp_z_b.push_back((_minimum_g_t - temp_c_k_r_z_r) / temp_blue_pointer->second.edge_weight[j]);
 					}
+
+					vector<float>::iterator temp_max_iterator = max_element(temp_z_b.begin(), temp_z_b.end());
+					int temp_max_index = distance(temp_z_b.begin(), temp_max_iterator);
+					temp_blue_pointer->second.z_b = max((float)0, temp_z_b[temp_max_index]);
 				}
 			}
 		}
@@ -1080,10 +1030,6 @@ if (m_verbal_flag) {cout<<"_minimum_g_t = "<<_minimum_g_t<<endl;}if (m_verbal_fl
 			map<LayeredClass, max_min_lp_msgs::layered_node>::iterator temp_red_pointer = 
 				getMapPointer("p"+boost::lexical_cast<string>(it->at(2)), i, "red");
 
-			if (m_verbal_flag) {
-				cout<<"(p"<<boost::lexical_cast<string>(it->at(2))<<", "<<i<<", "<<"red)"<<endl;
-			}
-
 			if (temp_red_pointer->second.layer == i) {
 				for (int j = 0; j < temp_red_pointer->second.loc_deg; j++) {
 					map<LayeredClass, max_min_lp_msgs::layered_node>::iterator temp_robot_pointer = 
@@ -1094,8 +1040,7 @@ if (m_verbal_flag) {cout<<"_minimum_g_t = "<<_minimum_g_t<<endl;}if (m_verbal_fl
 						map<LayeredClass, max_min_lp_msgs::layered_node>::iterator temp_blue_pointer = 
 							getMapPointer("p"+boost::lexical_cast<string>(temp_robot_pointer->second.loc_neighbor_id[k]), i, "blue");
 
-						// Here the variable "m_constraint_value" is applied in the case of |V_i| > 2.
-						temp_z_r.push_back((m_constraint_value - temp_robot_pointer->second.edge_weight[k] * temp_blue_pointer->second.z_b) 
+						temp_z_r.push_back((1 - temp_robot_pointer->second.edge_weight[k] * temp_blue_pointer->second.z_b) 
 							/ temp_red_pointer->second.edge_weight[j]);
 					}
 				}

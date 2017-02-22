@@ -38,6 +38,8 @@ private:
   ros::Subscriber m_target_2_sub;
   ros::Subscriber m_target_3_sub;
 
+  ros::Subscriber m_comm_graph_by_robots_sub;
+
   // Services
   ros::ServiceServer m_service;
 
@@ -102,6 +104,7 @@ public:
   bool initialize(max_min_lp_simulation::MessageRequest::Request &req, max_min_lp_simulation::MessageRequest::Response &res);
   void updatePose(const gazebo_msgs::ModelStates::ConstPtr& msg, int target_id); // Update pose information
   vector<max_min_lp_msgs::general_node> buildGeneralNode(string option);
+  void applySequentialLocalAlgorithm(const std_msgs::String::ConstPtr& msg);
 };
 
 #endif

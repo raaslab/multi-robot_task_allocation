@@ -50,7 +50,18 @@ void MaxMinLPRobotNode::applyMotionPrimitives(const std_msgs::String::ConstPtr& 
 	bool result_success = initialize();
 
 	if (result_success) {
-		ROS_INFO("The %s is initiated.", m_robot_name.c_str());
+		// Publisher
+		m_response_to_server_pub = m_nh.advertise<std_msgs::String>("/robot_comm_graph", 1);
+
+		std_msgs::String msg;
+	    stringstream ss;
+	    ss<<"comm graph is complete";
+	    msg.data = ss.str();
+	    m_response_to_server_pub.publish(msg);
+
+		if (m_verbal_flag) {
+			ROS_INFO("The %s is initiated.", m_robot_name.c_str());
+		}
 
 		// Publisher for general nodes
 		max_min_lp_msgs::general_node_array temp_msg;

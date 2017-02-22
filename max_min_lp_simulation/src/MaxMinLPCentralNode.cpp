@@ -41,6 +41,8 @@ m_num_robot(1), m_num_target(1), m_num_motion_primitive(10), m_num_layer(2), m_o
 	m_target_1_sub = m_nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1000, boost::bind(&MaxMinLPCentralNode::updatePose, this, _1, 0));
 	m_target_2_sub = m_nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1000, boost::bind(&MaxMinLPCentralNode::updatePose, this, _1, 1));
 	// m_target_3_sub = m_nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1000, boost::bind(&MaxMinLPCentralNode::updatePose, this, _1, 2));
+
+	m_comm_graph_by_robots_sub = m_nh.subscribe<std_msgs::String>("/robot_comm_graph", 1000, &MaxMinLPCentralNode::applySequentialLocalAlgorithm, this);
 }
 
 bool MaxMinLPCentralNode::initialize(max_min_lp_simulation::MessageRequest::Request &req, max_min_lp_simulation::MessageRequest::Response &res) {
@@ -686,6 +688,12 @@ vector<max_min_lp_msgs::general_node> MaxMinLPCentralNode::buildGeneralNode(stri
 	}
 
 	return gen_return_node;
+}
+
+void MaxMinLPCentralNode::applySequentialLocalAlgorithm(const std_msgs::String::ConstPtr& msg) {
+	if (strcmp( msg->data.c_str(), "comm graph is complete") == 0) {
+		ROS_INFO("applySequentialLocalAlgorithm() called");
+	}
 }
 
 int main(int argc, char **argv) {
