@@ -58,22 +58,34 @@ private:
   bool m_check_request_send;
 
   // For reduction
-  int m_num_constraints; // This corresponds to the number of robot nodes that are assigned to the corresonding ROBOT.
-  float m_constraint_value; // This value is used for weights between targets and primitives. (A_tp)
+  vector<float> m_constraint_value; // This value is used for reduction i.e., 2/|V_i|.
+
+  //// ROBOT ////
+  // ROBOT robot
+  vector<int> m_ROBOT_num_robot;
+  vector<int> m_prev_accumulate_robot;
+  int m_num_survived_robot;
+
+  // ROBOT motion primitives
+  vector<int> m_ROBOT_num_motion_primitive;
+  vector<int> m_prev_accumulate_motion_primitive;
+  int m_num_survived_motion_primitive;
 
   // ROBOT neighbor hop info
   vector<vector<vector<int> > > m_ROBOT_neighbor;
   vector<vector<int> > m_ROBOT_assign_targets;
   vector<int> m_max_neighbor_hop;
 
-  // Robot info
+  //// robot ////
+  // robot info
   vector<int> m_robot_id;
 
-  // Motion primitives info
+  //// motion primitives ////
   vector<int> m_primitive_id;
   vector<float> m_primitive_x_pos;
   vector<float> m_primitive_y_pos;
 
+  //// target ////
   // Target info of each time-step obtained from gazebo
   vector<geometry_msgs::Pose> m_temp_target_pos;
   vector<string> m_temp_target_name;

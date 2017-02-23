@@ -23,9 +23,6 @@ m_verbal_flag(false), m_epsilon(0.1), m_num_motion_primitive(10), m_time_interva
 	m_private_nh.getParam("num_motion_primitive", m_num_motion_primitive);
 	m_private_nh.getParam("time_interval", m_time_interval);
 
-	m_num_constraints = 1; // When the |V_i| <= 2, the reduction is not required. Therefore, the number of constraints is one.
-	m_constraint_value = 1;
-
 	// Publishers
 	m_general_node_pub = m_nh.advertise<max_min_lp_msgs::general_node_array>("/max_min_lp_msgs/general_node_array", 1);
 	m_layered_node_pub = m_nh.advertise<max_min_lp_msgs::layered_node_array>("/max_min_lp_msgs/layered_node_array", 1);
@@ -86,15 +83,15 @@ void MaxMinLPRobotNode::applyMotionPrimitives(const std_msgs::String::ConstPtr& 
 
 		// Local algorithm is applied from here.
 		max_min_lp_core::MaxMinLPDecentralizedCore lpc(m_robot_id, m_gen_r_node, m_gen_p_r_node, m_gen_p_t_node, m_gen_t_node,
-			m_num_layer, m_verbal_flag, m_epsilon, m_num_motion_primitive, m_max_neighbor_hop, m_num_neighbors_at_each_hop, 
-			m_num_constraints, m_constraint_value);
+			m_num_layer, m_verbal_flag, m_epsilon, m_max_neighbor_hop, m_num_neighbors_at_each_hop, m_ROBOT_num_robot, m_prev_accumulate_robot,
+			m_num_survived_robot, m_ROBOT_num_motion_primitive, m_prev_accumulate_motion_primitive, m_num_survived_motion_primitive, m_constraint_value);
 
 		// Step 2
 		lpc.convertDecentralizedLayeredMaxMinLP();
 
 		// Step 3
 		//   Phase 1 and 2
-		lpc.applyLocalAlgorithmPhase1and2();
+		// lpc.applyLocalAlgorithmPhase1and2();
 
 		// Publisher for layered nodes
 		max_min_lp_msgs::layered_node_array temp_layered_msg;
@@ -132,14 +129,6 @@ bool MaxMinLPRobotNode::initialize() {
 	motion_primitive_pose = computeMotionPrimitives();
 	srv.request.motion_primitive_info = motion_primitive_pose;
 
-	// Apply the reduction when |V_i| is greater than 2.
-	if (m_num_motion_primitive > 2) {
-		m_num_constraints = m_num_motion_primitive * (m_num_motion_primitive - 1) / 2;
-		srv.request.num_constraints = m_num_constraints;
-		m_constraint_value = float(2) / m_num_motion_primitive;
-		srv.request.constraint_value = m_constraint_value;
-	}
-
 	if (m_client.call(srv)) {
 		if (strcmp(srv.response.state_answer.c_str(), "start") == 0) {
 			m_max_neighbor_hop = srv.response.max_neighbor_hop;
@@ -150,6 +139,27 @@ bool MaxMinLPRobotNode::initialize() {
 
 			m_num_neighbors_at_each_hop.push_back(srv.response.num_neighbors_at_each_hop);
 			m_num_new_targets_at_each_hop.push_back(srv.response.num_new_targets_at_each_hop);
+
+			//// ROBOT info
+			// ROBOT to robot
+			for (int i = 0; i < srv.response.ROBOT_num_robot.size(); i++) {
+				m_ROBOT_num_robot.push_back(srv.response.ROBOT_num_robot[i]);
+			}
+			for (int i = 0; i < srv.response.prev_accumulate_robot.size(); i++) {
+				m_prev_accumulate_robot.push_back(srv.response.prev_accumulate_robot[i]);
+			}
+
+			// ROBOT to motion primitive
+			for (int i = 0; i < srv.response.ROBOT_num_motion_primitive.size(); i++) {
+				m_ROBOT_num_motion_primitive.push_back(srv.response.ROBOT_num_motion_primitive[i]);
+			}
+			for (int i = 0; i < srv.response.prev_accumulate_motion_primitive.size(); i++) {
+				m_prev_accumulate_motion_primitive.push_back(srv.response.prev_accumulate_motion_primitive[i]);
+			}
+
+			for (int i = 0; i < srv.response.constraint_value.size(); i++) {
+				m_constraint_value.push_back(srv.response.constraint_value[i]);
+			}
 
 			return true;
 		}

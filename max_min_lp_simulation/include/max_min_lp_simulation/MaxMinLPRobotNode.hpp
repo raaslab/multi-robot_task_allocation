@@ -58,13 +58,22 @@ private:
   geometry_msgs::Pose m_pos;
 
   // For reduction
-  int m_num_constraints;
-  float m_constraint_value;
+  vector<float> m_constraint_value;
 
   // Local info
   int m_max_neighbor_hop;
   vector<int> m_num_neighbors_at_each_hop;
   vector<int> m_num_new_targets_at_each_hop;
+
+  // ROBOT robot
+  vector<int> m_ROBOT_num_robot;
+  vector<int> m_prev_accumulate_robot;
+  int m_num_survived_robot;
+
+  // ROBOT motion primitives
+  vector<int> m_ROBOT_num_motion_primitive;
+  vector<int> m_prev_accumulate_motion_primitive;
+  int m_num_survived_motion_primitive;
 
   vector<max_min_lp_msgs::general_node> m_gen_r_node;
   vector<max_min_lp_msgs::general_node> m_gen_p_r_node;

@@ -72,27 +72,37 @@ private:
 
   int m_num_red_layer_zero;
 
-  // Variables from the launch file
+  //// Variables from the launch file
   int m_ROBOT_id;
   int m_num_layer; // Number of layers in the layered model
   bool m_verbal_flag;
   double m_epsilon;
-  int m_num_motion_primitive;
   int m_max_neighbor_hop;
   vector<int> m_num_neighbors_at_each_hop;
-  int m_num_constraints;
-  float m_constraint_value;
+
+  // ROBOT robot
+  vector<int> m_ROBOT_num_robot;
+  vector<int> m_prev_accumulate_robot;
+  int m_num_survived_robot;
+
+  // ROBOT motion primitives
+  vector<int> m_ROBOT_num_motion_primitive;
+  vector<int> m_prev_accumulate_motion_primitive;
+  int m_num_survived_motion_primitive;
+
+  vector<float> m_constraint_value;
 
 public:
   // Constructor
   MaxMinLPDecentralizedCore();
   MaxMinLPDecentralizedCore(int _ROBOT_id, vector<max_min_lp_msgs::general_node>& _gen_r_node, vector<max_min_lp_msgs::general_node>& _gen_p_r_node, 
     vector<max_min_lp_msgs::general_node>& _gen_p_t_node, vector<max_min_lp_msgs::general_node>& _gen_t_node, 
-    int _num_layer, bool _verbal_flag, double _epsilon, int _num_motion_primivie, int _max_neighbor_hop, 
-    vector<int> _num_neighbors_at_each_hop, int _num_constraints, float _constraint_value);
+    int _num_layer, bool _verbal_flag, double _epsilon, int _max_neighbor_hop, vector<int> _num_neighbors_at_each_hop, vector<int> _ROBOT_num_robot,
+    vector<int> _prev_accumulate_robot, int _num_survived_robot, vector<int> _ROBOT_num_motion_primitive, vector<int> _prev_accumulate_motion_primitive,
+    int _num_survived_motion_primitive, vector<float> _constraint_value);
   // Destructor
   ~MaxMinLPDecentralizedCore() {
-    delete[] m_red_tree;
+    // delete[] m_red_tree;
   }
 
   void convertDecentralizedLayeredMaxMinLP(); // Converting the general graph into the layered graph for the decentralized approach. (Step 2)

@@ -14,11 +14,13 @@ namespace max_min_lp_core {
 
 MaxMinLPDecentralizedCore::MaxMinLPDecentralizedCore(int _ROBOT_id, vector<max_min_lp_msgs::general_node>& _gen_r_node, vector<max_min_lp_msgs::general_node>& _gen_p_r_node, 
 	vector<max_min_lp_msgs::general_node>& _gen_p_t_node, vector<max_min_lp_msgs::general_node>& _gen_t_node, int _num_layer, 
-	bool _verbal_flag, double _epsilon, int _num_motion_primivie, int _max_neighbor_hop, vector<int> _num_neighbors_at_each_hop, 
-	int _num_constraints, float _constraint_value) :
+	bool _verbal_flag, double _epsilon, int _max_neighbor_hop, vector<int> _num_neighbors_at_each_hop, vector<int> _ROBOT_num_robot,
+	vector<int> _prev_accumulate_robot, int _num_survived_robot, vector<int> _ROBOT_num_motion_primitive, vector<int> _prev_accumulate_motion_primitive,
+    int _num_survived_motion_primitive, vector<float> _constraint_value) :
 m_ROBOT_id(_ROBOT_id), m_gen_r_node(_gen_r_node), m_gen_p_r_node(_gen_p_r_node), m_gen_p_t_node(_gen_p_t_node), m_gen_t_node(_gen_t_node), m_num_layer(_num_layer),
-m_verbal_flag(_verbal_flag), m_epsilon(_epsilon), m_num_motion_primitive(_num_motion_primivie), m_max_neighbor_hop(_max_neighbor_hop),
-m_num_neighbors_at_each_hop(_num_neighbors_at_each_hop), m_num_constraints(_num_constraints), m_constraint_value(_constraint_value) {
+m_verbal_flag(_verbal_flag), m_epsilon(_epsilon), m_max_neighbor_hop(_max_neighbor_hop), m_num_neighbors_at_each_hop(_num_neighbors_at_each_hop),
+m_ROBOT_num_robot(_ROBOT_num_robot), m_prev_accumulate_robot(_prev_accumulate_robot), m_num_survived_robot(_num_survived_robot), m_ROBOT_num_motion_primitive(_ROBOT_num_motion_primitive),
+m_prev_accumulate_motion_primitive(_prev_accumulate_motion_primitive), m_num_survived_motion_primitive(_num_survived_motion_primitive), m_constraint_value(_constraint_value) {
 }
 
 void MaxMinLPDecentralizedCore::convertDecentralizedLayeredMaxMinLP() {
@@ -121,7 +123,7 @@ void MaxMinLPDecentralizedCore::convertDecentralizedLayeredMaxMinLP() {
 			}
 
 			// Used to construct red trees R[0] later.
-			if ((temp_lay_node.layer == 0) && (it->id > (m_ROBOT_id - 1) * m_num_motion_primitive) && (it->id <= m_ROBOT_id * m_num_motion_primitive)) {
+			if ((temp_lay_node.layer == 0) && (it->id > m_prev_accumulate_motion_primitive[m_ROBOT_id-1]) && (it->id <= m_prev_accumulate_motion_primitive[m_ROBOT_id-1] + m_ROBOT_num_motion_primitive[m_ROBOT_id-1])) {
 				temp_lay_node.red_tree_candidate = true;
 				m_num_red_layer_zero += 1;
 			}
@@ -496,7 +498,7 @@ void MaxMinLPDecentralizedCore::applyLocalAlgorithmPhase1and2() {
 		int count_recursive = 0;
 		float init_minimum_g_t = minimum_g_t[i];
 		m_t_r.at(i) = minimum_g_t[i];
-if (m_verbal_flag) {cout<<"1111"<<endl;}
+
 		while(1) {
 			count_recursive += 1;
 			if (computeRecursive(i, minimum_g_t[i]) == true) {
@@ -1085,6 +1087,14 @@ if (m_verbal_flag) {cout<<"_minimum_g_t = "<<_minimum_g_t<<endl;}if (m_verbal_fl
 			}
 
 			if (temp_red_pointer->second.layer == i) {
+				// Check which ROBOT id has this red node so that we can decide m_constraint_value.
+				int temp_ROBOT_id;
+				for (int j = 0; j < m_ROBOT_num_motion_primitive.size(); j++) {
+					if ((temp_red_pointer->second.id > m_prev_accumulate_motion_primitive[j]) && (temp_red_pointer->second.id <= (m_prev_accumulate_motion_primitive[j] + m_ROBOT_num_motion_primitive[j]))) {
+						temp_ROBOT_id = j+1;
+					}
+				}
+
 				for (int j = 0; j < temp_red_pointer->second.loc_deg; j++) {
 					map<LayeredClass, max_min_lp_msgs::layered_node>::iterator temp_robot_pointer = 
 						getMapPointer("r"+boost::lexical_cast<string>(temp_red_pointer->second.loc_neighbor_id[j]), 
@@ -1095,7 +1105,7 @@ if (m_verbal_flag) {cout<<"_minimum_g_t = "<<_minimum_g_t<<endl;}if (m_verbal_fl
 							getMapPointer("p"+boost::lexical_cast<string>(temp_robot_pointer->second.loc_neighbor_id[k]), i, "blue");
 
 						// Here the variable "m_constraint_value" is applied in the case of |V_i| > 2.
-						temp_z_r.push_back((m_constraint_value - temp_robot_pointer->second.edge_weight[k] * temp_blue_pointer->second.z_b) 
+						temp_z_r.push_back((m_constraint_value[temp_ROBOT_id-1] - temp_robot_pointer->second.edge_weight[k] * temp_blue_pointer->second.z_b) 
 							/ temp_red_pointer->second.edge_weight[j]);
 					}
 				}

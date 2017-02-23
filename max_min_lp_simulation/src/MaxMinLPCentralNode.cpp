@@ -29,8 +29,8 @@ m_num_robot(1), m_num_target(1), m_num_motion_primitive(10), m_num_layer(2), m_o
 	m_send_robot_id = 1;
 	m_check_request_send = true;
 
-	m_num_constraints = 1;
-	m_constraint_value = 1;
+	m_num_survived_robot = 0;
+	m_num_survived_motion_primitive = 0;
 
 	// // Subscribers
 	geometry_msgs::Pose dummy_target_pos;
@@ -69,10 +69,6 @@ bool MaxMinLPCentralNode::initialize(max_min_lp_simulation::MessageRequest::Requ
 		if (m_request_robot_id == (m_num_robot+1)) {
 			// Match relavent motion primitives with targets on the basis of FoV. This happens only once in the initialization step.
 			if (m_check_request_send) {
-				if (m_num_motion_primitive > 2) {
-					m_num_constraints = req.num_constraints;
-					m_constraint_value = req.constraint_value;
-				}
 				// Obtain target information.
 				if (m_verbal_flag) {
 					ROS_INFO("\nTarget information");
@@ -93,17 +89,11 @@ bool MaxMinLPCentralNode::initialize(max_min_lp_simulation::MessageRequest::Requ
 					ROS_INFO("\nPrimitive information");
 				}
 
-				int count_num_total_primitives = 0;
 				for (vector<max_min_lp_msgs::server_to_robots>::iterator it = m_robot_info.each_robot.begin(); it != m_robot_info.each_robot.end(); ++it) {
+					int count_num_each_primitives = 0;
+					m_prev_accumulate_motion_primitive.push_back(m_num_survived_motion_primitive);
+
 					for (int i = 0; i < it->primitive_id.size(); i++) {
-						m_primitive_id.push_back(count_num_total_primitives + 1);
-						m_primitive_x_pos.push_back(it->p_x_pos[i]);
-						m_primitive_y_pos.push_back(it->p_y_pos[i]);
-
-						if (m_verbal_flag) {
-							ROS_INFO("primitive id = %d, (x, y) = (%f, %f)", count_num_total_primitives + 1, it->p_x_pos[i], it->p_y_pos[i]);
-						}
-
 						vector<int> temp_primitives_to_targets;
 						vector<float> temp_primitives_to_targets_weight;
 
@@ -111,6 +101,14 @@ bool MaxMinLPCentralNode::initialize(max_min_lp_simulation::MessageRequest::Requ
 							float dist_primitive_to_target = sqrt(pow((m_target_x_pos[j] - it->p_x_pos[i]), 2) + pow((m_target_y_pos[j] - it->p_y_pos[i]), 2));
 
 							if (dist_primitive_to_target <= m_fov) { // Observed by the corresponding motion primitive.
+								m_primitive_id.push_back(m_num_survived_motion_primitive + 1);
+								m_primitive_x_pos.push_back(it->p_x_pos[i]);
+								m_primitive_y_pos.push_back(it->p_y_pos[i]);
+
+								if (m_verbal_flag) {
+									ROS_INFO("primitive id = %d, (x, y) = (%f, %f)", m_num_survived_motion_primitive + 1, it->p_x_pos[i], it->p_y_pos[i]);
+								}
+
 								temp_primitives_to_targets.push_back(m_target_id[j]);
 
 								// Objective option must be taken into account here.
@@ -120,6 +118,11 @@ bool MaxMinLPCentralNode::initialize(max_min_lp_simulation::MessageRequest::Requ
 								else if (strcmp(m_objective_option.c_str(), "number_of_targets") == 0) {
 									temp_primitives_to_targets_weight.push_back(1);
 								}
+
+								m_primitives_to_targets.push_back(temp_primitives_to_targets);
+								m_primitives_to_targets_weight.push_back(temp_primitives_to_targets_weight);
+								m_num_survived_motion_primitive += 1;
+								count_num_each_primitives += 1;
 							}
 							// else { // Not observed by the corresponding motion primitive.
 							// 	if (strcmp(m_objective_option.c_str(), "quality_of_tracking") == 0) {
@@ -130,10 +133,12 @@ bool MaxMinLPCentralNode::initialize(max_min_lp_simulation::MessageRequest::Requ
 							// 	}
 							// }
 						}
+					}
 
-						m_primitives_to_targets.push_back(temp_primitives_to_targets);
-						m_primitives_to_targets_weight.push_back(temp_primitives_to_targets_weight);
-						count_num_total_primitives += 1;
+					m_ROBOT_num_motion_primitive.push_back(count_num_each_primitives);
+
+					if (m_verbal_flag) {
+						ROS_INFO("    ROBOT %d : number of motion primitives = %d", it->robot_id, count_num_each_primitives);
 					}
 				}
 
@@ -142,11 +147,15 @@ bool MaxMinLPCentralNode::initialize(max_min_lp_simulation::MessageRequest::Requ
 				if (m_verbal_flag) {
 					ROS_INFO("\nRobot information");
 				}
+
 				int count_num_total_robot = 0;
-				if (m_num_motion_primitive > 2) {
-					for (int i = 0; i < m_primitive_id.size(); i += m_num_motion_primitive) {
-						for (int j = 0; j < m_num_motion_primitive-1; j++) {
-							for (int k = j+1; k < m_num_motion_primitive; k++) {
+				for (int i = 0; i < m_num_robot; i++) { // m_num_robot = number of ROBOTs
+					// 3 cases (1) |V_i|>2, 2) |V_i|=2, and 3) |V_i|=1)
+					m_prev_accumulate_robot.push_back(m_num_survived_robot);
+
+					if (m_ROBOT_num_motion_primitive[i] > 2) {
+						for (int j = 0; j < m_ROBOT_num_motion_primitive[i]-1; j++) {
+							for (int k = j+1; k < m_ROBOT_num_motion_primitive[i]; k++) {
 								m_robot_id.push_back(count_num_total_robot + 1);
 
 								if (m_verbal_flag) {
@@ -154,25 +163,17 @@ bool MaxMinLPCentralNode::initialize(max_min_lp_simulation::MessageRequest::Requ
 								}
 
 								vector<int> temp_robots_to_primitives;
-								temp_robots_to_primitives.push_back(m_primitive_id[i + j]);
-								temp_robots_to_primitives.push_back(m_primitive_id[i + k]);
+								temp_robots_to_primitives.push_back(m_primitive_id[m_prev_accumulate_motion_primitive[i] + j]);
+								temp_robots_to_primitives.push_back(m_primitive_id[m_prev_accumulate_motion_primitive[i] + k]);
 								m_robots_to_primitives.push_back(temp_robots_to_primitives);
 
 								count_num_total_robot += 1;
 							}
 						}
 
-						// Check if the result of combination is correct or not.
-						if (i == 0) {
-							if (count_num_total_robot != m_num_constraints) {
-								cout<<"ERROR: the computation of the combination is wrong."<<endl;
-								exit (EXIT_FAILURE);
-							}
-						}
+						m_ROBOT_num_robot.push_back(count_num_total_robot);
 					}
-				}
-				else { // When m_num_motion_primitive = 2.
-					for (int i = 0; i < m_primitive_id.size(); i += m_num_motion_primitive) {
+					else if (m_ROBOT_num_motion_primitive[i] == 2) {
 						m_robot_id.push_back(count_num_total_robot + 1);
 
 						if (m_verbal_flag) {
@@ -180,13 +181,32 @@ bool MaxMinLPCentralNode::initialize(max_min_lp_simulation::MessageRequest::Requ
 						}
 
 						vector<int> temp_robots_to_primitives;
-						temp_robots_to_primitives.push_back(m_primitive_id[i]);
-						temp_robots_to_primitives.push_back(m_primitive_id[i + 1]);
+						temp_robots_to_primitives.push_back(m_primitive_id[m_prev_accumulate_motion_primitive[i]]);
+						temp_robots_to_primitives.push_back(m_primitive_id[m_prev_accumulate_motion_primitive[i]] + 1);
 						m_robots_to_primitives.push_back(temp_robots_to_primitives);
 
 						count_num_total_robot += 1;
+
+						m_ROBOT_num_robot.push_back(count_num_total_robot);
+					}
+					else if(m_ROBOT_num_motion_primitive[i] == 1) {
+						m_robot_id.push_back(count_num_total_robot + 1);
+
+						if (m_verbal_flag) {
+							ROS_INFO("robot id = %d", count_num_total_robot + 1);
+						}
+
+						vector<int> temp_robots_to_primitives;
+						temp_robots_to_primitives.push_back(m_primitive_id[m_prev_accumulate_motion_primitive[i]]);
+						m_robots_to_primitives.push_back(temp_robots_to_primitives);
+
+						count_num_total_robot += 1;
+
+						m_ROBOT_num_robot.push_back(count_num_total_robot);
 					}
 				}
+
+				m_num_survived_robot = count_num_total_robot;
 
 				// Primitives to robots
 				for (int i = 0; i < m_primitive_id.size(); i++) {
@@ -253,7 +273,7 @@ bool MaxMinLPCentralNode::initialize(max_min_lp_simulation::MessageRequest::Requ
 					vector<int> used_primitives_total;
 					vector<int> used_primitives_prev;
 
-					for (int j = i * m_num_motion_primitive; j < (i + 1) * m_num_motion_primitive; j++) {
+					for (int j = m_prev_accumulate_motion_primitive[i]; j < m_prev_accumulate_motion_primitive[i] + m_ROBOT_num_motion_primitive[i]; j++) {
 						used_primitives_total.push_back(j);
 						used_primitives_prev.push_back(j);
 					}
@@ -277,7 +297,7 @@ bool MaxMinLPCentralNode::initialize(max_min_lp_simulation::MessageRequest::Requ
 						}
 
 						for (vector<int>::iterator it = temp_ROBOT_neighbor_at_layer.begin(); it != temp_ROBOT_neighbor_at_layer.end(); ++it) {
-							for (int j = (*it - 1) * m_num_motion_primitive; j < *it * m_num_motion_primitive; j++) {
+							for (int j = m_prev_accumulate_motion_primitive[*it-1]; j < m_prev_accumulate_motion_primitive[*it-1] * m_ROBOT_num_motion_primitive[*it-1]; j++) {
 								used_primitives_prev.push_back(j);
 							}
 						}
@@ -324,7 +344,18 @@ bool MaxMinLPCentralNode::initialize(max_min_lp_simulation::MessageRequest::Requ
 								continue;
 							}
 							used_primitives_total.push_back((*it - 1));
-							int temp_neighbor_ROBOT_id = ceil(double(*it) / m_num_motion_primitive);
+
+							int temp_neighbor_ROBOT_id = 0;
+							for (int j = 0; j < m_num_robot; j++) {
+								if (*it > m_prev_accumulate_motion_primitive[j] && *it <= m_prev_accumulate_motion_primitive[j] + m_ROBOT_num_motion_primitive[j]) {
+									temp_neighbor_ROBOT_id = j + 1;ROS_INFO("temp_neighbor_ROBOT_id = %d", j+1);
+								}
+							}
+							if (temp_neighbor_ROBOT_id == 0) {
+								ROS_INFO("Erorr occurred when finding neighbor ROBOTs.");
+								exit (EXIT_FAILURE);
+							}
+
 							temp_ROBOT_neighbor_at_layer.push_back(temp_neighbor_ROBOT_id);
 						}
 
@@ -349,6 +380,16 @@ bool MaxMinLPCentralNode::initialize(max_min_lp_simulation::MessageRequest::Requ
 
 					m_ROBOT_neighbor.push_back(temp_ROBOT_neighbor);
 					m_max_neighbor_hop.push_back(temp_layer_count);
+				}
+
+				// Compute contraint values (i.e., 2/|V_i|) for reduction.
+				for (vector<int>::iterator it = m_ROBOT_num_motion_primitive.begin(); it != m_ROBOT_num_motion_primitive.end(); ++it) {
+					if (*it <= 2) {
+						m_constraint_value.push_back(float(1));
+					}
+					else {
+						m_constraint_value.push_back(float(2) / *it);
+					}
 				}
 
 				if (m_verbal_flag) {
@@ -402,7 +443,7 @@ bool MaxMinLPCentralNode::initialize(max_min_lp_simulation::MessageRequest::Requ
 					}
 
 					ROS_INFO("\n\nNeighbor hops of each ROBOT");
-					for (int i = 0; i < m_primitive_id.size() / m_num_motion_primitive; i++) { // m_primitive_id.size() / m_num_motion_primitive = the number of ROBOTs.
+					for (int i = 0; i < m_num_robot; i++) { // m_primitive_id.size() / m_num_motion_primitive = the number of ROBOTs.
 						ROS_INFO("ROBOT id = %d :", i+1);
 						ROS_INFO("     number of targets observed = %d", (int)m_ROBOT_assign_targets[i].size());
 						for (vector<int>::iterator it = m_ROBOT_assign_targets[i].begin(); it != m_ROBOT_assign_targets[i].end(); ++it) {
@@ -412,7 +453,7 @@ bool MaxMinLPCentralNode::initialize(max_min_lp_simulation::MessageRequest::Requ
 						if (m_max_neighbor_hop[i] == 0) {
 							continue;
 						}
-						for (int j = 1; j < m_num_layer; j++) {
+						for (int j = 1; j <= m_num_layer; j++) {
 							if (m_max_neighbor_hop[i] >= j) {
 								ROS_INFO("     layer = %d :", j);
 								for (vector<int>::iterator it = m_ROBOT_neighbor[i][j-1].begin(); it != m_ROBOT_neighbor[i][j-1].end(); ++it) {
@@ -435,7 +476,7 @@ bool MaxMinLPCentralNode::initialize(max_min_lp_simulation::MessageRequest::Requ
 				res.state_answer = "start";
 				m_send_robot_id += 1;
 
-				for (int i = 0; i < m_primitive_id.size() / m_num_motion_primitive; i++) {
+				for (int i = 0; i < m_num_robot; i++) {
 					if (i == req.robot_id - 1) {
 						vector<max_min_lp_msgs::general_node> temp_gen_r_node;
 						vector<max_min_lp_msgs::general_node> temp_gen_p_r_node;
@@ -446,10 +487,10 @@ bool MaxMinLPCentralNode::initialize(max_min_lp_simulation::MessageRequest::Requ
 						int count_new_targets_at_each_hop = 0;
 
 						// Information of the corresponding ROBOT.
-						for (int j = i * m_num_constraints; j < (i + 1) * m_num_constraints; j++) {
+						for (int j = m_prev_accumulate_robot[i]; j < m_prev_accumulate_robot[i] + m_ROBOT_num_robot[i]; j++) {
 							temp_gen_r_node.push_back(m_gen_r_node[j]);
 						}
-						for (int j = i * m_num_motion_primitive; j < (i + 1) * m_num_motion_primitive; j++) {
+						for (int j = m_prev_accumulate_motion_primitive[i]; j < m_prev_accumulate_motion_primitive[i] + m_ROBOT_num_motion_primitive[i]; j++) {
 							temp_gen_p_r_node.push_back(m_gen_p_r_node[j]);
 							temp_gen_p_t_node.push_back(m_gen_p_t_node[j]);
 						}
@@ -469,11 +510,11 @@ bool MaxMinLPCentralNode::initialize(max_min_lp_simulation::MessageRequest::Requ
 								count_new_targets_at_each_hop = 0;
 
 								for (int k = 0; k < m_ROBOT_neighbor[i][j].size(); k++) {
-									for (int l = (m_ROBOT_neighbor[i][j][k]-1) * m_num_constraints; l < m_ROBOT_neighbor[i][j][k] * m_num_constraints; l++) {
+									for (int l = m_prev_accumulate_robot[m_ROBOT_neighbor[i][j][k]-1]; l < m_prev_accumulate_robot[m_ROBOT_neighbor[i][j][k]-1] + m_ROBOT_num_robot[m_ROBOT_neighbor[i][j][k]-1]; l++) {
 										temp_gen_r_node.push_back(m_gen_r_node[l]);
 									}
 
-									for (int l = (m_ROBOT_neighbor[i][j][k]-1) * m_num_motion_primitive; l < m_ROBOT_neighbor[i][j][k] * m_num_motion_primitive; l++) {
+									for (int l = m_prev_accumulate_motion_primitive[m_ROBOT_neighbor[i][j][k]-1]; l < m_prev_accumulate_motion_primitive[m_ROBOT_neighbor[i][j][k]-1] + m_ROBOT_num_motion_primitive[m_ROBOT_neighbor[i][j][k]-1]; l++) {
 										temp_gen_p_r_node.push_back(m_gen_p_r_node[l]);
 										temp_gen_p_t_node.push_back(m_gen_p_t_node[l]);
 									}
@@ -504,12 +545,32 @@ bool MaxMinLPCentralNode::initialize(max_min_lp_simulation::MessageRequest::Requ
 						res.gen_p_t_node = temp_gen_p_t_node;
 						res.gen_t_node = temp_gen_t_node;
 
+						for (vector<int>::iterator it = m_ROBOT_num_robot.begin(); it != m_ROBOT_num_robot.end(); ++it) {
+							res.ROBOT_num_robot.push_back(*it);
+						}
+						for (vector<int>::iterator it = m_prev_accumulate_robot.begin(); it != m_prev_accumulate_robot.end(); ++it) {
+							res.prev_accumulate_robot.push_back(*it);
+						}
+						res.num_survived_robot = m_num_survived_robot;
+
+						for (vector<int>::iterator it = m_ROBOT_num_motion_primitive.begin(); it != m_ROBOT_num_motion_primitive.end(); ++it) {
+							res.ROBOT_num_motion_primitive.push_back(*it);
+						}
+						for (vector<int>::iterator it = m_prev_accumulate_motion_primitive.begin(); it != m_prev_accumulate_motion_primitive.end(); ++it) {
+							res.prev_accumulate_motion_primitive.push_back(*it);
+						}
+						res.num_survived_motion_primitive = m_num_survived_motion_primitive;
+
+						for (vector<float>::iterator it = m_constraint_value.begin(); it != m_constraint_value.end(); ++it) {
+							res.constraint_value.push_back(*it);
+						}
+
 						if (m_verbal_flag) {
 							ROS_INFO("\n\nROBOT %d's local general graph information.", i + 1);
 							ROS_INFO("    maximum number of hops = %d", m_max_neighbor_hop[i]);
 							if (m_max_neighbor_hop[i] > 0) {
 								for (int j = 0; j < m_max_neighbor_hop[i]; j++) { // Maximum number of hops that the corresponding ROBOT can reach.
-									ROS_INFO("      number of neighbors at hop %d = %d", j + 1, (int)m_ROBOT_neighbor[i][j].size());
+									ROS_INFO("      number of neighbors at hop %d = ROBOT %d", j + 1, (int)m_ROBOT_neighbor[i][j].size());
 								}
 							}
 							ROS_INFO("    robot nodes");
@@ -645,7 +706,7 @@ vector<max_min_lp_msgs::general_node> MaxMinLPCentralNode::buildGeneralNode(stri
 			gen_return_node.push_back(temp_node);
 
 			if (m_verbal_flag) {
-				ROS_INFO("        type = %s, id = %d, loc_deg = %d", "red", m_primitive_id[i], (int)m_primitives_to_targets[i].size());
+				ROS_INFO("        type = %s, id = %d, loc_deg = %d", "blue", m_primitive_id[i], (int)m_primitives_to_targets[i].size());
 				for (vector<int>::iterator it = m_primitives_to_targets[i].begin(); it != m_primitives_to_targets[i].end(); ++it) {
 					ROS_INFO("            loc_id = %d", *it);
 				}
@@ -676,7 +737,7 @@ vector<max_min_lp_msgs::general_node> MaxMinLPCentralNode::buildGeneralNode(stri
 			gen_return_node.push_back(temp_node);
 
 			if (m_verbal_flag) {
-				ROS_INFO("        type = %s, id = %d, loc_deg = %d", "red", m_target_id[i], (int)m_targets_to_primitives[i].size());
+				ROS_INFO("        type = %s, id = %d, loc_deg = %d", "target", m_target_id[i], (int)m_targets_to_primitives[i].size());
 				for (vector<int>::iterator it = m_targets_to_primitives[i].begin(); it != m_targets_to_primitives[i].end(); ++it) {
 					ROS_INFO("            loc_id = %d", *it);
 				}
