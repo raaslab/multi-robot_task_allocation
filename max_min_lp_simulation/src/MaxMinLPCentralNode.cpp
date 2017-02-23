@@ -148,18 +148,18 @@ bool MaxMinLPCentralNode::initialize(max_min_lp_simulation::MessageRequest::Requ
 					ROS_INFO("\nRobot information");
 				}
 
-				int count_num_total_robot = 0;
 				for (int i = 0; i < m_num_robot; i++) { // m_num_robot = number of ROBOTs
 					// 3 cases (1) |V_i|>2, 2) |V_i|=2, and 3) |V_i|=1)
+					int count_num_each_robots = 0;
 					m_prev_accumulate_robot.push_back(m_num_survived_robot);
 
 					if (m_ROBOT_num_motion_primitive[i] > 2) {
 						for (int j = 0; j < m_ROBOT_num_motion_primitive[i]-1; j++) {
 							for (int k = j+1; k < m_ROBOT_num_motion_primitive[i]; k++) {
-								m_robot_id.push_back(count_num_total_robot + 1);
+								m_robot_id.push_back(m_num_survived_robot + 1);
 
 								if (m_verbal_flag) {
-									ROS_INFO("robot id = %d", count_num_total_robot + 1);
+									ROS_INFO("robot id = %d", m_num_survived_robot + 1);
 								}
 
 								vector<int> temp_robots_to_primitives;
@@ -167,17 +167,18 @@ bool MaxMinLPCentralNode::initialize(max_min_lp_simulation::MessageRequest::Requ
 								temp_robots_to_primitives.push_back(m_primitive_id[m_prev_accumulate_motion_primitive[i] + k]);
 								m_robots_to_primitives.push_back(temp_robots_to_primitives);
 
-								count_num_total_robot += 1;
+								m_num_survived_robot += 1;
+								count_num_each_robots += 1;
 							}
 						}
 
-						m_ROBOT_num_robot.push_back(count_num_total_robot);
+						m_ROBOT_num_robot.push_back(count_num_each_robots);
 					}
 					else if (m_ROBOT_num_motion_primitive[i] == 2) {
-						m_robot_id.push_back(count_num_total_robot + 1);
+						m_robot_id.push_back(m_num_survived_robot + 1);
 
 						if (m_verbal_flag) {
-							ROS_INFO("robot id = %d", count_num_total_robot + 1);
+							ROS_INFO("robot id = %d", m_num_survived_robot + 1);
 						}
 
 						vector<int> temp_robots_to_primitives;
@@ -185,28 +186,28 @@ bool MaxMinLPCentralNode::initialize(max_min_lp_simulation::MessageRequest::Requ
 						temp_robots_to_primitives.push_back(m_primitive_id[m_prev_accumulate_motion_primitive[i]] + 1);
 						m_robots_to_primitives.push_back(temp_robots_to_primitives);
 
-						count_num_total_robot += 1;
+						m_num_survived_robot += 1;
+						count_num_each_robots += 1;
 
-						m_ROBOT_num_robot.push_back(count_num_total_robot);
+						m_ROBOT_num_robot.push_back(count_num_each_robots);
 					}
 					else if(m_ROBOT_num_motion_primitive[i] == 1) {
-						m_robot_id.push_back(count_num_total_robot + 1);
+						m_robot_id.push_back(m_num_survived_robot + 1);
 
 						if (m_verbal_flag) {
-							ROS_INFO("robot id = %d", count_num_total_robot + 1);
+							ROS_INFO("robot id = %d", m_num_survived_robot + 1);
 						}
 
 						vector<int> temp_robots_to_primitives;
 						temp_robots_to_primitives.push_back(m_primitive_id[m_prev_accumulate_motion_primitive[i]]);
 						m_robots_to_primitives.push_back(temp_robots_to_primitives);
 
-						count_num_total_robot += 1;
+						m_num_survived_robot += 1;
+						count_num_each_robots += 1;
 
-						m_ROBOT_num_robot.push_back(count_num_total_robot);
+						m_ROBOT_num_robot.push_back(count_num_each_robots);
 					}
 				}
-
-				m_num_survived_robot = count_num_total_robot;
 
 				// Primitives to robots
 				for (int i = 0; i < m_primitive_id.size(); i++) {
@@ -348,7 +349,7 @@ bool MaxMinLPCentralNode::initialize(max_min_lp_simulation::MessageRequest::Requ
 							int temp_neighbor_ROBOT_id = 0;
 							for (int j = 0; j < m_num_robot; j++) {
 								if (*it > m_prev_accumulate_motion_primitive[j] && *it <= m_prev_accumulate_motion_primitive[j] + m_ROBOT_num_motion_primitive[j]) {
-									temp_neighbor_ROBOT_id = j + 1;ROS_INFO("temp_neighbor_ROBOT_id = %d", j+1);
+									temp_neighbor_ROBOT_id = j + 1;
 								}
 							}
 							if (temp_neighbor_ROBOT_id == 0) {
@@ -567,10 +568,13 @@ bool MaxMinLPCentralNode::initialize(max_min_lp_simulation::MessageRequest::Requ
 
 						if (m_verbal_flag) {
 							ROS_INFO("\n\nROBOT %d's local general graph information.", i + 1);
-							ROS_INFO("    maximum number of hops = %d", m_max_neighbor_hop[i]);
+							ROS_INFO("     maximum number of hops = %d", m_max_neighbor_hop[i]);
 							if (m_max_neighbor_hop[i] > 0) {
 								for (int j = 0; j < m_max_neighbor_hop[i]; j++) { // Maximum number of hops that the corresponding ROBOT can reach.
-									ROS_INFO("      number of neighbors at hop %d = ROBOT %d", j + 1, (int)m_ROBOT_neighbor[i][j].size());
+									ROS_INFO("          number of neighbors at hop %d = %d", j + 1, (int)m_ROBOT_neighbor[i][j].size());
+									for (vector<int>::iterator it = m_ROBOT_neighbor[i][j].begin(); it != m_ROBOT_neighbor[i][j].end(); ++it) {
+										ROS_INFO("               neighbor ROBOT = ROBOT %d", *it);
+									}
 								}
 							}
 							ROS_INFO("    robot nodes");

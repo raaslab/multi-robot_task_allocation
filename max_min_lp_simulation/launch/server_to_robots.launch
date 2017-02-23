@@ -14,7 +14,7 @@
     <param name="num_layer" type="int" value="$(arg num_layer)"/>
     <param name="fov" type="int" value="5"/>
     <param name="objective_option" type="str" value="quality_of_tracking"/> <!--Two options: 1) "quality_of_tracking", and 2) "number_of_targets"-->
-    <param name="verbal_flag" type="bool" value="true"/>
+    <param name="verbal_flag" type="bool" value="false"/>
   </node>
 
   <group ns="robot_1">

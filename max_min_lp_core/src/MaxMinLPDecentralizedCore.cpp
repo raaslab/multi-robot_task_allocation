@@ -45,23 +45,29 @@ void MaxMinLPDecentralizedCore::convertDecentralizedLayeredMaxMinLP() {
 				temp_lay_node.connected_id = it->loc_neighbor[j];
 				temp_lay_node.state = it->type;
 				temp_lay_node.f_r = 0;
-				temp_neighbor.erase (temp_neighbor.begin()+j);
-				temp_lay_node.loc_deg = (int)temp_neighbor.size();
 
-				for (vector<int>::iterator itt = temp_neighbor.begin(); itt != temp_neighbor.end(); ++itt) {
-					temp_lay_node.loc_neighbor_id.push_back(*itt);
+				if (it->loc_deg == 1) {
+					temp_lay_node.loc_deg = 1;
+					temp_lay_node.loc_neighbor_id.push_back(it->loc_neighbor[j]);
 					temp_lay_node.loc_layer.push_back(i);
 					temp_lay_node.loc_connected_id.push_back(it->id);
 					temp_lay_node.loc_state.push_back("blue");
+					temp_lay_node.edge_weight.push_back((it->loc_edge_weight[j])/2);
+				}
+				else {
+					temp_neighbor.erase (temp_neighbor.begin()+j);
+					temp_lay_node.loc_deg = (int)temp_neighbor.size();
 
-					for (int l = 0; l < it->loc_deg; l++) {
-						if (it->loc_neighbor[l] != *itt) {
-							continue;
-						}
-						if (it->loc_deg == 1) {
-							temp_lay_node.edge_weight.push_back((it->loc_edge_weight[l])/2);
-						}
-						else {
+					for (vector<int>::iterator itt = temp_neighbor.begin(); itt != temp_neighbor.end(); ++itt) {
+						temp_lay_node.loc_neighbor_id.push_back(*itt);
+						temp_lay_node.loc_layer.push_back(i);
+						temp_lay_node.loc_connected_id.push_back(it->id);
+						temp_lay_node.loc_state.push_back("blue");
+
+						for (int l = 0; l < it->loc_deg; l++) {
+							if (it->loc_neighbor[l] != *itt) {
+								continue;
+							}
 							temp_lay_node.edge_weight.push_back(it->loc_edge_weight[l]);
 						}
 					}
@@ -114,7 +120,7 @@ void MaxMinLPDecentralizedCore::convertDecentralizedLayeredMaxMinLP() {
 				temp_lay_node.loc_connected_id.push_back(it->id);
 				temp_lay_node.loc_state.push_back("robot");
 
-				if (m_gen_r_node[it->loc_neighbor[j]].loc_deg == 1) {
+				if (m_gen_r_node[it->loc_neighbor[j]-1].loc_deg == 1) {
 					temp_lay_node.edge_weight.push_back((it->loc_edge_weight[j])/2);
 				}
 				else {
@@ -177,7 +183,7 @@ void MaxMinLPDecentralizedCore::convertDecentralizedLayeredMaxMinLP() {
 				temp_lay_node.loc_connected_id.push_back(it->id);
 				temp_lay_node.loc_state.push_back("target");
 
-				if (m_gen_t_node[it->loc_neighbor[j]].loc_deg == 1) {
+				if (m_gen_t_node[it->loc_neighbor[j]-1].loc_deg == 1) {
 					temp_lay_node.edge_weight.push_back((it->loc_edge_weight[j])/2);
 				}
 				else {
@@ -226,23 +232,29 @@ void MaxMinLPDecentralizedCore::convertDecentralizedLayeredMaxMinLP() {
 				temp_lay_node.connected_id = it->loc_neighbor[j];
 				temp_lay_node.state = it->type;
 				temp_lay_node.g_t = 0;
-				temp_neighbor.erase (temp_neighbor.begin()+j);
-				temp_lay_node.loc_deg = (int)temp_neighbor.size();
 
-				for (vector<int>::iterator itt = temp_neighbor.begin(); itt != temp_neighbor.end(); ++itt) {
-					temp_lay_node.loc_neighbor_id.push_back(*itt);
+				if (it->loc_deg == 1) {
+					temp_lay_node.loc_deg = 1;
+					temp_lay_node.loc_neighbor_id.push_back(it->loc_neighbor[j]);
 					temp_lay_node.loc_layer.push_back(i);
 					temp_lay_node.loc_connected_id.push_back(it->id);
 					temp_lay_node.loc_state.push_back("red");
+					temp_lay_node.edge_weight.push_back((it->loc_edge_weight[j])/2);
+				}
+				else {
+					temp_neighbor.erase (temp_neighbor.begin()+j);
+					temp_lay_node.loc_deg = (int)temp_neighbor.size();
 
-					for (int l = 0; l < it->loc_edge_weight.size(); l++) {
-						if (it->loc_neighbor[l] != *itt) {
-							continue;
-						}
-						if (it->loc_deg == 1) {
-							temp_lay_node.edge_weight.push_back(it->loc_edge_weight[l]/2);
-						}
-						else {
+					for (vector<int>::iterator itt = temp_neighbor.begin(); itt != temp_neighbor.end(); ++itt) {
+						temp_lay_node.loc_neighbor_id.push_back(*itt);
+						temp_lay_node.loc_layer.push_back(i);
+						temp_lay_node.loc_connected_id.push_back(it->id);
+						temp_lay_node.loc_state.push_back("red");
+
+						for (int l = 0; l < it->loc_edge_weight.size(); l++) {
+							if (it->loc_neighbor[l] != *itt) {
+								continue;
+							}
 							temp_lay_node.edge_weight.push_back(it->loc_edge_weight[l]);
 						}
 					}
@@ -1026,7 +1038,6 @@ void MaxMinLPDecentralizedCore::getRedTreeStruct(TreeStruct * _red_tree, string 
 
 bool MaxMinLPDecentralizedCore::computeRecursive(int _count_red_layer_zero, float _minimum_g_t) {
 	bool check_z_negative = false; // True means that either z_r or z_b is negative
-if (m_verbal_flag) {cout<<"_minimum_g_t = "<<_minimum_g_t<<endl;}if (m_verbal_flag) {cout<<"m_red_tree[_count_red_layer_zero].tree_depth = "<<m_red_tree[_count_red_layer_zero].tree_depth<<endl;}
 	for (int i = m_red_tree[_count_red_layer_zero].tree_depth; i >= 0; i--) {
 		for (vector<string>::iterator it = m_red_tree[_count_red_layer_zero].blue_node_id[i].begin(); 
 			it != m_red_tree[_count_red_layer_zero].blue_node_id[i].end(); ++it) {

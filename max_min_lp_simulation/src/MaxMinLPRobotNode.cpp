@@ -91,7 +91,7 @@ void MaxMinLPRobotNode::applyMotionPrimitives(const std_msgs::String::ConstPtr& 
 
 		// Step 3
 		//   Phase 1 and 2
-		// lpc.applyLocalAlgorithmPhase1and2();
+		lpc.applyLocalAlgorithmPhase1and2();
 
 		// Publisher for layered nodes
 		max_min_lp_msgs::layered_node_array temp_layered_msg;
