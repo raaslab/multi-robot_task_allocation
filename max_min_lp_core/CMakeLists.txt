@@ -20,6 +20,7 @@ include_directories(
 add_library(${PROJECT_NAME}
   src/MaxMinLPCore.cpp
   src/MaxMinLPDecentralizedCore.cpp
+  src/MaxMinLPSequentialCore.cpp
 )
 
 target_link_libraries(${PROJECT_NAME}

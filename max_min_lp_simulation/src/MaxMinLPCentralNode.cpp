@@ -12,7 +12,7 @@
 
 MaxMinLPCentralNode::MaxMinLPCentralNode() :
 m_num_robot(1), m_num_target(1), m_num_motion_primitive(10), m_num_layer(2), m_objective_option(string("quality_of_tracking")),
- m_fov(10), m_verbal_flag(false), m_private_nh("~")
+ m_fov(10), m_verbal_flag(false), m_epsilon(0.1), m_private_nh("~")
 {
 	m_private_nh.getParam("num_robot", m_num_robot);
 	m_private_nh.getParam("num_target", m_num_target);
@@ -21,6 +21,7 @@ m_num_robot(1), m_num_target(1), m_num_motion_primitive(10), m_num_layer(2), m_o
 	m_private_nh.getParam("fov", m_fov);
 	m_private_nh.getParam("objective_option", m_objective_option);
 	m_private_nh.getParam("verbal_flag", m_verbal_flag);
+	m_private_nh.getParam("epsilon", m_epsilon);
 
 	// // Services
 	m_service = m_nh.advertiseService("/robot_request", &MaxMinLPCentralNode::initialize, this);
@@ -33,7 +34,7 @@ m_num_robot(1), m_num_target(1), m_num_motion_primitive(10), m_num_layer(2), m_o
 	m_num_survived_robot = 0;
 	m_num_survived_motion_primitive = 0;
 
-	// // Subscribers
+	// Subscribers
 	geometry_msgs::Pose dummy_target_pos;
 	for (int i = 0; i < m_num_target; i++) {
 		m_temp_target_name.push_back("target_"+boost::lexical_cast<string>(i+1));
@@ -44,6 +45,10 @@ m_num_robot(1), m_num_target(1), m_num_motion_primitive(10), m_num_layer(2), m_o
 	// m_target_3_sub = m_nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1000, boost::bind(&MaxMinLPCentralNode::updatePose, this, _1, 2));
 
 	m_comm_graph_by_robots_sub = m_nh.subscribe<std_msgs::String>("/robot_comm_graph", 1000, &MaxMinLPCentralNode::applySequentialLocalAlgorithm, this);
+
+	// Publishers
+	m_general_node_pub = m_nh.advertise<max_min_lp_msgs::general_node_array>("/central/max_min_lp_msgs/general_node_array", 1);
+	m_layered_node_pub = m_nh.advertise<max_min_lp_msgs::layered_node_array>("/central/max_min_lp_msgs/layered_node_array", 1);
 }
 
 bool MaxMinLPCentralNode::initialize(max_min_lp_simulation::MessageRequest::Request &req, max_min_lp_simulation::MessageRequest::Response &res) {
@@ -759,12 +764,62 @@ vector<max_min_lp_msgs::general_node> MaxMinLPCentralNode::buildGeneralNode(stri
 void MaxMinLPCentralNode::applySequentialLocalAlgorithm(const std_msgs::String::ConstPtr& msg) {
 	if (strcmp( msg->data.c_str(), "comm graph is complete") == 0 && m_check_apply_sequential_send) {
 		m_check_apply_sequential_send = false;
-		ROS_INFO("applySequentialLocalAlgorithm() called");
 
 		// Local algorithm is applied from here.
-		// max_min_lp_core::MaxMinLPSequentialCore lpc(m_robot_id, m_gen_r_node, m_gen_p_r_node, m_gen_p_t_node, m_gen_t_node,
-		// 	m_num_layer, m_verbal_flag, m_epsilon, m_max_neighbor_hop, m_num_neighbors_at_each_hop, m_ROBOT_num_robot, m_prev_accumulate_robot,
-		// 	m_num_survived_robot, m_ROBOT_num_motion_primitive, m_prev_accumulate_motion_primitive, m_num_survived_motion_primitive, m_constraint_value);
+		max_min_lp_core::MaxMinLPSequentialCore lps(m_gen_r_node, m_gen_p_r_node, m_gen_p_t_node, m_gen_t_node,
+			m_num_layer, m_verbal_flag, m_epsilon, m_ROBOT_num_robot, m_prev_accumulate_robot, m_num_survived_robot,
+			m_ROBOT_num_motion_primitive, m_prev_accumulate_motion_primitive, m_num_survived_motion_primitive, m_constraint_value);
+
+		// Step 2
+		lps.convertSequentialLayeredMaxMinLP();
+
+		// Step 3 and 4
+		lps.applyLocalAlgorithm();
+
+		//// Publishers
+		// Publisher for general nodes
+		max_min_lp_msgs::general_node_array temp_msg;
+		// Robot nodes
+		for (int i = 0; i < m_gen_r_node.size(); i++) {
+			temp_msg.gen_nodes.push_back(m_gen_r_node[i]);
+		}
+		// Motion primitive to robot nodes
+		for (int i = 0; i < m_gen_p_r_node.size(); i++) {
+			temp_msg.gen_nodes.push_back(m_gen_p_r_node[i]);
+		}
+		// Motion primitive to target nodes
+		for (int i = 0; i < m_gen_p_t_node.size(); i++) {
+			temp_msg.gen_nodes.push_back(m_gen_p_t_node[i]);
+		}
+		// Target nodes
+		for (int i = 0; i < m_gen_t_node.size(); i++) {
+			temp_msg.gen_nodes.push_back(m_gen_t_node[i]);
+		}
+
+		m_general_node_pub.publish(temp_msg);
+
+		// Publisher for layered nodes
+		max_min_lp_msgs::layered_node_array temp_layered_msg;
+
+		vector<max_min_lp_msgs::layered_node> lay_robot_node = lps.getRobotLayeredNode();
+		vector<max_min_lp_msgs::layered_node> lay_red_node = lps.getRedLayeredNode();
+		vector<max_min_lp_msgs::layered_node> lay_blue_node = lps.getBlueLayeredNode();
+		vector<max_min_lp_msgs::layered_node> lay_target_node = lps.getTargetLayeredNode();
+
+		for (int i = 0; i < lay_robot_node.size(); i++) {
+			temp_layered_msg.lay_nodes.push_back(lay_robot_node[i]);
+		}
+		for (int i = 0; i < lay_red_node.size(); i++) {
+			temp_layered_msg.lay_nodes.push_back(lay_red_node[i]);
+		}
+		for (int i = 0; i < lay_blue_node.size(); i++) {
+			temp_layered_msg.lay_nodes.push_back(lay_blue_node[i]);
+		}
+		for (int i = 0; i < lay_target_node.size(); i++) {
+			temp_layered_msg.lay_nodes.push_back(lay_target_node[i]);
+		}
+
+		m_layered_node_pub.publish(temp_layered_msg);
 	}
 }
 

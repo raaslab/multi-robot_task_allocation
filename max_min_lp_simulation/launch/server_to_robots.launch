@@ -1,7 +1,7 @@
 <launch>
   <arg name="num_target" default="2"/>
   <arg name="num_robot" default="2"/>
-  <arg name="num_layer" default="1"/>
+  <arg name="num_layer" default="5"/>
   <!--<arg name="verbal_flag" default="true"/>-->
   <arg name="epsilon" default="0.1"/>
   <arg name="num_motion_primitive" default="3"/>
@@ -14,7 +14,8 @@
     <param name="num_layer" type="int" value="$(arg num_layer)"/>
     <param name="fov" type="int" value="5"/>
     <param name="objective_option" type="str" value="quality_of_tracking"/> <!--Two options: 1) "quality_of_tracking", and 2) "number_of_targets"-->
-    <param name="verbal_flag" type="bool" value="false"/>
+    <param name="verbal_flag" type="bool" value="true"/>
+    <param name="epsilon" type="double" value="$(arg epsilon)"/>
   </node>
 
   <group ns="robot_1">
@@ -24,7 +25,7 @@
       <param name="robot_id" type="int" value="1"/>
       <param name="robot_name" type="str" value="robot_1"/>
       <param name="num_layer" type="int" value="$(arg num_layer)"/>
-      <param name="verbal_flag" type="bool" value="true"/>
+      <param name="verbal_flag" type="bool" value="false"/>
       <param name="epsilon" type="double" value="$(arg epsilon)"/>
       <param name="num_motion_primitive" type="int" value="$(arg num_motion_primitive)"/>
       <param name="time_interval" type="int" value="$(arg time_interval)"/>

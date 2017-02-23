@@ -12,7 +12,7 @@
 #include <string>
 #include <vector>
 #include <math.h>
-#include <max_min_lp_core/MaxMinLPCore.hpp>
+#include <max_min_lp_core/MaxMinLPSequentialCore.hpp>
 #include <max_min_lp_msgs/general_node.h>
 #include <max_min_lp_msgs/general_node_array.h>
 #include <max_min_lp_msgs/server_to_robots.h>
@@ -40,6 +40,10 @@ private:
 
   ros::Subscriber m_comm_graph_by_robots_sub;
 
+  // Publishers
+  ros::Publisher m_general_node_pub;
+  ros::Publisher m_layered_node_pub;
+
   // Services
   ros::ServiceServer m_service;
 
@@ -50,6 +54,7 @@ private:
   int m_num_motion_primitive;
   int m_num_layer;
   int m_fov;
+  double m_epsilon;
   string m_objective_option;
   bool m_verbal_flag;
 
