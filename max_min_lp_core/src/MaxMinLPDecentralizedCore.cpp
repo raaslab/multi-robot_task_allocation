@@ -1047,7 +1047,7 @@ bool MaxMinLPDecentralizedCore::computeRecursive(int _count_red_layer_zero, floa
 				getMapPointer("p"+boost::lexical_cast<string>(it->at(2)), i, "blue");
 
 			if (m_verbal_flag) {
-				cout<<"(p"<<boost::lexical_cast<string>(it->at(2))<<", "<<i<<", "<<"blue)"<<endl;
+				// cout<<"(p"<<boost::lexical_cast<string>(it->at(2))<<", "<<i<<", "<<"blue)"<<endl;
 			}
 
 			if (temp_blue_pointer->second.layer == i) {
@@ -1094,7 +1094,7 @@ bool MaxMinLPDecentralizedCore::computeRecursive(int _count_red_layer_zero, floa
 				getMapPointer("p"+boost::lexical_cast<string>(it->at(2)), i, "red");
 
 			if (m_verbal_flag) {
-				cout<<"(p"<<boost::lexical_cast<string>(it->at(2))<<", "<<i<<", "<<"red)"<<endl;
+				// cout<<"(p"<<boost::lexical_cast<string>(it->at(2))<<", "<<i<<", "<<"red)"<<endl;
 			}
 
 			if (temp_red_pointer->second.layer == i) {

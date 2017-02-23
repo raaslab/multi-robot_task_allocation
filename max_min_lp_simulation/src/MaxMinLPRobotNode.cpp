@@ -26,6 +26,7 @@ m_verbal_flag(false), m_epsilon(0.1), m_num_motion_primitive(10), m_time_interva
 	// Publishers
 	m_general_node_pub = m_nh.advertise<max_min_lp_msgs::general_node_array>("/max_min_lp_msgs/general_node_array", 1);
 	m_layered_node_pub = m_nh.advertise<max_min_lp_msgs::layered_node_array>("/max_min_lp_msgs/layered_node_array", 1);
+	m_response_to_server_pub = m_nh.advertise<std_msgs::String>("/robot_comm_graph", 1);
 
 	// Subscribers
 	request_sub = m_nh.subscribe("/robot_status", 1000, &MaxMinLPRobotNode::applyMotionPrimitives, this);
@@ -48,8 +49,6 @@ void MaxMinLPRobotNode::applyMotionPrimitives(const std_msgs::String::ConstPtr& 
 
 	if (result_success) {
 		// Publisher
-		m_response_to_server_pub = m_nh.advertise<std_msgs::String>("/robot_comm_graph", 1);
-
 		std_msgs::String msg;
 	    stringstream ss;
 	    ss<<"comm graph is complete";

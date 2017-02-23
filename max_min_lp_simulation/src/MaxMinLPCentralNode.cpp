@@ -28,6 +28,7 @@ m_num_robot(1), m_num_target(1), m_num_motion_primitive(10), m_num_layer(2), m_o
 	m_request_robot_id = 1;
 	m_send_robot_id = 1;
 	m_check_request_send = true;
+	m_check_apply_sequential_send = true;
 
 	m_num_survived_robot = 0;
 	m_num_survived_motion_primitive = 0;
@@ -756,8 +757,14 @@ vector<max_min_lp_msgs::general_node> MaxMinLPCentralNode::buildGeneralNode(stri
 }
 
 void MaxMinLPCentralNode::applySequentialLocalAlgorithm(const std_msgs::String::ConstPtr& msg) {
-	if (strcmp( msg->data.c_str(), "comm graph is complete") == 0) {
+	if (strcmp( msg->data.c_str(), "comm graph is complete") == 0 && m_check_apply_sequential_send) {
+		m_check_apply_sequential_send = false;
 		ROS_INFO("applySequentialLocalAlgorithm() called");
+
+		// Local algorithm is applied from here.
+		// max_min_lp_core::MaxMinLPSequentialCore lpc(m_robot_id, m_gen_r_node, m_gen_p_r_node, m_gen_p_t_node, m_gen_t_node,
+		// 	m_num_layer, m_verbal_flag, m_epsilon, m_max_neighbor_hop, m_num_neighbors_at_each_hop, m_ROBOT_num_robot, m_prev_accumulate_robot,
+		// 	m_num_survived_robot, m_ROBOT_num_motion_primitive, m_prev_accumulate_motion_primitive, m_num_survived_motion_primitive, m_constraint_value);
 	}
 }
 

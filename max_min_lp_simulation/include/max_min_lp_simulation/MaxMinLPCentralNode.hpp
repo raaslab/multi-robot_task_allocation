@@ -56,6 +56,7 @@ private:
   int m_send_robot_id;
   int m_request_robot_id;
   bool m_check_request_send;
+  bool m_check_apply_sequential_send;
 
   // For reduction
   vector<float> m_constraint_value; // This value is used for reduction i.e., 2/|V_i|.
