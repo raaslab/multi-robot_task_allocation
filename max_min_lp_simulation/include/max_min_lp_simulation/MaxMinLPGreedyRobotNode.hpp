@@ -1,5 +1,5 @@
-#ifndef MAXMINLPROBOTNODE_HPP_
-#define MAXMINLPROBOTNODE_HPP_
+#ifndef MaxMinLPGREEDYRobotNode_HPP_
+#define MaxMinLPGREEDYRobotNode_HPP_
 
 #include <ros/ros.h>
 #include <std_msgs/String.h>
@@ -25,7 +25,7 @@
 
 using namespace std;
 
-class MaxMinLPRobotNode {  
+class MaxMinLPGreedyRobotNode {  
 private:
   ros::NodeHandle m_nh;
   ros::NodeHandle m_private_nh;
@@ -63,13 +63,12 @@ private:
   // int m_motion_case_rotation[];
 
 public:
-  MaxMinLPRobotNode(); // Constructor
+  MaxMinLPGreedyRobotNode(); // Constructor
 
   void updateOdom(const gazebo_msgs::ModelStates::ConstPtr& msg); // Update odometry information by subscribing to /robot/odom
   bool initialize();
   vector<geometry_msgs::Pose> computeMotionPrimitives();
   void applyMotionPrimitives(const std_msgs::String::ConstPtr& msg);
-  void updateGraph();
 };
 
 #endif

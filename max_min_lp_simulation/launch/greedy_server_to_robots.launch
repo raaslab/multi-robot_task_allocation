@@ -4,10 +4,10 @@
   <arg name="num_layer" default="1"/>
   <!--<arg name="verbal_flag" default="true"/>-->
   <arg name="epsilon" default="0.1"/>
-  <arg name="num_motion_primitive" default="3"/>
+  <arg name="num_motion_primitive" default="5"/>
   <arg name="time_interval" default="7"/>
 
-  <node type="max_min_lp_simulation_central_node" pkg="max_min_lp_simulation" name="max_min_lp_simulation_central_node" output="screen">
+  <node type="max_min_lp_simulation_greedy_central_node" pkg="max_min_lp_simulation" name="max_min_lp_simulation_greedy_central_node" output="screen">
     <param name="num_target" type="int" value="$(arg num_target)"/>
     <param name="num_robot" type="int" value="$(arg num_robot)"/>
     <param name="num_motion_primitive" type="int" value="$(arg num_motion_primitive)"/>
@@ -19,7 +19,7 @@
   </node>
 
   <group ns="robot_1">
-    <node type="max_min_lp_simulation_robot_node" pkg="max_min_lp_simulation" name="max_min_lp_simulation_robot_node" output="screen">
+    <node type="max_min_lp_simulation_greedy_robot_node" pkg="max_min_lp_simulation" name="max_min_lp_simulation_greedy_robot_node" output="screen">
       <param name="num_target" type="int" value="$(arg num_target)"/>
       <param name="num_robot" type="int" value="$(arg num_robot)"/>
       <param name="robot_id" type="int" value="1"/>
@@ -32,7 +32,7 @@
     </node>
   </group>
   <group ns="robot_2">
-    <node type="max_min_lp_simulation_robot_node" pkg="max_min_lp_simulation" name="max_min_lp_simulation_robot_node" output="screen">
+    <node type="max_min_lp_simulation_greedy_robot_node" pkg="max_min_lp_simulation" name="max_min_lp_simulation_greedy_robot_node" output="screen">
       <param name="num_target" type="int" value="$(arg num_target)"/>
       <param name="num_robot" type="int" value="$(arg num_robot)"/>
       <param name="robot_id" type="int" value="2"/>

@@ -428,6 +428,9 @@ void MaxMinLPCore::applyLocalAlgorithm() {
 			temp_blue_node_id.clear();
 
 			for (vector<string>::iterator it = m_red_tree[i].blue_node_id[j].begin(); it != m_red_tree[i].blue_node_id[j].end(); ++it) {
+				if (m_verbal_flag) {
+					cout<<"m_red_tree["<<i<<"].blue_node_id["<<j<<"] "<<"size() = "<<m_red_tree[i].blue_node_id[j].size()<<endl;
+				}
 				temp_blue_node_id.push_back(*it);
 			}
 		}

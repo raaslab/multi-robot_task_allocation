@@ -410,6 +410,10 @@ void MaxMinLPSequentialCore::applyLocalAlgorithm() {
 						map<LayeredClass, max_min_lp_msgs::layered_node>::iterator temp_blue_pointer = 
 							getMapPointer("p"+boost::lexical_cast<string>(itt->at(2)), j-1, "blue");
 
+						if (m_verbal_flag) {
+							cout<<"(p"+boost::lexical_cast<string>(itt->at(2))+", "+boost::lexical_cast<string>(j-1)+", blue) ";
+						}
+
 						for (int k = 0; k < temp_blue_pointer->second.loc_deg; k++) {
 							if (temp_blue_pointer->second.loc_neighbor_id[k] == boost::lexical_cast<int>(it->at(2))) {
 
@@ -418,7 +422,7 @@ void MaxMinLPSequentialCore::applyLocalAlgorithm() {
 								map<LayeredClass, max_min_lp_msgs::layered_node>::iterator temp_target_pointer = 
 									getMapPointer("t"+boost::lexical_cast<string>(it->at(2)), j, "p"+boost::lexical_cast<string>(itt->at(2)));
 								temp_target_pointer_verbal.push_back("(t"+boost::lexical_cast<string>
-									(it->at(2))+", "+boost::lexical_cast<string>(j)+", p"+boost::lexical_cast<string>(itt->at(2))+")");
+									(it->at(2))+", "+boost::lexical_cast<string>(j)+", p"+boost::lexical_cast<string>(itt->at(2))+") ");
 
 								temp_g_t += temp_blue_pointer->second.edge_weight[k] * temp_blue_pointer->second.x_v;
 
@@ -427,6 +431,11 @@ void MaxMinLPSequentialCore::applyLocalAlgorithm() {
 										getMapPointer("p"+boost::lexical_cast<string>(temp_target_pointer->second.loc_neighbor_id[l]), j, "red");
 
 									temp_g_t += temp_target_pointer->second.edge_weight[l] * temp_red_pointer->second.x_v;
+
+									if (m_verbal_flag) {
+										cout<<"(p"+boost::lexical_cast<string>(temp_target_pointer->second.loc_neighbor_id[l])+", "+
+											boost::lexical_cast<string>(j)+", red) ";
+									}
 								}
 
 								temp_target_pointer->second.g_t = temp_g_t;

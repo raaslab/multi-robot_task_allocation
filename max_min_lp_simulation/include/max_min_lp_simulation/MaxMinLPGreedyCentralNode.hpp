@@ -1,5 +1,5 @@
-#ifndef MAXMINLPCENTRALNODE_HPP_
-#define MAXMINLPCENTRALNODE_HPP_
+#ifndef MAXMINLPGREEDYCENTRALNODE_HPP_
+#define MAXMINLPGREEDYCENTRALNODE_HPP_
 
 #include <ros/ros.h>
 #include <std_msgs/String.h>
@@ -20,7 +20,7 @@
 
 using namespace std;
 
-class MaxMinLPCentralNode {  
+class MaxMinLPGreedyCentralNode {  
 private:
   ros::NodeHandle m_nh;
   ros::NodeHandle m_private_nh;
@@ -54,6 +54,8 @@ private:
   vector<float> m_primitive_x_pos;
   vector<float> m_primitive_y_pos;
 
+  vector<int> m_primitive_selected;
+
   // Target info of each time-step
   vector<geometry_msgs::Pose> m_temp_target_pos;
   vector<string> m_temp_target_name;
@@ -67,7 +69,7 @@ private:
   vector<vector<int> > m_targets_to_primitives; // Targets to motion primitives
 
 public:
-  MaxMinLPCentralNode(); // Constructor
+  MaxMinLPGreedyCentralNode(); // Constructor
 
   bool initialize(max_min_lp_simulation::MessageRequest::Request &req, max_min_lp_simulation::MessageRequest::Response &res);
 

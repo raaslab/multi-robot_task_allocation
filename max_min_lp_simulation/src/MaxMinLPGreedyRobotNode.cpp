@@ -5,11 +5,11 @@
  * Copyright 2017. All Rights Reserved.
  */
 
-#include "max_min_lp_simulation/MaxMinLPRobotNodeGreedy.hpp"
+#include "max_min_lp_simulation/MaxMinLPGreedyRobotNode.hpp"
 
 #define PHI 3.141592
 
-MaxMinLPRobotNode::MaxMinLPRobotNode() :
+MaxMinLPGreedyRobotNode::MaxMinLPGreedyRobotNode() :
 m_num_robot(1), m_num_target(1), m_robot_id(1), m_robot_name(string("robot_1")), m_num_layer(2), 
 m_verbal_flag(false), m_epsilon(0.1), m_num_motion_primitive(10), m_time_interval(10), m_private_nh("~")
 {
@@ -23,13 +23,13 @@ m_verbal_flag(false), m_epsilon(0.1), m_num_motion_primitive(10), m_time_interva
 	m_private_nh.getParam("num_motion_primitive", m_num_motion_primitive);
 	m_private_nh.getParam("time_interval", m_time_interval);
 
-	request_sub = m_nh.subscribe("/robot_status", 1000, &MaxMinLPRobotNode::applyMotionPrimitives, this);
+	request_sub = m_nh.subscribe("/robot_status", 1000, &MaxMinLPGreedyRobotNode::applyMotionPrimitives, this);
 
 	// Subscribers
-	m_odom_sub = m_nh.subscribe("/gazebo/model_states", 1000, &MaxMinLPRobotNode::updateOdom, this);
+	m_odom_sub = m_nh.subscribe("/gazebo/model_states", 1000, &MaxMinLPGreedyRobotNode::updateOdom, this);
 }
 
-void MaxMinLPRobotNode::updateOdom(const gazebo_msgs::ModelStates::ConstPtr& msg) {
+void MaxMinLPGreedyRobotNode::updateOdom(const gazebo_msgs::ModelStates::ConstPtr& msg) {
 	int size_msg = m_num_robot + m_num_target + 1; // 1 is for 'ground plane' in gazebo.
 	int id;
 	for (int i = 0; i < size_msg; i++) {
@@ -40,7 +40,7 @@ void MaxMinLPRobotNode::updateOdom(const gazebo_msgs::ModelStates::ConstPtr& msg
 	m_pos = msg->pose[id];
 }
 
-void MaxMinLPRobotNode::applyMotionPrimitives(const std_msgs::String::ConstPtr& msg) {
+void MaxMinLPGreedyRobotNode::applyMotionPrimitives(const std_msgs::String::ConstPtr& msg) {
 	bool result_success = initialize();
 
 	if (result_success) {
@@ -48,7 +48,7 @@ void MaxMinLPRobotNode::applyMotionPrimitives(const std_msgs::String::ConstPtr& 
 	}
 }
 
-bool MaxMinLPRobotNode::initialize() {
+bool MaxMinLPGreedyRobotNode::initialize() {
 	m_client = m_nh.serviceClient<max_min_lp_simulation::MessageRequest>("/robot_request");
 	max_min_lp_simulation::MessageRequest srv;
 	srv.request.robot_id = m_robot_id;
@@ -65,7 +65,7 @@ bool MaxMinLPRobotNode::initialize() {
 			return true;
 		}
 		else {
-			return MaxMinLPRobotNode::initialize();
+			return MaxMinLPGreedyRobotNode::initialize();
 		}
 	}
 	else {
@@ -74,7 +74,7 @@ bool MaxMinLPRobotNode::initialize() {
 	}
 }
 
-vector<geometry_msgs::Pose> MaxMinLPRobotNode::computeMotionPrimitives() {
+vector<geometry_msgs::Pose> MaxMinLPGreedyRobotNode::computeMotionPrimitives() {
 	// At this moment, tweak this part. Just consider the case when the number of motion primitives considered is five. This should be changed later.
 	// Also, this motion primitives are based on the 1m/s for x-direction and 1rad/s for z-direction.
 	vector<geometry_msgs::Pose> temp_motion_primitive;
@@ -128,13 +128,10 @@ vector<geometry_msgs::Pose> MaxMinLPRobotNode::computeMotionPrimitives() {
 	return temp_motion_primitive;
 }
 
-void MaxMinLPRobotNode::updateGraph() {
-}
-
 int main(int argc, char **argv) {
-	ros::init(argc, argv, "max_min_lp_robot_node");
+	ros::init(argc, argv, "max_min_lp_robot_node_greedy");
 
-	MaxMinLPRobotNode rn;
+	MaxMinLPGreedyRobotNode rn;
 
 	ros::spin();
 	return 0;
