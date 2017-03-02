@@ -20,6 +20,7 @@
 #include <max_min_lp_msgs/target_node.h>
 #include <max_min_lp_msgs/primitive_node.h>
 #include <max_min_lp_simulation/MessageRequest.h>
+#include <max_min_lp_simulation/MotionPrimitiveRequest.h>
 
 using namespace std;
 
@@ -37,6 +38,23 @@ private:
   ros::Subscriber m_target_1_sub;
   ros::Subscriber m_target_2_sub;
   ros::Subscriber m_target_3_sub;
+  ros::Subscriber m_target_4_sub;
+  ros::Subscriber m_target_5_sub;
+  ros::Subscriber m_target_6_sub;
+  ros::Subscriber m_target_7_sub;
+  ros::Subscriber m_target_8_sub;
+  ros::Subscriber m_target_9_sub;
+  ros::Subscriber m_target_10_sub;
+  ros::Subscriber m_target_11_sub;
+  ros::Subscriber m_target_12_sub;
+  ros::Subscriber m_target_13_sub;
+  ros::Subscriber m_target_14_sub;
+  ros::Subscriber m_target_15_sub;
+  ros::Subscriber m_target_16_sub;
+  ros::Subscriber m_target_17_sub;
+  ros::Subscriber m_target_18_sub;
+  ros::Subscriber m_target_19_sub;
+  ros::Subscriber m_target_20_sub;
 
   ros::Subscriber m_comm_graph_by_robots_sub;
 
@@ -46,6 +64,7 @@ private:
 
   // Services
   ros::ServiceServer m_service;
+  ros::ServiceServer m_primitive_service;
 
   // Variables from the launch file
   max_min_lp_msgs::server_to_robots_array m_robot_info;
@@ -62,6 +81,8 @@ private:
   int m_request_robot_id;
   bool m_check_request_send;
   bool m_check_apply_sequential_send;
+
+  bool m_ready_to_send;
 
   // For reduction
   vector<float> m_constraint_value; // This value is used for reduction i.e., 2/|V_i|.
@@ -88,8 +109,10 @@ private:
 
   //// motion primitives ////
   vector<int> m_primitive_id;
+  vector<int> m_primitive_original_id;
   vector<float> m_primitive_x_pos;
   vector<float> m_primitive_y_pos;
+  vector<float> m_dist_primitive_to_target;
 
   //// target ////
   // Target info of each time-step obtained from gazebo
@@ -110,6 +133,9 @@ private:
   vector<vector<float> > m_primitives_to_targets_weight; // Weights of motion primitives to targets
   vector<vector<float> > m_targets_to_primitives_weight; // Weights of targets to motion primitives
 
+  // Send optimal motion primitives to each robot
+  vector<int> m_optimal_primitive_id;
+
   // General node values
   vector<max_min_lp_msgs::general_node> m_gen_r_node;
   vector<max_min_lp_msgs::general_node> m_gen_p_r_node;
@@ -120,6 +146,7 @@ public:
   MaxMinLPCentralNode(); // Constructor
 
   bool initialize(max_min_lp_simulation::MessageRequest::Request &req, max_min_lp_simulation::MessageRequest::Response &res);
+  bool sendMotionPrimitive(max_min_lp_simulation::MotionPrimitiveRequest::Request &req, max_min_lp_simulation::MotionPrimitiveRequest::Response &res);
   void updatePose(const gazebo_msgs::ModelStates::ConstPtr& msg, int target_id); // Update pose information
   vector<max_min_lp_msgs::general_node> buildGeneralNode(string option);
   void applySequentialLocalAlgorithm(const std_msgs::String::ConstPtr& msg);

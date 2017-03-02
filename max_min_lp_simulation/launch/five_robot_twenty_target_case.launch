@@ -1,0 +1,378 @@
+<launch>
+  <arg name="robot_base"      value="$(optenv TURTLEBOT_BASE kobuki)"/> <!-- create, roomba -->
+  <arg name="target_base"     value="$(optenv TARGET_BASE moving_target)"/>
+  <arg name="battery"   value="$(optenv TURTLEBOT_BATTERY /proc/acpi/battery/BAT0)"/>  <!-- /proc/acpi/battery/BAT0 --> 
+  <arg name="gui" default="false"/>
+  <arg name="stacks"    value="$(optenv TURTLEBOT_STACKS hexagons)"/>  <!-- circles, hexagons --> 
+  <arg name="3d_sensor" value="$(optenv TURTLEBOT_3D_SENSOR kinect)"/>  <!-- kinect, asus_xtion_pro --> 
+
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="use_sim_time" value="true"/>
+    <arg name="debug" value="false"/>
+    <arg name="gui" value="$(arg gui)" />
+  </include>
+  
+  <!-- Robots --> 
+  <group ns="robot_1"> <!-- in Y (i.e., yaw) 1.57 = +90 in degree -->
+    <include file="$(find max_min_lp_simulation)/launch/includes/$(arg robot_base).launch.xml">
+      <arg name="base" value="kobuki"/>
+      <arg name="stacks" value="$(arg stacks)"/>
+      <arg name="3d_sensor" value="$(arg 3d_sensor)"/>
+      <arg name="init_pose" value="-x 0 -y 0 -z 0 -R 0 -P 0 -Y -1.57"/>
+      <arg name="robot_name"  value="robot_1"/>
+    </include>
+  </group>
+  <group ns="robot_2">
+    <include file="$(find max_min_lp_simulation)/launch/includes/$(arg robot_base).launch.xml">
+      <arg name="base" value="kobuki"/>
+      <arg name="stacks" value="$(arg stacks)"/>
+      <arg name="3d_sensor" value="$(arg 3d_sensor)"/>
+      <arg name="init_pose" value="-x -1 -y 4 -z 0 -R 0 -P 0 -Y 3.14"/>
+      <arg name="robot_name"  value="robot_2"/>
+    </include>
+  </group>
+  <group ns="robot_3">
+    <include file="$(find max_min_lp_simulation)/launch/includes/$(arg robot_base).launch.xml">
+      <arg name="base" value="kobuki"/>
+      <arg name="stacks" value="$(arg stacks)"/>
+      <arg name="3d_sensor" value="$(arg 3d_sensor)"/>
+      <arg name="init_pose" value="-x 2 -y 5 -z 0 -R 0 -P 0 -Y 0"/>
+      <arg name="robot_name"  value="robot_3"/>
+    </include>
+  </group>
+  <group ns="robot_4">
+    <include file="$(find max_min_lp_simulation)/launch/includes/$(arg robot_base).launch.xml">
+      <arg name="base" value="kobuki"/>
+      <arg name="stacks" value="$(arg stacks)"/>
+      <arg name="3d_sensor" value="$(arg 3d_sensor)"/>
+      <arg name="init_pose" value="-x 4 -y -1 -z 0 -R 0 -P 0 -Y -1.57"/>
+      <arg name="robot_name"  value="robot_4"/>
+    </include>
+  </group>
+  <group ns="robot_5">
+    <include file="$(find max_min_lp_simulation)/launch/includes/$(arg robot_base).launch.xml">
+      <arg name="base" value="kobuki"/>
+      <arg name="stacks" value="$(arg stacks)"/>
+      <arg name="3d_sensor" value="$(arg 3d_sensor)"/>
+      <arg name="init_pose" value="-x -4 -y -2 -z 0 -R 0 -P 0 -Y 1.57"/>
+      <arg name="robot_name"  value="robot_5"/>
+    </include>
+  </group>
+  <!--<group ns="robot_6">
+    <include file="$(find max_min_lp_simulation)/launch/includes/$(arg robot_base).launch.xml">
+      <arg name="base" value="kobuki"/>
+      <arg name="stacks" value="$(arg stacks)"/>
+      <arg name="3d_sensor" value="$(arg 3d_sensor)"/>
+      <arg name="init_pose" value="-x 2 -y 5 -z 0 -R 0 -P 0 -Y 3.14"/>
+      <arg name="robot_name"  value="robot_6"/>
+    </include>
+  </group>
+  <group ns="robot_7">
+    <include file="$(find max_min_lp_simulation)/launch/includes/$(arg robot_base).launch.xml">
+      <arg name="base" value="kobuki"/>
+      <arg name="stacks" value="$(arg stacks)"/>
+      <arg name="3d_sensor" value="$(arg 3d_sensor)"/>
+      <arg name="init_pose" value="-x 2 -y 5 -z 0 -R 0 -P 0 -Y 3.14"/>
+      <arg name="robot_name"  value="robot_7"/>
+    </include>
+  </group>
+  <group ns="robot_8">
+    <include file="$(find max_min_lp_simulation)/launch/includes/$(arg robot_base).launch.xml">
+      <arg name="base" value="kobuki"/>
+      <arg name="stacks" value="$(arg stacks)"/>
+      <arg name="3d_sensor" value="$(arg 3d_sensor)"/>
+      <arg name="init_pose" value="-x 2 -y 5 -z 0 -R 0 -P 0 -Y 3.14"/>
+      <arg name="robot_name"  value="robot_8"/>
+    </include>
+  </group>
+  <group ns="robot_9">
+    <include file="$(find max_min_lp_simulation)/launch/includes/$(arg robot_base).launch.xml">
+      <arg name="base" value="kobuki"/>
+      <arg name="stacks" value="$(arg stacks)"/>
+      <arg name="3d_sensor" value="$(arg 3d_sensor)"/>
+      <arg name="init_pose" value="-x 2 -y 5 -z 0 -R 0 -P 0 -Y 3.14"/>
+      <arg name="robot_name"  value="robot_9"/>
+    </include>
+  </group>
+  <group ns="robot_10">
+    <include file="$(find max_min_lp_simulation)/launch/includes/$(arg robot_base).launch.xml">
+      <arg name="base" value="kobuki"/>
+      <arg name="stacks" value="$(arg stacks)"/>
+      <arg name="3d_sensor" value="$(arg 3d_sensor)"/>
+      <arg name="init_pose" value="-x 2 -y 5 -z 0 -R 0 -P 0 -Y 3.14"/>
+      <arg name="robot_name"  value="robot_10"/>
+    </include>
+  </group>-->
+
+  <!-- Targets --> 
+  <group ns="target_1">
+    <include file="$(find max_min_lp_simulation)/launch/includes/$(arg target_base).launch.xml">
+      <arg name="base" value="box"/>
+      <arg name="stacks" value="$(arg stacks)"/>
+      <arg name="3d_sensor" value="$(arg 3d_sensor)"/>
+      <arg name="init_pose" value="-x 0 -y 3 -z 0 -R 0 -P 0 -Y 0"/>
+      <arg name="robot_name"  value="target_1"/>
+    </include>
+  </group>
+  <group ns="target_2">
+    <include file="$(find max_min_lp_simulation)/launch/includes/$(arg target_base).launch.xml">
+      <arg name="base" value="box"/>
+      <arg name="stacks" value="$(arg stacks)"/>
+      <arg name="3d_sensor" value="$(arg 3d_sensor)"/>
+      <arg name="init_pose" value="-x -3 -y 6 -z 0 -R 0 -P 0 -Y 0"/>
+      <arg name="robot_name"  value="target_2"/>
+    </include>
+  </group>
+  <group ns="target_3">
+    <include file="$(find max_min_lp_simulation)/launch/includes/$(arg target_base).launch.xml">
+      <arg name="base" value="box"/>
+      <arg name="stacks" value="$(arg stacks)"/>
+      <arg name="3d_sensor" value="$(arg 3d_sensor)"/>
+      <arg name="init_pose" value="-x 4 -y 8 -z 0 -R 0 -P 0 -Y 0"/>
+      <arg name="robot_name"  value="target_3"/>
+    </include>
+  </group>
+  <group ns="target_4">
+    <include file="$(find max_min_lp_simulation)/launch/includes/$(arg target_base).launch.xml">
+      <arg name="base" value="box"/>
+      <arg name="stacks" value="$(arg stacks)"/>
+      <arg name="3d_sensor" value="$(arg 3d_sensor)"/>
+      <arg name="init_pose" value="-x 5 -y 5 -z 0 -R 0 -P 0 -Y 0"/>
+      <arg name="robot_name"  value="target_4"/>
+    </include>
+  </group>
+  <group ns="target_5">
+    <include file="$(find max_min_lp_simulation)/launch/includes/$(arg target_base).launch.xml">
+      <arg name="base" value="box"/>
+      <arg name="stacks" value="$(arg stacks)"/>
+      <arg name="3d_sensor" value="$(arg 3d_sensor)"/>
+      <arg name="init_pose" value="-x -4 -y 6 -z 0 -R 0 -P 0 -Y 0"/>
+      <arg name="robot_name"  value="target_5"/>
+    </include>
+  </group>
+  <group ns="target_6">
+    <include file="$(find max_min_lp_simulation)/launch/includes/$(arg target_base).launch.xml">
+      <arg name="base" value="box"/>
+      <arg name="stacks" value="$(arg stacks)"/>
+      <arg name="3d_sensor" value="$(arg 3d_sensor)"/>
+      <arg name="init_pose" value="-x 6 -y 4 -z 0 -R 0 -P 0 -Y 0"/>
+      <arg name="robot_name"  value="target_6"/>
+    </include>
+  </group>
+  <group ns="target_7">
+    <include file="$(find max_min_lp_simulation)/launch/includes/$(arg target_base).launch.xml">
+      <arg name="base" value="box"/>
+      <arg name="stacks" value="$(arg stacks)"/>
+      <arg name="3d_sensor" value="$(arg 3d_sensor)"/>
+      <arg name="init_pose" value="-x 6 -y 1 -z 0 -R 0 -P 0 -Y 0"/>
+      <arg name="robot_name"  value="target_7"/>
+    </include>
+  </group>
+  <group ns="target_8">
+    <include file="$(find max_min_lp_simulation)/launch/includes/$(arg target_base).launch.xml">
+      <arg name="base" value="box"/>
+      <arg name="stacks" value="$(arg stacks)"/>
+      <arg name="3d_sensor" value="$(arg 3d_sensor)"/>
+      <arg name="init_pose" value="-x 2 -y 3 -z 0 -R 0 -P 0 -Y 0"/>
+      <arg name="robot_name"  value="target_8"/>
+    </include>
+  </group>
+  <group ns="target_9">
+    <include file="$(find max_min_lp_simulation)/launch/includes/$(arg target_base).launch.xml">
+      <arg name="base" value="box"/>
+      <arg name="stacks" value="$(arg stacks)"/>
+      <arg name="3d_sensor" value="$(arg 3d_sensor)"/>
+      <arg name="init_pose" value="-x -5 -y 3 -z 0 -R 0 -P 0 -Y 0"/>
+      <arg name="robot_name"  value="target_9"/>
+    </include>
+  </group>
+  <group ns="target_10">
+    <include file="$(find max_min_lp_simulation)/launch/includes/$(arg target_base).launch.xml">
+      <arg name="base" value="box"/>
+      <arg name="stacks" value="$(arg stacks)"/>
+      <arg name="3d_sensor" value="$(arg 3d_sensor)"/>
+      <arg name="init_pose" value="-x -3 -y 0 -z 0 -R 0 -P 0 -Y 0"/>
+      <arg name="robot_name"  value="target_10"/>
+    </include>
+  </group>
+  <group ns="target_11">
+    <include file="$(find max_min_lp_simulation)/launch/includes/$(arg target_base).launch.xml">
+      <arg name="base" value="box"/>
+      <arg name="stacks" value="$(arg stacks)"/>
+      <arg name="3d_sensor" value="$(arg 3d_sensor)"/>
+      <arg name="init_pose" value="-x 0 -y 8 -z 0 -R 0 -P 0 -Y 0"/>
+      <arg name="robot_name"  value="target_11"/>
+    </include>
+  </group>
+  <group ns="target_12">
+    <include file="$(find max_min_lp_simulation)/launch/includes/$(arg target_base).launch.xml">
+      <arg name="base" value="box"/>
+      <arg name="stacks" value="$(arg stacks)"/>
+      <arg name="3d_sensor" value="$(arg 3d_sensor)"/>
+      <arg name="init_pose" value="-x -1 -y -4 -z 0 -R 0 -P 0 -Y 0"/>
+      <arg name="robot_name"  value="target_12"/>
+    </include>
+  </group>
+  <group ns="target_13">
+    <include file="$(find max_min_lp_simulation)/launch/includes/$(arg target_base).launch.xml">
+      <arg name="base" value="box"/>
+      <arg name="stacks" value="$(arg stacks)"/>
+      <arg name="3d_sensor" value="$(arg 3d_sensor)"/>
+      <arg name="init_pose" value="-x 2 -y -3 -z 0 -R 0 -P 0 -Y 0"/>
+      <arg name="robot_name"  value="target_13"/>
+    </include>
+  </group>
+  <group ns="target_14">
+    <include file="$(find max_min_lp_simulation)/launch/includes/$(arg target_base).launch.xml">
+      <arg name="base" value="box"/>
+      <arg name="stacks" value="$(arg stacks)"/>
+      <arg name="3d_sensor" value="$(arg 3d_sensor)"/>
+      <arg name="init_pose" value="-x 4 -y -3 -z 0 -R 0 -P 0 -Y 0"/>
+      <arg name="robot_name"  value="target_14"/>
+    </include>
+  </group>
+  <group ns="target_15">
+    <include file="$(find max_min_lp_simulation)/launch/includes/$(arg target_base).launch.xml">
+      <arg name="base" value="box"/>
+      <arg name="stacks" value="$(arg stacks)"/>
+      <arg name="3d_sensor" value="$(arg 3d_sensor)"/>
+      <arg name="init_pose" value="-x -6 -y 0 -z 0 -R 0 -P 0 -Y 0"/>
+      <arg name="robot_name"  value="target_15"/>
+    </include>
+  </group>
+  <group ns="target_16">
+    <include file="$(find max_min_lp_simulation)/launch/includes/$(arg target_base).launch.xml">
+      <arg name="base" value="box"/>
+      <arg name="stacks" value="$(arg stacks)"/>
+      <arg name="3d_sensor" value="$(arg 3d_sensor)"/>
+      <arg name="init_pose" value="-x -4 -y -4 -z 0 -R 0 -P 0 -Y 0"/>
+      <arg name="robot_name"  value="target_16"/>
+    </include>
+  </group>
+  <group ns="target_17">
+    <include file="$(find max_min_lp_simulation)/launch/includes/$(arg target_base).launch.xml">
+      <arg name="base" value="box"/>
+      <arg name="stacks" value="$(arg stacks)"/>
+      <arg name="3d_sensor" value="$(arg 3d_sensor)"/>
+      <arg name="init_pose" value="-x 8 -y -2 -z 0 -R 0 -P 0 -Y 0"/>
+      <arg name="robot_name"  value="target_17"/>
+    </include>
+  </group>
+  <group ns="target_18">
+    <include file="$(find max_min_lp_simulation)/launch/includes/$(arg target_base).launch.xml">
+      <arg name="base" value="box"/>
+      <arg name="stacks" value="$(arg stacks)"/>
+      <arg name="3d_sensor" value="$(arg 3d_sensor)"/>
+      <arg name="init_pose" value="-x 1 -y -2 -z 0 -R 0 -P 0 -Y 0"/>
+      <arg name="robot_name"  value="target_18"/>
+    </include>
+  </group>
+  <group ns="target_19">
+    <include file="$(find max_min_lp_simulation)/launch/includes/$(arg target_base).launch.xml">
+      <arg name="base" value="box"/>
+      <arg name="stacks" value="$(arg stacks)"/>
+      <arg name="3d_sensor" value="$(arg 3d_sensor)"/>
+      <arg name="init_pose" value="-x -8 -y -3 -z 0 -R 0 -P 0 -Y 0"/>
+      <arg name="robot_name"  value="target_19"/>
+    </include>
+  </group>
+  <group ns="target_20">
+    <include file="$(find max_min_lp_simulation)/launch/includes/$(arg target_base).launch.xml">
+      <arg name="base" value="box"/>
+      <arg name="stacks" value="$(arg stacks)"/>
+      <arg name="3d_sensor" value="$(arg 3d_sensor)"/>
+      <arg name="init_pose" value="-x -1 -y -3 -z 0 -R 0 -P 0 -Y 0"/>
+      <arg name="robot_name"  value="target_20"/>
+    </include>
+  </group>
+  <group ns="target_21">
+    <include file="$(find max_min_lp_simulation)/launch/includes/$(arg target_base).launch.xml">
+      <arg name="base" value="box"/>
+      <arg name="stacks" value="$(arg stacks)"/>
+      <arg name="3d_sensor" value="$(arg 3d_sensor)"/>
+      <arg name="init_pose" value="-x 5 -y 9 -z 0 -R 0 -P 0 -Y 0"/>
+      <arg name="robot_name"  value="target_21"/>
+    </include>
+  </group>
+  <group ns="target_22">
+    <include file="$(find max_min_lp_simulation)/launch/includes/$(arg target_base).launch.xml">
+      <arg name="base" value="box"/>
+      <arg name="stacks" value="$(arg stacks)"/>
+      <arg name="3d_sensor" value="$(arg 3d_sensor)"/>
+      <arg name="init_pose" value="-x -7 -y -1 -z 0 -R 0 -P 0 -Y 0"/>
+      <arg name="robot_name"  value="target_22"/>
+    </include>
+  </group>
+  <group ns="target_23">
+    <include file="$(find max_min_lp_simulation)/launch/includes/$(arg target_base).launch.xml">
+      <arg name="base" value="box"/>
+      <arg name="stacks" value="$(arg stacks)"/>
+      <arg name="3d_sensor" value="$(arg 3d_sensor)"/>
+      <arg name="init_pose" value="-x 7 -y 0 -z 0 -R 0 -P 0 -Y 0"/>
+      <arg name="robot_name"  value="target_23"/>
+    </include>
+  </group>
+  <group ns="target_24">
+    <include file="$(find max_min_lp_simulation)/launch/includes/$(arg target_base).launch.xml">
+      <arg name="base" value="box"/>
+      <arg name="stacks" value="$(arg stacks)"/>
+      <arg name="3d_sensor" value="$(arg 3d_sensor)"/>
+      <arg name="init_pose" value="-x -1 -y 2 -z 0 -R 0 -P 0 -Y 0"/>
+      <arg name="robot_name"  value="target_24"/>
+    </include>
+  </group>
+  <group ns="target_25">
+    <include file="$(find max_min_lp_simulation)/launch/includes/$(arg target_base).launch.xml">
+      <arg name="base" value="box"/>
+      <arg name="stacks" value="$(arg stacks)"/>
+      <arg name="3d_sensor" value="$(arg 3d_sensor)"/>
+      <arg name="init_pose" value="-x 4 -y 9 -z 0 -R 0 -P 0 -Y 0"/>
+      <arg name="robot_name"  value="target_25"/>
+    </include>
+  </group>
+  <group ns="target_26">
+    <include file="$(find max_min_lp_simulation)/launch/includes/$(arg target_base).launch.xml">
+      <arg name="base" value="box"/>
+      <arg name="stacks" value="$(arg stacks)"/>
+      <arg name="3d_sensor" value="$(arg 3d_sensor)"/>
+      <arg name="init_pose" value="-x 6 -y 0 -z 0 -R 0 -P 0 -Y 0"/>
+      <arg name="robot_name"  value="target_26"/>
+    </include>
+  </group>
+  <group ns="target_27">
+    <include file="$(find max_min_lp_simulation)/launch/includes/$(arg target_base).launch.xml">
+      <arg name="base" value="box"/>
+      <arg name="stacks" value="$(arg stacks)"/>
+      <arg name="3d_sensor" value="$(arg 3d_sensor)"/>
+      <arg name="init_pose" value="-x -5 -y 1 -z 0 -R 0 -P 0 -Y 0"/>
+      <arg name="robot_name"  value="target_27"/>
+    </include>
+  </group>
+  <group ns="target_28">
+    <include file="$(find max_min_lp_simulation)/launch/includes/$(arg target_base).launch.xml">
+      <arg name="base" value="box"/>
+      <arg name="stacks" value="$(arg stacks)"/>
+      <arg name="3d_sensor" value="$(arg 3d_sensor)"/>
+      <arg name="init_pose" value="-x -1 -y 6 -z 0 -R 0 -P 0 -Y 0"/>
+      <arg name="robot_name"  value="target_28"/>
+    </include>
+  </group>
+  <group ns="target_29">
+    <include file="$(find max_min_lp_simulation)/launch/includes/$(arg target_base).launch.xml">
+      <arg name="base" value="box"/>
+      <arg name="stacks" value="$(arg stacks)"/>
+      <arg name="3d_sensor" value="$(arg 3d_sensor)"/>
+      <arg name="init_pose" value="-x 1 -y -3 -z 0 -R 0 -P 0 -Y 0"/>
+      <arg name="robot_name"  value="target_29"/>
+    </include>
+  </group>
+  <group ns="target_30">
+    <include file="$(find max_min_lp_simulation)/launch/includes/$(arg target_base).launch.xml">
+      <arg name="base" value="box"/>
+      <arg name="stacks" value="$(arg stacks)"/>
+      <arg name="3d_sensor" value="$(arg 3d_sensor)"/>
+      <arg name="init_pose" value="-x 7 -y -2 -z 0 -R 0 -P 0 -Y 0"/>
+      <arg name="robot_name"  value="target_30"/>
+    </include>
+  </group>
+</launch>

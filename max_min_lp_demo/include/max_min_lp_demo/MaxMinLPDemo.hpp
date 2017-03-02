@@ -5,6 +5,7 @@
 #include <std_msgs/String.h>
 #include <iostream>
 #include <sstream>
+#include <fstream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
@@ -38,14 +39,23 @@ private:
   vector<max_min_lp_msgs::general_node> m_gen_t_node;
 
   // Variables from the launch file
+  string m_input_type;
+  string m_output_type;
   int m_num_layer; // Number of layers in the layered model
+  int m_num_text_files;
   bool m_verbal_flag;
   double m_epsilon;
+
+  ofstream m_outputFile;
+
+  int m_count;
+  bool check_start;
 
 public:
   MaxMinLPDemo(); // Constructor
 
   void maxMinCallback(const std_msgs::String::ConstPtr& msg);
+  void computeLocalAlgorithm(const std_msgs::String::ConstPtr& msg, int num_robot_node, int num_p_t_node, vector<int> p_t_id, vector<int> p_t_loc_deg, vector<vector<int> > p_t_neighbor);
 };
 
 #endif

@@ -1,10 +1,122 @@
 <launch>
-
+<group ns="1">
   <node type="max_min_lp_demo_node" pkg="max_min_lp_demo" name="max_min_lp_demo_node" output="screen">
+  	<param name="input_type" type="str" value="text" /> <!-- Two types are possible: 1) text and 2) yaml -->
     <param name="num_layer" type="int" value="2" />
+    <param name="num_text_files" type="int" value="20" />
     <param name="verbal_flag" type="bool" value="false" />
     <param name="epsilon" type="double" value="0.1" />
-    <rosparam file="$(find max_min_lp_demo)/yaml/test_example.yaml" command="load" />
+    <param name="input_path" type="str" value="/home/yoon/yoon/max_min_ws/src/max_min_lp_demo/data/t200/t200d8/20_200_8/" />
+    <param name="output_path" type="str" value="/home/yoon/yoon/max_min_ws/src/max_min_lp_demo/output/t200/t200d8/20_200_8/" />
+    <rosparam file="$(find max_min_lp_demo)/yaml/test_example_num_targets.yaml" command="load" />
   </node>
-
+</group>
+<group ns="2">
+  <node type="max_min_lp_demo_node" pkg="max_min_lp_demo" name="max_min_lp_demo_node" output="screen">
+  	<param name="input_type" type="str" value="text" /> <!-- Two types are possible: 1) text and 2) yaml -->
+    <param name="num_layer" type="int" value="2" />
+    <param name="num_text_files" type="int" value="20" />
+    <param name="verbal_flag" type="bool" value="false" />
+    <param name="epsilon" type="double" value="0.1" />
+    <param name="input_path" type="str" value="/home/yoon/yoon/max_min_ws/src/max_min_lp_demo/data/t200/t200d8/40_200_8/" />
+    <param name="output_path" type="str" value="/home/yoon/yoon/max_min_ws/src/max_min_lp_demo/output/t200/t200d8/40_200_8/" />
+    <rosparam file="$(find max_min_lp_demo)/yaml/test_example_num_targets.yaml" command="load" />
+  </node>
+</group>
+<group ns="3">
+  <node type="max_min_lp_demo_node" pkg="max_min_lp_demo" name="max_min_lp_demo_node" output="screen">
+  	<param name="input_type" type="str" value="text" /> <!-- Two types are possible: 1) text and 2) yaml -->
+    <param name="num_layer" type="int" value="2" />
+    <param name="num_text_files" type="int" value="20" />
+    <param name="verbal_flag" type="bool" value="false" />
+    <param name="epsilon" type="double" value="0.1" />
+    <param name="input_path" type="str" value="/home/yoon/yoon/max_min_ws/src/max_min_lp_demo/data/t200/t200d8/60_200_8/" />
+    <param name="output_path" type="str" value="/home/yoon/yoon/max_min_ws/src/max_min_lp_demo/output/t200/t200d8/60_200_8/" />
+    <rosparam file="$(find max_min_lp_demo)/yaml/test_example_num_targets.yaml" command="load" />
+  </node>
+</group>
+<group ns="4">
+  <node type="max_min_lp_demo_node" pkg="max_min_lp_demo" name="max_min_lp_demo_node" output="screen">
+  	<param name="input_type" type="str" value="text" /> <!-- Two types are possible: 1) text and 2) yaml -->
+    <param name="num_layer" type="int" value="2" />
+    <param name="num_text_files" type="int" value="20" />
+    <param name="verbal_flag" type="bool" value="false" />
+    <param name="epsilon" type="double" value="0.1" />
+    <param name="input_path" type="str" value="/home/yoon/yoon/max_min_ws/src/max_min_lp_demo/data/t200/t200d8/80_200_8/" />
+    <param name="output_path" type="str" value="/home/yoon/yoon/max_min_ws/src/max_min_lp_demo/output/t200/t200d8/80_200_8/" />
+    <rosparam file="$(find max_min_lp_demo)/yaml/test_example_num_targets.yaml" command="load" />
+  </node>
+</group>
+<group ns="5">
+  <node type="max_min_lp_demo_node" pkg="max_min_lp_demo" name="max_min_lp_demo_node" output="screen">
+  	<param name="input_type" type="str" value="text" /> <!-- Two types are possible: 1) text and 2) yaml -->
+    <param name="num_layer" type="int" value="2" />
+    <param name="num_text_files" type="int" value="20" />
+    <param name="verbal_flag" type="bool" value="false" />
+    <param name="epsilon" type="double" value="0.1" />
+    <param name="input_path" type="str" value="/home/yoon/yoon/max_min_ws/src/max_min_lp_demo/data/t200/t200d8/100_200_8/" />
+    <param name="output_path" type="str" value="/home/yoon/yoon/max_min_ws/src/max_min_lp_demo/output/t200/t200d8/100_200_8/" />
+    <rosparam file="$(find max_min_lp_demo)/yaml/test_example_num_targets.yaml" command="load" />
+  </node>
+</group>
+<group ns="6">
+  <node type="max_min_lp_demo_node" pkg="max_min_lp_demo" name="max_min_lp_demo_node" output="screen">
+  	<param name="input_type" type="str" value="text" /> <!-- Two types are possible: 1) text and 2) yaml -->
+    <param name="num_layer" type="int" value="2" />
+    <param name="num_text_files" type="int" value="20" />
+    <param name="verbal_flag" type="bool" value="false" />
+    <param name="epsilon" type="double" value="0.1" />
+    <param name="input_path" type="str" value="/home/yoon/yoon/max_min_ws/src/max_min_lp_demo/data/t800/t800d2/10_800_2/" />
+    <param name="output_path" type="str" value="/home/yoon/yoon/max_min_ws/src/max_min_lp_demo/output/t800/t800d2/10_800_2/" />
+    <rosparam file="$(find max_min_lp_demo)/yaml/test_example_num_targets.yaml" command="load" />
+  </node>
+</group>
+<group ns="7">
+  <node type="max_min_lp_demo_node" pkg="max_min_lp_demo" name="max_min_lp_demo_node" output="screen">
+  	<param name="input_type" type="str" value="text" /> <!-- Two types are possible: 1) text and 2) yaml -->
+    <param name="num_layer" type="int" value="2" />
+    <param name="num_text_files" type="int" value="20" />
+    <param name="verbal_flag" type="bool" value="false" />
+    <param name="epsilon" type="double" value="0.1" />
+    <param name="input_path" type="str" value="/home/yoon/yoon/max_min_ws/src/max_min_lp_demo/data/t800/t800d2/50_800_2/" />
+    <param name="output_path" type="str" value="/home/yoon/yoon/max_min_ws/src/max_min_lp_demo/output/t800/t800d2/50_800_2/" />
+    <rosparam file="$(find max_min_lp_demo)/yaml/test_example_num_targets.yaml" command="load" />
+  </node>
+</group>
+<group ns="8">
+  <node type="max_min_lp_demo_node" pkg="max_min_lp_demo" name="max_min_lp_demo_node" output="screen">
+  	<param name="input_type" type="str" value="text" /> <!-- Two types are possible: 1) text and 2) yaml -->
+    <param name="num_layer" type="int" value="2" />
+    <param name="num_text_files" type="int" value="20" />
+    <param name="verbal_flag" type="bool" value="false" />
+    <param name="epsilon" type="double" value="0.1" />
+    <param name="input_path" type="str" value="/home/yoon/yoon/max_min_ws/src/max_min_lp_demo/data/t800/t800d2/100_800_2/" />
+    <param name="output_path" type="str" value="/home/yoon/yoon/max_min_ws/src/max_min_lp_demo/output/t800/t800d2/100_800_2/" />
+    <rosparam file="$(find max_min_lp_demo)/yaml/test_example_num_targets.yaml" command="load" />
+  </node>
+</group>
+<group ns="9">
+  <node type="max_min_lp_demo_node" pkg="max_min_lp_demo" name="max_min_lp_demo_node" output="screen">
+  	<param name="input_type" type="str" value="text" /> <!-- Two types are possible: 1) text and 2) yaml -->
+    <param name="num_layer" type="int" value="2" />
+    <param name="num_text_files" type="int" value="20" />
+    <param name="verbal_flag" type="bool" value="false" />
+    <param name="epsilon" type="double" value="0.1" />
+    <param name="input_path" type="str" value="/home/yoon/yoon/max_min_ws/src/max_min_lp_demo/data/t800/t800d2/200_800_2/" />
+    <param name="output_path" type="str" value="/home/yoon/yoon/max_min_ws/src/max_min_lp_demo/output/t800/t800d2/200_800_2/" />
+    <rosparam file="$(find max_min_lp_demo)/yaml/test_example_num_targets.yaml" command="load" />
+  </node>
+</group>
+<group ns="10">
+  <node type="max_min_lp_demo_node" pkg="max_min_lp_demo" name="max_min_lp_demo_node" output="screen">
+  	<param name="input_type" type="str" value="text" /> <!-- Two types are possible: 1) text and 2) yaml -->
+    <param name="num_layer" type="int" value="2" />
+    <param name="num_text_files" type="int" value="20" />
+    <param name="verbal_flag" type="bool" value="false" />
+    <param name="epsilon" type="double" value="0.1" />
+    <param name="input_path" type="str" value="/home/yoon/yoon/max_min_ws/src/max_min_lp_demo/data/t800/t800d2/500_800_2/" />
+    <param name="output_path" type="str" value="/home/yoon/yoon/max_min_ws/src/max_min_lp_demo/output/t800/t800d2/500_800_2/" />
+    <rosparam file="$(find max_min_lp_demo)/yaml/test_example_num_targets.yaml" command="load" />
+  </node>
+</group>
 </launch>

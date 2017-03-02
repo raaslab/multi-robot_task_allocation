@@ -178,7 +178,7 @@ bool MaxMinLPGreedyCentralNode::initialize(max_min_lp_simulation::MessageRequest
 						for (int j = 0; j < object_pos_for_collision.size(); j++) {
 							float dist_primitive_to_object = sqrt(pow((object_pos_for_collision[j].position.x - m_primitive_x_pos[i]), 2) 
 															+ pow((object_pos_for_collision[j].position.y - m_primitive_y_pos[i]), 2));
-							if (dist_primitive_to_object < 0.5) { // If any objects are within 2 m of the corresponding motion primitive, this motion primitive is discarded.  (Hard-coded.)
+							if (dist_primitive_to_object < 0.2) { // If any objects are within 2 m of the corresponding motion primitive, this motion primitive is discarded.  (Hard-coded.)
 								num_targets_detected_by_primitive[i] = 0;
 							}
 						}

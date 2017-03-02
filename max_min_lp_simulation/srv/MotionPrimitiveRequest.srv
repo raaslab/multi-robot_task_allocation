@@ -1,0 +1,7 @@
+int8 request_ROBOT_id
+int8 count_motion_primitive
+
+---
+
+int8 return_count_motion_primitive
+int8 selected_primitive_id

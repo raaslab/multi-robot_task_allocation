@@ -4,7 +4,7 @@
  * Important note: in this code a robot is used to take into consideration of the reduction of the step 1 of local algorithm. 
  * Thus, a robot here does not indicate a real robot but an element of a real robot. Instead, ROBOT is used for a real robot.
  * \Author Yoonchang Sung <yooncs8@vt.edu>
- * \02/18/2017
+ * \02/27/2017
  * Copyright 2017. All Rights Reserved.
  */
 
@@ -23,13 +23,16 @@ m_num_robot(1), m_num_target(1), m_num_motion_primitive(10), m_num_layer(2), m_o
 	m_private_nh.getParam("verbal_flag", m_verbal_flag);
 	m_private_nh.getParam("epsilon", m_epsilon);
 
-	// // Services
+	// Services
 	m_service = m_nh.advertiseService("/robot_request", &MaxMinLPCentralNode::initialize, this);
+	m_primitive_service = m_nh.advertiseService("/motion_primitive_request", &MaxMinLPCentralNode::sendMotionPrimitive, this);
 
 	m_request_robot_id = 1;
 	m_send_robot_id = 1;
 	m_check_request_send = true;
 	m_check_apply_sequential_send = true;
+
+	m_ready_to_send = false;
 
 	m_num_survived_robot = 0;
 	m_num_survived_motion_primitive = 0;
@@ -43,6 +46,23 @@ m_num_robot(1), m_num_target(1), m_num_motion_primitive(10), m_num_layer(2), m_o
 	m_target_1_sub = m_nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1000, boost::bind(&MaxMinLPCentralNode::updatePose, this, _1, 0));
 	m_target_2_sub = m_nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1000, boost::bind(&MaxMinLPCentralNode::updatePose, this, _1, 1));
 	// m_target_3_sub = m_nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1000, boost::bind(&MaxMinLPCentralNode::updatePose, this, _1, 2));
+	// m_target_4_sub = m_nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1000, boost::bind(&MaxMinLPCentralNode::updatePose, this, _1, 3));
+	// m_target_5_sub = m_nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1000, boost::bind(&MaxMinLPCentralNode::updatePose, this, _1, 4));
+	// m_target_6_sub = m_nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1000, boost::bind(&MaxMinLPCentralNode::updatePose, this, _1, 5));
+	// m_target_7_sub = m_nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1000, boost::bind(&MaxMinLPCentralNode::updatePose, this, _1, 6));
+	// m_target_8_sub = m_nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1000, boost::bind(&MaxMinLPCentralNode::updatePose, this, _1, 7));
+	// m_target_9_sub = m_nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1000, boost::bind(&MaxMinLPCentralNode::updatePose, this, _1, 8));
+	// m_target_10_sub = m_nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1000, boost::bind(&MaxMinLPCentralNode::updatePose, this, _1, 9));
+	// m_target_11_sub = m_nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1000, boost::bind(&MaxMinLPCentralNode::updatePose, this, _1, 10));
+	// m_target_12_sub = m_nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1000, boost::bind(&MaxMinLPCentralNode::updatePose, this, _1, 11));
+	// m_target_13_sub = m_nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1000, boost::bind(&MaxMinLPCentralNode::updatePose, this, _1, 12));
+	// m_target_14_sub = m_nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1000, boost::bind(&MaxMinLPCentralNode::updatePose, this, _1, 13));
+	// m_target_15_sub = m_nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1000, boost::bind(&MaxMinLPCentralNode::updatePose, this, _1, 14));
+	// m_target_16_sub = m_nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1000, boost::bind(&MaxMinLPCentralNode::updatePose, this, _1, 15));
+	// m_target_17_sub = m_nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1000, boost::bind(&MaxMinLPCentralNode::updatePose, this, _1, 16));
+	// m_target_18_sub = m_nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1000, boost::bind(&MaxMinLPCentralNode::updatePose, this, _1, 17));
+	// m_target_19_sub = m_nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1000, boost::bind(&MaxMinLPCentralNode::updatePose, this, _1, 18));
+	// m_target_20_sub = m_nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1000, boost::bind(&MaxMinLPCentralNode::updatePose, this, _1, 19));
 
 	m_comm_graph_by_robots_sub = m_nh.subscribe<std_msgs::String>("/robot_comm_graph", 1000, &MaxMinLPCentralNode::applySequentialLocalAlgorithm, this);
 
@@ -102,19 +122,13 @@ bool MaxMinLPCentralNode::initialize(max_min_lp_simulation::MessageRequest::Requ
 					for (int i = 0; i < it->primitive_id.size(); i++) {
 						vector<int> temp_primitives_to_targets;
 						vector<float> temp_primitives_to_targets_weight;
+						bool check_primitive_exist = false;
+						float sum_dist_primitive_to_target = 0;
 
 						for (int j = 0; j < m_target_id.size(); j++) {
 							float dist_primitive_to_target = sqrt(pow((m_target_x_pos[j] - it->p_x_pos[i]), 2) + pow((m_target_y_pos[j] - it->p_y_pos[i]), 2));
 
-							if (dist_primitive_to_target <= m_fov) { // Observed by the corresponding motion primitive.
-								m_primitive_id.push_back(m_num_survived_motion_primitive + 1);
-								m_primitive_x_pos.push_back(it->p_x_pos[i]);
-								m_primitive_y_pos.push_back(it->p_y_pos[i]);
-
-								if (m_verbal_flag) {
-									ROS_INFO("primitive id = %d, (x, y) = (%f, %f)", m_num_survived_motion_primitive + 1, it->p_x_pos[i], it->p_y_pos[i]);
-								}
-
+							if (dist_primitive_to_target <= m_fov && dist_primitive_to_target > 0.2) { // Observed by the corresponding motion primitive. Second condition is for the collision avoidance.
 								temp_primitives_to_targets.push_back(m_target_id[j]);
 
 								// Objective option must be taken into account here.
@@ -125,10 +139,8 @@ bool MaxMinLPCentralNode::initialize(max_min_lp_simulation::MessageRequest::Requ
 									temp_primitives_to_targets_weight.push_back(1);
 								}
 
-								m_primitives_to_targets.push_back(temp_primitives_to_targets);
-								m_primitives_to_targets_weight.push_back(temp_primitives_to_targets_weight);
-								m_num_survived_motion_primitive += 1;
-								count_num_each_primitives += 1;
+								sum_dist_primitive_to_target += dist_primitive_to_target;
+								check_primitive_exist = true;
 							}
 							// else { // Not observed by the corresponding motion primitive.
 							// 	if (strcmp(m_objective_option.c_str(), "quality_of_tracking") == 0) {
@@ -138,6 +150,23 @@ bool MaxMinLPCentralNode::initialize(max_min_lp_simulation::MessageRequest::Requ
 							// 		temp_primitives_to_targets_weight.push_back(0);
 							// 	}
 							// }
+						}
+
+						if (check_primitive_exist) {
+							m_primitive_id.push_back(m_num_survived_motion_primitive + 1);
+							m_primitive_original_id.push_back(it->primitive_id[i]); // Original id obtained from each robot node.
+							m_primitive_x_pos.push_back(it->p_x_pos[i]);
+							m_primitive_y_pos.push_back(it->p_y_pos[i]);
+							m_dist_primitive_to_target.push_back(sum_dist_primitive_to_target);
+
+							if (m_verbal_flag) {
+								ROS_INFO("primitive id = %d, (x, y) = (%f, %f)", m_num_survived_motion_primitive + 1, it->p_x_pos[i], it->p_y_pos[i]);
+							}
+
+							m_primitives_to_targets.push_back(temp_primitives_to_targets);
+							m_primitives_to_targets_weight.push_back(temp_primitives_to_targets_weight);
+							m_num_survived_motion_primitive += 1;
+							count_num_each_primitives += 1;
 						}
 					}
 
@@ -762,19 +791,8 @@ vector<max_min_lp_msgs::general_node> MaxMinLPCentralNode::buildGeneralNode(stri
 }
 
 void MaxMinLPCentralNode::applySequentialLocalAlgorithm(const std_msgs::String::ConstPtr& msg) {
-	if (strcmp( msg->data.c_str(), "comm graph is complete") == 0 && m_check_apply_sequential_send) {
+	if (strcmp(msg->data.c_str(), "comm graph is complete") == 0 && m_check_apply_sequential_send) {
 		m_check_apply_sequential_send = false;
-
-		// Local algorithm is applied from here.
-		max_min_lp_core::MaxMinLPSequentialCore lps(m_gen_r_node, m_gen_p_r_node, m_gen_p_t_node, m_gen_t_node,
-			m_num_layer, m_verbal_flag, m_epsilon, m_ROBOT_num_robot, m_prev_accumulate_robot, m_num_survived_robot,
-			m_ROBOT_num_motion_primitive, m_prev_accumulate_motion_primitive, m_num_survived_motion_primitive, m_constraint_value);
-
-		// Step 2
-		lps.convertSequentialLayeredMaxMinLP();
-
-		// Step 3 and 4
-		lps.applyLocalAlgorithm();
 
 		//// Publishers
 		// Publisher for general nodes
@@ -798,6 +816,18 @@ void MaxMinLPCentralNode::applySequentialLocalAlgorithm(const std_msgs::String::
 
 		m_general_node_pub.publish(temp_msg);
 
+		// Local algorithm is applied from here.
+		max_min_lp_core::MaxMinLPSequentialCore lps(m_gen_r_node, m_gen_p_r_node, m_gen_p_t_node, m_gen_t_node,
+			m_num_layer, m_verbal_flag, m_epsilon, m_ROBOT_num_robot, m_prev_accumulate_robot, m_num_survived_robot,
+			m_ROBOT_num_motion_primitive, m_prev_accumulate_motion_primitive, m_num_survived_motion_primitive, m_constraint_value);
+
+		// Step 2
+		lps.convertSequentialLayeredMaxMinLP();
+
+		// Step 3 and 4
+		lps.applyLocalAlgorithm();
+
+		//// Publishers
 		// Publisher for layered nodes
 		max_min_lp_msgs::layered_node_array temp_layered_msg;
 
@@ -820,6 +850,61 @@ void MaxMinLPCentralNode::applySequentialLocalAlgorithm(const std_msgs::String::
 		}
 
 		m_layered_node_pub.publish(temp_layered_msg);
+
+		// Find optimal motion primitives for each robot and send it to them.
+		vector<max_min_lp_msgs::general_node> temp_result = lps.getXValues();
+
+		for (int i = 0; i < m_num_robot; i++) { // m_num_robot = number of ROBOTs
+			vector<int> max_primitive_index;
+			float max_z_v_value = 0;
+			for (int j = 0; j < m_ROBOT_num_motion_primitive[i]; j++) {
+				if (temp_result[m_prev_accumulate_motion_primitive[i] + j].z_v >= max_z_v_value) {
+					max_z_v_value = temp_result[m_prev_accumulate_motion_primitive[i] + j].z_v;
+				}
+			}
+
+			// Check if there are more than one motion primitive that gives the same maximum z_v.
+			for (int j = 0; j < m_ROBOT_num_motion_primitive[i]; j++) {
+				if (temp_result[m_prev_accumulate_motion_primitive[i] + j].z_v == max_z_v_value) {
+					max_z_v_value = temp_result[m_prev_accumulate_motion_primitive[i] + j].z_v;
+					max_primitive_index.push_back(m_prev_accumulate_motion_primitive[i] + j);
+				}
+			}
+
+			if (max_primitive_index.size() > 1) { // Find one with the minimum distance to targets.
+				float min_dist_primitive_to_target = 10000;
+				int temp_optimal_primitive_id = 0;
+				for (vector<int>::iterator it = max_primitive_index.begin(); it != max_primitive_index.end(); ++it) {
+					if (m_dist_primitive_to_target[*it] < min_dist_primitive_to_target) {
+						min_dist_primitive_to_target = m_dist_primitive_to_target[*it];
+						temp_optimal_primitive_id = m_primitive_original_id[*it];
+					}
+				}
+
+				m_optimal_primitive_id.push_back(temp_optimal_primitive_id);
+			}
+			else { // When there was only one optimal motion primitive.
+				m_optimal_primitive_id.push_back(m_primitive_original_id[max_primitive_index[0]]);
+			}
+
+			if (m_verbal_flag) {
+				ROS_INFO("ROBOT %d : primitive id with maximum z_v = primitive %d", i+1, m_optimal_primitive_id[i]);
+			}
+		}
+
+		// m_ready_to_send = true;
+	}
+}
+
+bool MaxMinLPCentralNode::sendMotionPrimitive(max_min_lp_simulation::MotionPrimitiveRequest::Request &req, max_min_lp_simulation::MotionPrimitiveRequest::Response &res) {
+	if (m_ready_to_send) {
+		int count_time_interval = req.count_motion_primitive;
+		res.return_count_motion_primitive = count_time_interval + 1;
+		res.selected_primitive_id = m_optimal_primitive_id[req.request_ROBOT_id-1];
+		return true;
+	}
+	else {
+		return false;
 	}
 }
 

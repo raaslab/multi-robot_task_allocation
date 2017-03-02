@@ -87,34 +87,43 @@ vector<geometry_msgs::Pose> MaxMinLPGreedyRobotNode::computeMotionPrimitives() {
 	double roll, pitch, yaw;
 	m.getRPY(roll, pitch, yaw);
 
+	yaw = yaw * 180 / PHI;
+
 	double x_new, y_new;
 
 	for (int i = 0; i < m_num_motion_primitive; i++) {
 		geometry_msgs::Pose temp_motion_primitive_instance;
+		double temp_orientation = yaw + 34 * m_motion_case_rotation[i];
+		if (temp_orientation > 180) {
+			temp_orientation -= 360;
+		}
+		else if (temp_orientation < -180) {
+			temp_orientation += 360;
+		}
 		// This is hard-coded.
-		if ((yaw + 34 * m_motion_case_rotation[i]) >= 0 && (yaw + 34 * m_motion_case_rotation[i]) < 90) {
+		if (temp_orientation >= 0 && temp_orientation < 90) {
 			x_new = m_pos.position.x + 0.59 * (m_time_interval - abs(m_motion_case_rotation[i])) 
-					* cos((yaw + 34 * m_motion_case_rotation[i]) * PHI / 180);
+					* cos(temp_orientation * PHI / 180);
 			y_new = m_pos.position.y + 0.59 * (m_time_interval - abs(m_motion_case_rotation[i])) 
-					* sin((yaw + 34 * m_motion_case_rotation[i]) * PHI / 180);
+					* sin(temp_orientation * PHI / 180);
 		}
-		else if ((yaw + 34 * m_motion_case_rotation[i]) >= 90 && (yaw + 34 * m_motion_case_rotation[i]) < 180) {
+		else if (temp_orientation >= 90 && temp_orientation < 180) {
 			x_new = m_pos.position.x - 0.59 * (m_time_interval - abs(m_motion_case_rotation[i])) 
-					* cos((180 - (yaw + 34 * m_motion_case_rotation[i])) * PHI / 180);
+					* cos((180 - temp_orientation) * PHI / 180);
 			y_new = m_pos.position.y + 0.59 * (m_time_interval - abs(m_motion_case_rotation[i])) 
-					* sin((180 - (yaw + 34 * m_motion_case_rotation[i])) * PHI / 180);
+					* sin((180 - temp_orientation) * PHI / 180);
 		}
-		else if ((yaw + 34 * m_motion_case_rotation[i]) < 0 && (yaw + 34 * m_motion_case_rotation[i]) >= -90) {
+		else if (temp_orientation < 0 && temp_orientation >= -90) {
 			x_new = m_pos.position.x + 0.59 * (m_time_interval - abs(m_motion_case_rotation[i])) 
-					* cos((-1) * (yaw + 34 * m_motion_case_rotation[i]) * PHI / 180);
+					* cos((-1) * temp_orientation * PHI / 180);
 			y_new = m_pos.position.y - 0.59 * (m_time_interval - abs(m_motion_case_rotation[i])) 
-					* sin((-1) * (yaw + 34 * m_motion_case_rotation[i]) * PHI / 180);
+					* sin((-1) * temp_orientation * PHI / 180);
 		}
-		else if ((yaw + 34 * m_motion_case_rotation[i]) < -90 && (yaw + 34 * m_motion_case_rotation[i]) >= -180) {
+		else if (temp_orientation < -90 && temp_orientation >= -180) {
 			x_new = m_pos.position.x - 0.59 * (m_time_interval - abs(m_motion_case_rotation[i])) 
-					* cos((180 + (yaw + 34 * m_motion_case_rotation[i])) * PHI / 180);
+					* cos((180 + temp_orientation) * PHI / 180);
 			y_new = m_pos.position.y - 0.59 * (m_time_interval - abs(m_motion_case_rotation[i])) 
-					* sin((180 + (yaw + 34 * m_motion_case_rotation[i])) * PHI / 180);
+					* sin((180 + temp_orientation) * PHI / 180);
 		}
 
 		temp_motion_primitive_instance.position.x = x_new;

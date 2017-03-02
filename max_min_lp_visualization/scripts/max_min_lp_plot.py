@@ -301,6 +301,8 @@ def MaxMinLPVisualization():
     rospy.init_node('MaxMinLPVisualization', anonymous=True)
     rospy.Subscriber("/central/max_min_lp_msgs/general_node_array", general_node_array, general_callback)
     rospy.Subscriber("/central/max_min_lp_msgs/layered_node_array", layered_node_array, layered_callback)
+    #rospy.Subscriber("/max_min_lp_msgs/general_node_array", general_node_array, general_callback)
+    #rospy.Subscriber("/max_min_lp_msgs/layered_node_array", layered_node_array, layered_callback)
     rospy.spin()
 
 if __name__ == '__main__':

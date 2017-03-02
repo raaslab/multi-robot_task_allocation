@@ -113,6 +113,25 @@ public:
   void getRedTreeStruct(TreeStruct * _red_tree, string _current, int _layer, string _state);
   bool computeRecursive(int _count_red_layer_zero, float _minimum_g_t );
 
+  int getNodeID(const string & s) {
+    string return_str;
+    if (isInteger(boost::lexical_cast<string>(s.at(3)))) { // Greater than or equal to 10
+      return_str = boost::lexical_cast<string>(s.at(2))+boost::lexical_cast<string>(s.at(3));
+    }
+    else { // Less than 10
+      return_str = boost::lexical_cast<string>(s.at(2));
+    }
+    return boost::lexical_cast<int>(return_str);
+  }
+  inline bool isInteger(const string & s) {
+    if(s.empty() || ((!isdigit(s[0])) && (s[0] != '-') && (s[0] != '+'))) return false ;
+
+    char * p ;
+    strtol(s.c_str(), &p, 10) ;
+
+    return (*p == 0) ;
+  }
+
   vector<max_min_lp_msgs::layered_node> getRobotLayeredNode() {
     return m_lay_robot_node;
   }

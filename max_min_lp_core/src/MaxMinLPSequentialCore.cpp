@@ -408,21 +408,21 @@ void MaxMinLPSequentialCore::applyLocalAlgorithm() {
 					it != m_red_tree[i].target_node_id[j-1].end(); ++it) {
 					for (vector<string>::iterator itt = temp_blue_node_id.begin(); itt != temp_blue_node_id.end(); ++itt) {
 						map<LayeredClass, max_min_lp_msgs::layered_node>::iterator temp_blue_pointer = 
-							getMapPointer("p"+boost::lexical_cast<string>(itt->at(2)), j-1, "blue");
+							getMapPointer("p"+boost::lexical_cast<string>(getNodeID(*itt)), j-1, "blue");
 
 						if (m_verbal_flag) {
-							cout<<"(p"+boost::lexical_cast<string>(itt->at(2))+", "+boost::lexical_cast<string>(j-1)+", blue) ";
+							cout<<"(p"+boost::lexical_cast<string>(getNodeID(*itt))+", "+boost::lexical_cast<string>(j-1)+", blue) ";
 						}
 
 						for (int k = 0; k < temp_blue_pointer->second.loc_deg; k++) {
-							if (temp_blue_pointer->second.loc_neighbor_id[k] == boost::lexical_cast<int>(it->at(2))) {
+							if (temp_blue_pointer->second.loc_neighbor_id[k] == getNodeID(*it)) {
 
 								float temp_g_t = 0;
 
 								map<LayeredClass, max_min_lp_msgs::layered_node>::iterator temp_target_pointer = 
-									getMapPointer("t"+boost::lexical_cast<string>(it->at(2)), j, "p"+boost::lexical_cast<string>(itt->at(2)));
+									getMapPointer("t"+boost::lexical_cast<string>(getNodeID(*it)), j, "p"+boost::lexical_cast<string>(getNodeID(*itt)));
 								temp_target_pointer_verbal.push_back("(t"+boost::lexical_cast<string>
-									(it->at(2))+", "+boost::lexical_cast<string>(j)+", p"+boost::lexical_cast<string>(itt->at(2))+") ");
+									(getNodeID(*it))+", "+boost::lexical_cast<string>(j)+", p"+boost::lexical_cast<string>(getNodeID(*itt))+") ");
 
 								temp_g_t += temp_blue_pointer->second.edge_weight[k] * temp_blue_pointer->second.x_v;
 
@@ -440,8 +440,8 @@ void MaxMinLPSequentialCore::applyLocalAlgorithm() {
 
 								temp_target_pointer->second.g_t = temp_g_t;
 								if (m_verbal_flag) {
-									cout<<"(t"+boost::lexical_cast<string>(it->at(2))+", "+boost::lexical_cast<string>(j)+", p"+
-										boost::lexical_cast<string>(itt->at(2))+"): g_t = "+boost::lexical_cast<string>(temp_g_t)<<endl;
+									cout<<"(t"+boost::lexical_cast<string>(getNodeID(*it))+", "+boost::lexical_cast<string>(j)+", p"+
+										boost::lexical_cast<string>(getNodeID(*itt))+"): g_t = "+boost::lexical_cast<string>(temp_g_t)<<endl;
 								}
 
 								// Find the minimum of g_t(x)
@@ -510,6 +510,10 @@ void MaxMinLPSequentialCore::applyLocalAlgorithm() {
 		float init_minimum_g_t = minimum_g_t[i];
 		t_r.at(i) = minimum_g_t[i];
 
+		if (m_verbal_flag) {
+			cout<<"t_r (Initial minimum g_t) = "<<init_minimum_g_t<<endl;
+		}
+
 		while(1) {
 			count_recursive += 1;
 			if (computeRecursive(i, minimum_g_t[i]) == true) {
@@ -524,6 +528,10 @@ void MaxMinLPSequentialCore::applyLocalAlgorithm() {
 			}
 
 			minimum_g_t.at(i) -= m_epsilon;
+
+			if (m_verbal_flag) {
+				cout<<"At "<<count_recursive<<" iteration : minimum g_t = "<<minimum_g_t.at(i)<<endl;
+			}
 
 			if (minimum_g_t[i] < init_minimum_g_t / 2) {
 				cout<<"ERROR: t_r becomes below 1/2*t_r at "<<i+1<<"'s red tree"<<endl;
@@ -598,7 +606,7 @@ void MaxMinLPSequentialCore::applyLocalAlgorithm() {
 				if (itt->layer == i) {
 					for (int j = 0; j < itt->loc_deg; j++) {
 						for (vector<string>::iterator ittt = temp_blue_node_id.begin(); ittt != temp_blue_node_id.end(); ++ittt) {
-							if (itt->loc_neighbor_id[j] == boost::lexical_cast<int>(ittt->at(2))) {
+							if (itt->loc_neighbor_id[j] == getNodeID(*ittt)) {
 								string temp_robot_node_string = "(r"+boost::lexical_cast<string>(itt->id)+", "+
 									boost::lexical_cast<string>(itt->layer)+", p"+boost::lexical_cast<string>(itt->connected_id)+")";
 								temp_robot_node_id.push_back(temp_robot_node_string);
@@ -648,7 +656,7 @@ void MaxMinLPSequentialCore::applyLocalAlgorithm() {
 					if (itt->layer == i) {
 						for (int j = 0; j < itt->loc_deg; j++) {
 							for (vector<string>::iterator ittt = temp_red_node_id.begin(); ittt != temp_red_node_id.end(); ++ittt) {
-								if (itt->loc_neighbor_id[j] == boost::lexical_cast<int>(ittt->at(2))) {
+								if (itt->loc_neighbor_id[j] == getNodeID(*ittt)) {
 									string temp_target_node_string = "(t"+boost::lexical_cast<string>(itt->id)+", "+
 										boost::lexical_cast<string>(itt->layer)+", p"+boost::lexical_cast<string>(itt->connected_id)+")";
 									temp_target_node_id.push_back(temp_target_node_string);
@@ -671,7 +679,7 @@ void MaxMinLPSequentialCore::applyLocalAlgorithm() {
 			if (i == 0) {
 				vector<float> temp_min_t_r;
 				for (vector<string>::iterator itt = temp_red_node_id.begin(); itt != temp_red_node_id.end(); ++itt) {
-					temp_min_t_r.push_back(t_r[boost::lexical_cast<int>(itt->at(2)) - 1]);
+					temp_min_t_r.push_back(t_r[getNodeID(*itt) - 1]);
 
 					if (m_verbal_flag) {
 						map<LayeredClass, max_min_lp_msgs::layered_node>::iterator temp_blue_pointer = 
@@ -698,8 +706,10 @@ void MaxMinLPSequentialCore::applyLocalAlgorithm() {
 	}
 
 	// Compute recursively z(s) using equations (13)-(15) and each agent v outputs the value z_v(s)
-	cout<<endl;
-	cout<<"Obtain z_v's for all red and blue nodes"<<endl;
+	if (m_verbal_flag) {
+		cout<<endl;
+		cout<<"Obtain z_v's for all red and blue nodes"<<endl;
+	}
 	for (int i = m_num_layer; i >= 0; i--) {
 		// Blue nodes
 		if (i == m_num_layer) { // Blue nodes in the last layer
@@ -939,7 +949,7 @@ void MaxMinLPSequentialCore::getRedTreeStruct(TreeStruct * _red_tree, string _cu
 		// Target nodes (Only target starts from index 1)
 		for (vector<string>::iterator it = _red_tree->blue_node_id[i-1].begin(); it != _red_tree->blue_node_id[i-1].end(); ++it) {
 			map<LayeredClass, max_min_lp_msgs::layered_node>::iterator temp_blue_pointer = 
-				getMapPointer("p"+boost::lexical_cast<string>(it->at(2)), i-1, "blue");
+				getMapPointer("p"+boost::lexical_cast<string>(getNodeID(*it)), i-1, "blue");
 
 			// Target nodes
 			for (int j = 0; j < temp_blue_pointer->second.loc_deg; j++) {
@@ -1035,15 +1045,15 @@ void MaxMinLPSequentialCore::getRedTreeStruct(TreeStruct * _red_tree, string _cu
 
 bool MaxMinLPSequentialCore::computeRecursive(int _count_red_layer_zero, float _minimum_g_t) {
 	bool check_z_negative = false; // True means that either z_r or z_b is negative
-
+// cout<<"*** computeRecursive()"<<endl;
 	for (int i = m_red_tree[_count_red_layer_zero].tree_depth; i >= 0; i--) {
 		for (vector<string>::iterator it = m_red_tree[_count_red_layer_zero].blue_node_id[i].begin(); 
 			it != m_red_tree[_count_red_layer_zero].blue_node_id[i].end(); ++it) {
 
 			vector<float> temp_z_b;
 			map<LayeredClass, max_min_lp_msgs::layered_node>::iterator temp_blue_pointer = 
-				getMapPointer("p"+boost::lexical_cast<string>(it->at(2)), i, "blue");
-
+				getMapPointer("p"+boost::lexical_cast<string>(getNodeID(*it)), i, "blue");
+// cout<<"(p"<<boost::lexical_cast<string>(getNodeID(*it))<<", "<<i<<", blue)"<<endl;
 			if (temp_blue_pointer->second.layer == i) {
 				if (i == m_red_tree[_count_red_layer_zero].tree_depth) { // B[h]
 					temp_blue_pointer->second.z_b = 0;
@@ -1059,7 +1069,7 @@ bool MaxMinLPSequentialCore::computeRecursive(int _count_red_layer_zero, float _
 
 							map<LayeredClass, max_min_lp_msgs::layered_node>::iterator temp_target_pointer = 
 								getMapPointer("t"+boost::lexical_cast<string>(temp_blue_pointer->second.loc_neighbor_id[j]), 
-								i+1, "p"+boost::lexical_cast<string>(it->at(2)));
+								i+1, "p"+boost::lexical_cast<string>(getNodeID(*it)));
 
 							for (int k = 0; k < temp_target_pointer->second.loc_deg; k++) {
 								map<LayeredClass, max_min_lp_msgs::layered_node>::iterator temp_red_pointer = 
@@ -1074,6 +1084,7 @@ bool MaxMinLPSequentialCore::computeRecursive(int _count_red_layer_zero, float _
 						vector<float>::iterator temp_max_iterator = max_element(temp_z_b.begin(), temp_z_b.end());
 						int temp_max_index = distance(temp_z_b.begin(), temp_max_iterator);
 						temp_blue_pointer->second.z_b = max((float)0, temp_z_b[temp_max_index]);
+						// cout<<"z_b = "<<temp_blue_pointer->second.z_b<<endl;
 					}
 				}
 			}
@@ -1085,8 +1096,8 @@ bool MaxMinLPSequentialCore::computeRecursive(int _count_red_layer_zero, float _
 
 			vector<float> temp_z_r;
 			map<LayeredClass, max_min_lp_msgs::layered_node>::iterator temp_red_pointer = 
-				getMapPointer("p"+boost::lexical_cast<string>(it->at(2)), i, "red");
-
+				getMapPointer("p"+boost::lexical_cast<string>(getNodeID(*it)), i, "red");
+// cout<<"(p"<<boost::lexical_cast<string>(getNodeID(*it))<<", "<<i<<", red)"<<endl;
 			if (temp_red_pointer->second.layer == i) {
 				// Check which ROBOT id has this red node so that we can decide m_constraint_value.
 				int temp_ROBOT_id;
@@ -1099,7 +1110,7 @@ bool MaxMinLPSequentialCore::computeRecursive(int _count_red_layer_zero, float _
 				for (int j = 0; j < temp_red_pointer->second.loc_deg; j++) {
 					map<LayeredClass, max_min_lp_msgs::layered_node>::iterator temp_robot_pointer = 
 						getMapPointer("r"+boost::lexical_cast<string>(temp_red_pointer->second.loc_neighbor_id[j]), 
-						i, "p"+boost::lexical_cast<string>(it->at(2)));
+						i, "p"+boost::lexical_cast<string>(getNodeID(*it)));
 
 					for (int k = 0; k < temp_robot_pointer->second.loc_deg; k++) {
 						map<LayeredClass, max_min_lp_msgs::layered_node>::iterator temp_blue_pointer = 
@@ -1114,8 +1125,9 @@ bool MaxMinLPSequentialCore::computeRecursive(int _count_red_layer_zero, float _
 				vector<float>::iterator temp_min_iterator = min_element(temp_z_r.begin(), temp_z_r.end());
 				int temp_min_index = distance(temp_z_r.begin(), temp_min_iterator);
 				temp_red_pointer->second.z_r = temp_z_r[temp_min_index];
+				// cout<<"z_r = "<<temp_red_pointer->second.z_r<<endl;
 
-				if (temp_red_pointer->second.z_r < 0) {
+				if (temp_red_pointer->second.z_r < -0.0001) {
 					check_z_negative = true;
 					break;
 				}

@@ -22,6 +22,7 @@
 #include <max_min_lp_msgs/server_to_robots_array.h>
 #include <max_min_lp_core/MaxMinLPDecentralizedCore.hpp>
 #include <max_min_lp_simulation/MessageRequest.h>
+#include <max_min_lp_simulation/MotionPrimitiveRequest.h>
 
 using namespace std;
 
@@ -36,12 +37,14 @@ private:
   ros::Publisher m_general_node_pub;
   ros::Publisher m_layered_node_pub;
   ros::Publisher m_response_to_server_pub;
+  ros::Publisher m_cmd_vel_robot_pub;
 
   // Subscriber
   ros::Subscriber m_odom_sub;
 
   // Clients
   ros::ServiceClient m_client;
+  ros::ServiceClient m_primitive_client;
 
   // Variables from the launch file
   int m_num_robot;
@@ -53,6 +56,11 @@ private:
   bool m_verbal_flag;
   double m_epsilon;
   string m_robot_name;
+
+  // Optimal motion primitive that is applied at the end of algorithm at each time
+  int m_count_time_interval;
+  int m_selected_primitive_id;
+  vector<int> m_motion_case_rotation;
 
   // Robot info
   geometry_msgs::Pose m_pos;
@@ -85,8 +93,9 @@ public:
 
   void updateOdom(const gazebo_msgs::ModelStates::ConstPtr& msg); // Update odometry information by subscribing to /robot/odom
   bool initialize();
-  vector<geometry_msgs::Pose> computeMotionPrimitives();
+  bool getMotionPrimitive();
   void applyMotionPrimitives(const std_msgs::String::ConstPtr& msg);
+  vector<geometry_msgs::Pose> computeMotionPrimitives();
 };
 
 #endif

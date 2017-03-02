@@ -414,17 +414,17 @@ void MaxMinLPDecentralizedCore::applyLocalAlgorithmPhase1and2() {
 					it != m_red_tree[i].target_node_id[j-1].end(); ++it) {
 					for (vector<string>::iterator itt = temp_blue_node_id.begin(); itt != temp_blue_node_id.end(); ++itt) {
 						map<LayeredClass, max_min_lp_msgs::layered_node>::iterator temp_blue_pointer = 
-							getMapPointer("p"+boost::lexical_cast<string>(itt->at(2)), j-1, "blue");
+							getMapPointer("p"+boost::lexical_cast<string>(getNodeID(*itt)), j-1, "blue");
 
 						for (int k = 0; k < temp_blue_pointer->second.loc_deg; k++) {
-							if (temp_blue_pointer->second.loc_neighbor_id[k] == boost::lexical_cast<int>(it->at(2))) {
+							if (temp_blue_pointer->second.loc_neighbor_id[k] == getNodeID(*it)) {
 
 								float temp_g_t = 0;
 
 								map<LayeredClass, max_min_lp_msgs::layered_node>::iterator temp_target_pointer = 
-									getMapPointer("t"+boost::lexical_cast<string>(it->at(2)), j, "p"+boost::lexical_cast<string>(itt->at(2)));
+									getMapPointer("t"+boost::lexical_cast<string>(getNodeID(*it)), j, "p"+boost::lexical_cast<string>(getNodeID(*itt)));
 								temp_target_pointer_verbal.push_back("(t"+boost::lexical_cast<string>
-									(it->at(2))+", "+boost::lexical_cast<string>(j)+", p"+boost::lexical_cast<string>(itt->at(2))+")");
+									(getNodeID(*it))+", "+boost::lexical_cast<string>(j)+", p"+boost::lexical_cast<string>(getNodeID(*itt))+")");
 
 								temp_g_t += temp_blue_pointer->second.edge_weight[k] * temp_blue_pointer->second.x_v;
 
@@ -437,8 +437,8 @@ void MaxMinLPDecentralizedCore::applyLocalAlgorithmPhase1and2() {
 
 								temp_target_pointer->second.g_t = temp_g_t;
 								if (m_verbal_flag) {
-									cout<<"(t"+boost::lexical_cast<string>(it->at(2))+", "+boost::lexical_cast<string>(j)+", p"+
-										boost::lexical_cast<string>(itt->at(2))+"): g_t = "+boost::lexical_cast<string>(temp_g_t)<<endl;
+									cout<<"(t"+boost::lexical_cast<string>(getNodeID(*it))+", "+boost::lexical_cast<string>(j)+", p"+
+										boost::lexical_cast<string>(getNodeID(*itt))+"): g_t = "+boost::lexical_cast<string>(temp_g_t)<<endl;
 								}
 
 								// Find the minimum of g_t(x)
@@ -599,7 +599,7 @@ void MaxMinLPDecentralizedCore::applyLocalAlgorithmPhase3() {
 				if (itt->layer == i) {
 					for (int j = 0; j < itt->loc_deg; j++) {
 						for (vector<string>::iterator ittt = temp_blue_node_id.begin(); ittt != temp_blue_node_id.end(); ++ittt) {
-							if (itt->loc_neighbor_id[j] == boost::lexical_cast<int>(ittt->at(2))) {
+							if (itt->loc_neighbor_id[j] == getNodeID(*ittt)) {
 								string temp_robot_node_string = "(r"+boost::lexical_cast<string>(itt->id)+", "+
 									boost::lexical_cast<string>(itt->layer)+", p"+boost::lexical_cast<string>(itt->connected_id)+")";
 								temp_robot_node_id.push_back(temp_robot_node_string);
@@ -649,7 +649,7 @@ void MaxMinLPDecentralizedCore::applyLocalAlgorithmPhase3() {
 					if (itt->layer == i) {
 						for (int j = 0; j < itt->loc_deg; j++) {
 							for (vector<string>::iterator ittt = temp_red_node_id.begin(); ittt != temp_red_node_id.end(); ++ittt) {
-								if (itt->loc_neighbor_id[j] == boost::lexical_cast<int>(ittt->at(2))) {
+								if (itt->loc_neighbor_id[j] == getNodeID(*ittt)) {
 									string temp_target_node_string = "(t"+boost::lexical_cast<string>(itt->id)+", "+
 										boost::lexical_cast<string>(itt->layer)+", p"+boost::lexical_cast<string>(itt->connected_id)+")";
 									temp_target_node_id.push_back(temp_target_node_string);
@@ -672,7 +672,7 @@ void MaxMinLPDecentralizedCore::applyLocalAlgorithmPhase3() {
 			if (i == 0) {
 				vector<float> temp_min_t_r;
 				for (vector<string>::iterator itt = temp_red_node_id.begin(); itt != temp_red_node_id.end(); ++itt) {
-					temp_min_t_r.push_back(m_t_r[boost::lexical_cast<int>(itt->at(2)) - 1]);
+					temp_min_t_r.push_back(m_t_r[boost::lexical_cast<int>(getNodeID(*itt)) - 1]);
 
 					if (m_verbal_flag) {
 						map<LayeredClass, max_min_lp_msgs::layered_node>::iterator temp_blue_pointer = 
@@ -942,7 +942,7 @@ void MaxMinLPDecentralizedCore::getRedTreeStruct(TreeStruct * _red_tree, string 
 		// Target nodes (Only target starts from index 1)
 		for (vector<string>::iterator it = _red_tree->blue_node_id[i-1].begin(); it != _red_tree->blue_node_id[i-1].end(); ++it) {
 			map<LayeredClass, max_min_lp_msgs::layered_node>::iterator temp_blue_pointer = 
-				getMapPointer("p"+boost::lexical_cast<string>(it->at(2)), i-1, "blue");
+				getMapPointer("p"+boost::lexical_cast<string>(getNodeID(*it)), i-1, "blue");
 
 			// Target nodes
 			for (int j = 0; j < temp_blue_pointer->second.loc_deg; j++) {
@@ -1044,10 +1044,10 @@ bool MaxMinLPDecentralizedCore::computeRecursive(int _count_red_layer_zero, floa
 
 			vector<float> temp_z_b;
 			map<LayeredClass, max_min_lp_msgs::layered_node>::iterator temp_blue_pointer = 
-				getMapPointer("p"+boost::lexical_cast<string>(it->at(2)), i, "blue");
+				getMapPointer("p"+boost::lexical_cast<string>(getNodeID(*it)), i, "blue");
 
 			if (m_verbal_flag) {
-				// cout<<"(p"<<boost::lexical_cast<string>(it->at(2))<<", "<<i<<", "<<"blue)"<<endl;
+				// cout<<"(p"<<boost::lexical_cast<string>(getNodeID(*it))<<", "<<i<<", "<<"blue)"<<endl;
 			}
 
 			if (temp_blue_pointer->second.layer == i) {
@@ -1065,7 +1065,7 @@ bool MaxMinLPDecentralizedCore::computeRecursive(int _count_red_layer_zero, floa
 
 							map<LayeredClass, max_min_lp_msgs::layered_node>::iterator temp_target_pointer = 
 								getMapPointer("t"+boost::lexical_cast<string>(temp_blue_pointer->second.loc_neighbor_id[j]), 
-								i+1, "p"+boost::lexical_cast<string>(it->at(2)));
+								i+1, "p"+boost::lexical_cast<string>(getNodeID(*it)));
 
 							for (int k = 0; k < temp_target_pointer->second.loc_deg; k++) {
 								map<LayeredClass, max_min_lp_msgs::layered_node>::iterator temp_red_pointer = 
@@ -1091,10 +1091,10 @@ bool MaxMinLPDecentralizedCore::computeRecursive(int _count_red_layer_zero, floa
 
 			vector<float> temp_z_r;
 			map<LayeredClass, max_min_lp_msgs::layered_node>::iterator temp_red_pointer = 
-				getMapPointer("p"+boost::lexical_cast<string>(it->at(2)), i, "red");
+				getMapPointer("p"+boost::lexical_cast<string>(getNodeID(*it)), i, "red");
 
 			if (m_verbal_flag) {
-				// cout<<"(p"<<boost::lexical_cast<string>(it->at(2))<<", "<<i<<", "<<"red)"<<endl;
+				// cout<<"(p"<<boost::lexical_cast<string>(getNodeID(*it))<<", "<<i<<", "<<"red)"<<endl;
 			}
 
 			if (temp_red_pointer->second.layer == i) {
@@ -1109,7 +1109,7 @@ bool MaxMinLPDecentralizedCore::computeRecursive(int _count_red_layer_zero, floa
 				for (int j = 0; j < temp_red_pointer->second.loc_deg; j++) {
 					map<LayeredClass, max_min_lp_msgs::layered_node>::iterator temp_robot_pointer = 
 						getMapPointer("r"+boost::lexical_cast<string>(temp_red_pointer->second.loc_neighbor_id[j]), 
-						i, "p"+boost::lexical_cast<string>(it->at(2)));
+						i, "p"+boost::lexical_cast<string>(getNodeID(*it)));
 
 					for (int k = 0; k < temp_robot_pointer->second.loc_deg; k++) {
 						map<LayeredClass, max_min_lp_msgs::layered_node>::iterator temp_blue_pointer = 
@@ -1125,7 +1125,7 @@ bool MaxMinLPDecentralizedCore::computeRecursive(int _count_red_layer_zero, floa
 				int temp_min_index = distance(temp_z_r.begin(), temp_min_iterator);
 				temp_red_pointer->second.z_r = temp_z_r[temp_min_index];
 
-				if (temp_red_pointer->second.z_r < 0) {
+				if (temp_red_pointer->second.z_r < -0.0001) {
 					check_z_negative = true;
 					break;
 				}

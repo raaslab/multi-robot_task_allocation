@@ -24,6 +24,7 @@ struct TreeStruct {
   vector< vector<string> > red_node_id;
   vector< vector<string> > blue_node_id;
   vector< vector<string> > target_node_id;
+  int tree_depth;
 };
 
 class LayeredClass {
@@ -88,11 +89,36 @@ public:
 
   void convertLayeredMaxMinLP(); // Converting the general graph into the layered graph. Step 2
   void convertDecentralizedLayeredMaxMinLP(); // // Converting the general graph into the layered graph for the decentralized approach.
-  void applyLocalAlgorithm(); // Step 3
+  vector<max_min_lp_msgs::general_node> applyLocalAlgorithm(); // Step 3
 
   map<LayeredClass, max_min_lp_msgs::layered_node>::iterator getMapPointer(string _current, int _layer, string _state);
   void getRedTreeStruct(TreeStruct * _red_tree, string _current, int _layer, string _state);
   bool computeRecursive(int _count_red_layer_zero, float _minimum_g_t );
+
+  int getNodeID(const string & s) {
+    string return_str;
+    if (isInteger(boost::lexical_cast<string>(s.at(4)))) { // Greater than or equal to 100
+      return_str = boost::lexical_cast<string>(s.at(2))+boost::lexical_cast<string>(s.at(3))+boost::lexical_cast<string>(s.at(4));
+    }
+    else { // Less than 100
+      if (isInteger(boost::lexical_cast<string>(s.at(3)))) { // Greater than or equal to 10
+        return_str = boost::lexical_cast<string>(s.at(2))+boost::lexical_cast<string>(s.at(3));
+      }
+      else { // Less than 10
+        return_str = boost::lexical_cast<string>(s.at(2));
+      }
+    }
+
+    return boost::lexical_cast<int>(return_str);
+  }
+  inline bool isInteger(const string & s) {
+    if(s.empty() || ((!isdigit(s[0])) && (s[0] != '-') && (s[0] != '+'))) return false ;
+
+    char * p ;
+    strtol(s.c_str(), &p, 10) ;
+
+    return (*p == 0) ;
+  }
 
   vector<max_min_lp_msgs::layered_node> getRobotLayeredNode() {
     return m_lay_robot_node;

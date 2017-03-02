@@ -14,6 +14,7 @@ find_package(catkin REQUIRED COMPONENTS
 add_service_files(
   FILES
   MessageRequest.srv
+  MotionPrimitiveRequest.srv
 )
 
 generate_messages(
@@ -51,3 +52,10 @@ add_dependencies(max_min_lp_simulation_greedy_central_node max_min_lp_simulation
 add_executable(max_min_lp_simulation_greedy_robot_node src/MaxMinLPGreedyRobotNode.cpp)
 target_link_libraries(max_min_lp_simulation_greedy_robot_node ${catkin_LIBRARIES})
 add_dependencies(max_min_lp_simulation_greedy_robot_node max_min_lp_simulation_gencpp)
+
+add_executable(max_min_lp_simulation_central_node_simulation src/MaxMinLPCentralNodeSimulation.cpp)
+target_link_libraries(max_min_lp_simulation_central_node_simulation ${catkin_LIBRARIES})
+add_dependencies(max_min_lp_simulation_central_node_simulation max_min_lp_simulation_gencpp)
+add_executable(max_min_lp_simulation_robot_node_simulation src/MaxMinLPRobotNodeSimulation.cpp)
+target_link_libraries(max_min_lp_simulation_robot_node_simulation ${catkin_LIBRARIES})
+add_dependencies(max_min_lp_simulation_robot_node_simulation max_min_lp_simulation_gencpp)
