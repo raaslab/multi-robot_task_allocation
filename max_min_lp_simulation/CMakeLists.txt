@@ -59,3 +59,8 @@ add_dependencies(max_min_lp_simulation_central_node_simulation max_min_lp_simula
 add_executable(max_min_lp_simulation_robot_node_simulation src/MaxMinLPRobotNodeSimulation.cpp)
 target_link_libraries(max_min_lp_simulation_robot_node_simulation ${catkin_LIBRARIES})
 add_dependencies(max_min_lp_simulation_robot_node_simulation max_min_lp_simulation_gencpp)
+
+add_library(${PROJECT_NAME}
+  src/apply_motion_primitive.cpp
+  src/get_odom.cpp
+)

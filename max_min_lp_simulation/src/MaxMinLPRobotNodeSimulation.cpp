@@ -41,6 +41,8 @@ m_verbal_flag(false), m_epsilon(0.1), m_num_motion_primitive(10), m_time_interva
 	m_count_initialize_func = 0;
 
 	m_count_time_interval = 0;
+
+	m_check_start = false;
 }
 
 void MaxMinLPRobotNodeSimulation::updateOdom(const gazebo_msgs::ModelStates::ConstPtr& msg) {
@@ -53,6 +55,10 @@ void MaxMinLPRobotNodeSimulation::updateOdom(const gazebo_msgs::ModelStates::Con
 		}
 	}
 	m_pos = msg->pose[id];
+
+	if (m_check_start) {
+		ROS_INFO("ROBOT %d updateOdom() is working.", m_robot_id);
+	}
 }
 
 void MaxMinLPRobotNodeSimulation::applyMotionPrimitives(const std_msgs::String::ConstPtr& msg) {
@@ -66,6 +72,8 @@ void MaxMinLPRobotNodeSimulation::applyMotionPrimitives(const std_msgs::String::
 	if (temp_robot_y_pos < 0.001 && temp_robot_y_pos > 0) {
 		temp_robot_y_pos = 0;
 	}
+
+	m_check_start = true;
 
 	m_robot_outputFile<<setprecision(2)<<temp_robot_x_pos<<" "<<setprecision(2)<<temp_robot_y_pos<<" ";
 	m_robot_outputFile<<endl;
@@ -143,6 +151,9 @@ void MaxMinLPRobotNodeSimulation::applyMotionPrimitives(const std_msgs::String::
 		// Obtain an optimal motion primitive.
 		bool result_get_primitive = getMotionPrimitive();
 		if (result_get_primitive) {
+			ROS_INFO(" ");
+			ROS_INFO("After applying motion primitives.");
+			ROS_INFO(" ROBOT %d : (%.2f, %.2f)", m_robot_id, m_pos.position.x, m_pos.position.y);
 			std_msgs::String msg;
 		    stringstream ss;
 		    ss<<"action is applied";
@@ -170,6 +181,12 @@ bool MaxMinLPRobotNodeSimulation::initialize() {
 	if (m_verbal_flag) {
 		ROS_INFO("ROBOT %d is in the initialize() step", m_robot_id);
 	}
+
+	// Send robot info.
+	geometry_msgs::Pose robot_pose;
+	robot_pose.position.x = m_pos.position.x;
+	robot_pose.position.y = m_pos.position.y;
+	srv.request.robot_info = robot_pose;
 
 	// Compute motion primivites.
   	vector<geometry_msgs::Pose> motion_primitive_pose;
@@ -257,26 +274,26 @@ bool MaxMinLPRobotNodeSimulation::getMotionPrimitive() {
 				cmd_vel_msg.angular.y = 0;
 
 				if (m_motion_case_rotation[m_selected_primitive_id-1] > 0) {
-					cmd_vel_msg.angular.z = 1;
+					cmd_vel_msg.angular.z = 0.1;
 				}
 				else {
-					cmd_vel_msg.angular.z = -1;	
+					cmd_vel_msg.angular.z = -0.1;	
 				}
 
 				m_cmd_vel_robot_pub.publish(cmd_vel_msg);
 
-				if (m_verbal_flag) {
+				// if (m_verbal_flag) {
 					ROS_INFO("        ROBOT %d : time interval = %d, motion case = %d, cmd_vel = (%.1f, %.1f, %.1f) (%.1f, %.1f, %.1f)", 
 						m_robot_id, m_count_time_interval, m_motion_case_rotation[m_selected_primitive_id-1], cmd_vel_msg.linear.x, cmd_vel_msg.linear.y,
 						cmd_vel_msg.linear.z, cmd_vel_msg.angular.x, cmd_vel_msg.angular.y, cmd_vel_msg.angular.z);
-				}
+				// }
 
-				ros::Duration(0.01).sleep(); // Sleeping is required so that robot can move step by step.
+				usleep(1000000); // Sleeping is required so that robot can move step by step.
 			}
 			else { // Moving forward
 				geometry_msgs::Twist cmd_vel_msg;
 
-				cmd_vel_msg.linear.x = 1;
+				cmd_vel_msg.linear.x = 0.1;
 				cmd_vel_msg.linear.y = 0;
 				cmd_vel_msg.linear.z = 0;
 				cmd_vel_msg.angular.x = 0;
@@ -285,17 +302,17 @@ bool MaxMinLPRobotNodeSimulation::getMotionPrimitive() {
 
 				m_cmd_vel_robot_pub.publish(cmd_vel_msg);
 
-				if (m_verbal_flag) {
+				// if (m_verbal_flag) {
 					ROS_INFO("        ROBOT %d : time interval = %d, motion case = %d, cmd_vel = (%.1f, %.1f, %.1f) (%.1f, %.1f, %.1f)", 
 						m_robot_id, m_count_time_interval, m_motion_case_rotation[m_selected_primitive_id-1], cmd_vel_msg.linear.x, cmd_vel_msg.linear.y,
 						cmd_vel_msg.linear.z, cmd_vel_msg.angular.x, cmd_vel_msg.angular.y, cmd_vel_msg.angular.z);
-				}
+				// }
 
-				ros::Duration(0.01).sleep();
+				usleep(1000000);
 			}
 		}
 		else {
-			ros::Duration(0.01).sleep();
+			usleep(1000000);
 		}
 
 		if (m_count_time_interval == m_time_interval) {
@@ -336,7 +353,11 @@ vector<geometry_msgs::Pose> MaxMinLPRobotNodeSimulation::computeMotionPrimitives
 	// 	}
 	// }
 	srand (time(NULL));
-	int random_case = rand() % 5 + (-2); // Pick randomly one from -2 to 2
+	int random_case = rand() % 7 + (-3); // Pick randomly one from -3 to 3
+	random_case *= 3; // From -9 to 9
+
+	// x value: 0.1 m/s * 10 = 0.60 m
+	// z value: 0.1 * 10 = 33 (degree)
 
 	m_motion_case_rotation.clear();
 	m_motion_case_rotation.push_back(random_case);
@@ -353,7 +374,7 @@ vector<geometry_msgs::Pose> MaxMinLPRobotNodeSimulation::computeMotionPrimitives
 	for (int i = 0; i < m_num_motion_primitive; i++) {
 		if (i == 0) {
 			geometry_msgs::Pose temp_motion_primitive_instance;
-			double temp_orientation = yaw + 34 * m_motion_case_rotation[i];
+			double temp_orientation = yaw + 3.42 * m_motion_case_rotation[i];
 			if (temp_orientation > 180) {
 				temp_orientation -= 360;
 			}
@@ -362,27 +383,27 @@ vector<geometry_msgs::Pose> MaxMinLPRobotNodeSimulation::computeMotionPrimitives
 			}
 			// This is hard-coded.
 			if (temp_orientation >= 0 && temp_orientation < 90) {
-				x_new = m_pos.position.x + 0.59 * (m_time_interval - abs(m_motion_case_rotation[i])) 
+				x_new = m_pos.position.x + 0.06 * (m_time_interval - abs(m_motion_case_rotation[i])) 
 						* cos(temp_orientation * PHI / 180);
-				y_new = m_pos.position.y + 0.59 * (m_time_interval - abs(m_motion_case_rotation[i])) 
+				y_new = m_pos.position.y + 0.06 * (m_time_interval - abs(m_motion_case_rotation[i])) 
 						* sin(temp_orientation * PHI / 180);
 			}
 			else if (temp_orientation >= 90 && temp_orientation < 180) {
-				x_new = m_pos.position.x - 0.59 * (m_time_interval - abs(m_motion_case_rotation[i])) 
+				x_new = m_pos.position.x - 0.06 * (m_time_interval - abs(m_motion_case_rotation[i])) 
 						* cos((180 - temp_orientation) * PHI / 180);
-				y_new = m_pos.position.y + 0.59 * (m_time_interval - abs(m_motion_case_rotation[i])) 
+				y_new = m_pos.position.y + 0.06 * (m_time_interval - abs(m_motion_case_rotation[i])) 
 						* sin((180 - temp_orientation) * PHI / 180);
 			}
 			else if (temp_orientation < 0 && temp_orientation >= -90) {
-				x_new = m_pos.position.x + 0.59 * (m_time_interval - abs(m_motion_case_rotation[i])) 
+				x_new = m_pos.position.x + 0.06 * (m_time_interval - abs(m_motion_case_rotation[i])) 
 						* cos((-1) * temp_orientation * PHI / 180);
-				y_new = m_pos.position.y - 0.59 * (m_time_interval - abs(m_motion_case_rotation[i])) 
+				y_new = m_pos.position.y - 0.06 * (m_time_interval - abs(m_motion_case_rotation[i])) 
 						* sin((-1) * temp_orientation * PHI / 180);
 			}
 			else if (temp_orientation < -90 && temp_orientation >= -180) {
-				x_new = m_pos.position.x - 0.59 * (m_time_interval - abs(m_motion_case_rotation[i])) 
+				x_new = m_pos.position.x - 0.06 * (m_time_interval - abs(m_motion_case_rotation[i])) 
 						* cos((180 + temp_orientation) * PHI / 180);
-				y_new = m_pos.position.y - 0.59 * (m_time_interval - abs(m_motion_case_rotation[i])) 
+				y_new = m_pos.position.y - 0.06 * (m_time_interval - abs(m_motion_case_rotation[i])) 
 						* sin((180 + temp_orientation) * PHI / 180);
 			}
 

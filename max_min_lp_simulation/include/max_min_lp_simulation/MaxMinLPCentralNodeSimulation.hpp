@@ -83,6 +83,7 @@ private:
   double m_epsilon;
   string m_objective_option;
   bool m_verbal_flag;
+  bool m_verbal_local_flag;
 
   int m_send_robot_id;
   int m_request_robot_id;
@@ -102,6 +103,8 @@ private:
   vector<int> m_ROBOT_num_robot;
   vector<int> m_prev_accumulate_robot;
   int m_num_survived_robot;
+  vector<float> m_ROBOT_x_pos;
+  vector<float> m_ROBOT_y_pos;
 
   // ROBOT motion primitives
   vector<int> m_ROBOT_num_motion_primitive;
@@ -135,6 +138,7 @@ private:
   vector<float> m_target_y_pos;
   vector<bool> m_target_observed;
 
+  vector<vector<int> > m_ROBOTs_to_targets; // ROBOTs to targets
   vector<vector<int> > m_robots_to_primitives; // Robots to motion primitives
   vector<vector<int> > m_primitives_to_robots; // Motion primitives to robots
   vector<vector<int> > m_primitives_to_targets; // Motion primitives to targets

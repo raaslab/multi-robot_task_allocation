@@ -1,0 +1,140 @@
+<launch>
+  <arg name="num_target" default="2"/>
+  <arg name="num_robot" default="2"/>
+  <arg name="num_layer" default="2"/>
+  <!--<arg name="verbal_flag" default="true"/>-->
+  <arg name="epsilon" default="0.1"/>
+  <arg name="num_motion_primitive" default="2"/>
+  <arg name="time_interval" default="15"/>
+
+  <group ns="robot_1">
+    <node type="motion_primitive_generator" pkg="max_min_lp_simulation" name="motion_primitive_generator" output="screen">
+      <param name="num_target" type="int" value="$(arg num_target)"/>
+      <param name="num_robot" type="int" value="$(arg num_robot)"/>
+      <param name="robot_id" type="int" value="1"/>
+      <param name="robot_name" type="str" value="robot_1"/>
+      <param name="num_layer" type="int" value="$(arg num_layer)"/>
+      <param name="verbal_flag" type="bool" value="true"/>
+      <param name="epsilon" type="double" value="$(arg epsilon)"/>
+      <param name="num_motion_primitive" type="int" value="$(arg num_motion_primitive)"/>
+      <param name="time_interval" type="int" value="$(arg time_interval)"/>
+    </node>
+  </group>
+  <group ns="robot_2">
+    <node type="motion_primitive_generator" pkg="max_min_lp_simulation" name="motion_primitive_generator" output="screen">
+      <param name="num_target" type="int" value="$(arg num_target)"/>
+      <param name="num_robot" type="int" value="$(arg num_robot)"/>
+      <param name="robot_id" type="int" value="2"/>
+      <param name="robot_name" type="str" value="robot_2"/>
+      <param name="num_layer" type="int" value="$(arg num_layer)"/>
+      <param name="verbal_flag" type="bool" value="false"/>
+      <param name="epsilon" type="double" value="$(arg epsilon)"/>
+      <param name="num_motion_primitive" type="int" value="$(arg num_motion_primitive)"/>
+      <param name="time_interval" type="int" value="$(arg time_interval)"/>
+    </node>
+  </group>
+  <!--<group ns="robot_3">
+    <node type="motion_primitive_generator" pkg="max_min_lp_simulation" name="motion_primitive_generator" output="screen">
+      <param name="num_target" type="int" value="$(arg num_target)"/>
+      <param name="num_robot" type="int" value="$(arg num_robot)"/>
+      <param name="robot_id" type="int" value="3"/>
+      <param name="robot_name" type="str" value="robot_3"/>
+      <param name="num_layer" type="int" value="$(arg num_layer)"/>
+      <param name="verbal_flag" type="bool" value="false"/>
+      <param name="epsilon" type="double" value="$(arg epsilon)"/>
+      <param name="num_motion_primitive" type="int" value="$(arg num_motion_primitive)"/>
+      <param name="time_interval" type="int" value="$(arg time_interval)"/>
+    </node>
+  </group>
+  <group ns="robot_4">
+    <node type="motion_primitive_generator" pkg="max_min_lp_simulation" name="motion_primitive_generator" output="screen">
+      <param name="num_target" type="int" value="$(arg num_target)"/>
+      <param name="num_robot" type="int" value="$(arg num_robot)"/>
+      <param name="robot_id" type="int" value="4"/>
+      <param name="robot_name" type="str" value="robot_4"/>
+      <param name="num_layer" type="int" value="$(arg num_layer)"/>
+      <param name="verbal_flag" type="bool" value="false"/>
+      <param name="epsilon" type="double" value="$(arg epsilon)"/>
+      <param name="num_motion_primitive" type="int" value="$(arg num_motion_primitive)"/>
+      <param name="time_interval" type="int" value="$(arg time_interval)"/>
+    </node>
+  </group>
+  <group ns="robot_5">
+    <node type="motion_primitive_generator" pkg="max_min_lp_simulation" name="motion_primitive_generator" output="screen">
+      <param name="num_target" type="int" value="$(arg num_target)"/>
+      <param name="num_robot" type="int" value="$(arg num_robot)"/>
+      <param name="robot_id" type="int" value="5"/>
+      <param name="robot_name" type="str" value="robot_5"/>
+      <param name="num_layer" type="int" value="$(arg num_layer)"/>
+      <param name="verbal_flag" type="bool" value="false"/>
+      <param name="epsilon" type="double" value="$(arg epsilon)"/>
+      <param name="num_motion_primitive" type="int" value="$(arg num_motion_primitive)"/>
+      <param name="time_interval" type="int" value="$(arg time_interval)"/>
+    </node>
+  </group>
+  <group ns="robot_6">
+    <node type="motion_primitive_generator" pkg="max_min_lp_simulation" name="motion_primitive_generator" output="screen">
+      <param name="num_target" type="int" value="$(arg num_target)"/>
+      <param name="num_robot" type="int" value="$(arg num_robot)"/>
+      <param name="robot_id" type="int" value="6"/>
+      <param name="robot_name" type="str" value="robot_6"/>
+      <param name="num_layer" type="int" value="$(arg num_layer)"/>
+      <param name="verbal_flag" type="bool" value="false"/>
+      <param name="epsilon" type="double" value="$(arg epsilon)"/>
+      <param name="num_motion_primitive" type="int" value="$(arg num_motion_primitive)"/>
+      <param name="time_interval" type="int" value="$(arg time_interval)"/>
+    </node>
+  </group>
+  <group ns="robot_7">
+    <node type="motion_primitive_generator" pkg="max_min_lp_simulation" name="motion_primitive_generator" output="screen">
+      <param name="num_target" type="int" value="$(arg num_target)"/>
+      <param name="num_robot" type="int" value="$(arg num_robot)"/>
+      <param name="robot_id" type="int" value="7"/>
+      <param name="robot_name" type="str" value="robot_7"/>
+      <param name="num_layer" type="int" value="$(arg num_layer)"/>
+      <param name="verbal_flag" type="bool" value="false"/>
+      <param name="epsilon" type="double" value="$(arg epsilon)"/>
+      <param name="num_motion_primitive" type="int" value="$(arg num_motion_primitive)"/>
+      <param name="time_interval" type="int" value="$(arg time_interval)"/>
+    </node>
+  </group>
+  <group ns="robot_8">
+    <node type="motion_primitive_generator" pkg="max_min_lp_simulation" name="motion_primitive_generator" output="screen">
+      <param name="num_target" type="int" value="$(arg num_target)"/>
+      <param name="num_robot" type="int" value="$(arg num_robot)"/>
+      <param name="robot_id" type="int" value="8"/>
+      <param name="robot_name" type="str" value="robot_8"/>
+      <param name="num_layer" type="int" value="$(arg num_layer)"/>
+      <param name="verbal_flag" type="bool" value="false"/>
+      <param name="epsilon" type="double" value="$(arg epsilon)"/>
+      <param name="num_motion_primitive" type="int" value="$(arg num_motion_primitive)"/>
+      <param name="time_interval" type="int" value="$(arg time_interval)"/>
+    </node>
+  </group>
+  <group ns="robot_9">
+    <node type="motion_primitive_generator" pkg="max_min_lp_simulation" name="motion_primitive_generator" output="screen">
+      <param name="num_target" type="int" value="$(arg num_target)"/>
+      <param name="num_robot" type="int" value="$(arg num_robot)"/>
+      <param name="robot_id" type="int" value="9"/>
+      <param name="robot_name" type="str" value="robot_9"/>
+      <param name="num_layer" type="int" value="$(arg num_layer)"/>
+      <param name="verbal_flag" type="bool" value="false"/>
+      <param name="epsilon" type="double" value="$(arg epsilon)"/>
+      <param name="num_motion_primitive" type="int" value="$(arg num_motion_primitive)"/>
+      <param name="time_interval" type="int" value="$(arg time_interval)"/>
+    </node>
+  </group>
+  <group ns="robot_10">
+    <node type="motion_primitive_generator" pkg="max_min_lp_simulation" name="motion_primitive_generator" output="screen">
+      <param name="num_target" type="int" value="$(arg num_target)"/>
+      <param name="num_robot" type="int" value="$(arg num_robot)"/>
+      <param name="robot_id" type="int" value="10"/>
+      <param name="robot_name" type="str" value="robot_10"/>
+      <param name="num_layer" type="int" value="$(arg num_layer)"/>
+      <param name="verbal_flag" type="bool" value="false"/>
+      <param name="epsilon" type="double" value="$(arg epsilon)"/>
+      <param name="num_motion_primitive" type="int" value="$(arg num_motion_primitive)"/>
+      <param name="time_interval" type="int" value="$(arg time_interval)"/>
+    </node>
+  </group>-->
+</launch>

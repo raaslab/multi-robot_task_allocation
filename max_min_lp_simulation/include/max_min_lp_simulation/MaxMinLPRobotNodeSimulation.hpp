@@ -9,6 +9,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <unistd.h>
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -16,6 +17,7 @@
 #include <vector>
 #include <boost/lexical_cast.hpp>
 #include <tf/transform_datatypes.h>
+#include <max_min_lp_simulation/apply_motion_primitive.hpp>
 #include <max_min_lp_msgs/general_node.h>
 #include <max_min_lp_msgs/general_node_array.h>
 #include <max_min_lp_msgs/layered_node.h>
@@ -94,6 +96,8 @@ private:
   int m_count_initialize_func;
 
   ofstream m_robot_outputFile;
+
+  bool m_check_start;
 
 public:
   MaxMinLPRobotNodeSimulation(); // Constructor

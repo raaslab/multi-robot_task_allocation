@@ -1,5 +1,6 @@
 string state_check
 int8 robot_id
+geometry_msgs/Pose robot_info
 geometry_msgs/Pose[] motion_primitive_info
 
 ---

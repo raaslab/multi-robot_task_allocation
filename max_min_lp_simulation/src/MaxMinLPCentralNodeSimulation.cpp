@@ -12,7 +12,7 @@
 
 MaxMinLPCentralNodeSimulation::MaxMinLPCentralNodeSimulation() :
 m_num_robot(1), m_num_target(1), m_num_motion_primitive(10), m_num_layer(2), m_objective_option(string("quality_of_tracking")),
- m_fov(10), m_verbal_flag(false), m_epsilon(0.1), m_private_nh("~")
+ m_fov(10), m_verbal_flag(false), m_verbal_local_flag(false), m_epsilon(0.1), m_private_nh("~")
 {
 	m_private_nh.getParam("num_robot", m_num_robot);
 	m_private_nh.getParam("num_target", m_num_target);
@@ -21,6 +21,7 @@ m_num_robot(1), m_num_target(1), m_num_motion_primitive(10), m_num_layer(2), m_o
 	m_private_nh.getParam("fov", m_fov);
 	m_private_nh.getParam("objective_option", m_objective_option);
 	m_private_nh.getParam("verbal_flag", m_verbal_flag);
+	m_private_nh.getParam("verbal_local_flag", m_verbal_local_flag);
 	m_private_nh.getParam("epsilon", m_epsilon);
 
 	// Services
@@ -51,14 +52,14 @@ m_num_robot(1), m_num_target(1), m_num_motion_primitive(10), m_num_layer(2), m_o
 	}
 	m_target_1_sub = m_nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1000, boost::bind(&MaxMinLPCentralNodeSimulation::updatePose, this, _1, 0));
 	m_target_2_sub = m_nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1000, boost::bind(&MaxMinLPCentralNodeSimulation::updatePose, this, _1, 1));
-	// m_target_3_sub = m_nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1000, boost::bind(&MaxMinLPCentralNodeSimulation::updatePose, this, _1, 2));
-	// m_target_4_sub = m_nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1000, boost::bind(&MaxMinLPCentralNodeSimulation::updatePose, this, _1, 3));
-	// m_target_5_sub = m_nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1000, boost::bind(&MaxMinLPCentralNodeSimulation::updatePose, this, _1, 4));
-	// m_target_6_sub = m_nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1000, boost::bind(&MaxMinLPCentralNodeSimulation::updatePose, this, _1, 5));
-	// m_target_7_sub = m_nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1000, boost::bind(&MaxMinLPCentralNodeSimulation::updatePose, this, _1, 6));
-	// m_target_8_sub = m_nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1000, boost::bind(&MaxMinLPCentralNodeSimulation::updatePose, this, _1, 7));
-	// m_target_9_sub = m_nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1000, boost::bind(&MaxMinLPCentralNodeSimulation::updatePose, this, _1, 8));
-	// m_target_10_sub = m_nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1000, boost::bind(&MaxMinLPCentralNodeSimulation::updatePose, this, _1, 9));
+	m_target_3_sub = m_nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1000, boost::bind(&MaxMinLPCentralNodeSimulation::updatePose, this, _1, 2));
+	m_target_4_sub = m_nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1000, boost::bind(&MaxMinLPCentralNodeSimulation::updatePose, this, _1, 3));
+	m_target_5_sub = m_nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1000, boost::bind(&MaxMinLPCentralNodeSimulation::updatePose, this, _1, 4));
+	m_target_6_sub = m_nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1000, boost::bind(&MaxMinLPCentralNodeSimulation::updatePose, this, _1, 5));
+	m_target_7_sub = m_nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1000, boost::bind(&MaxMinLPCentralNodeSimulation::updatePose, this, _1, 6));
+	m_target_8_sub = m_nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1000, boost::bind(&MaxMinLPCentralNodeSimulation::updatePose, this, _1, 7));
+	m_target_9_sub = m_nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1000, boost::bind(&MaxMinLPCentralNodeSimulation::updatePose, this, _1, 8));
+	m_target_10_sub = m_nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1000, boost::bind(&MaxMinLPCentralNodeSimulation::updatePose, this, _1, 9));
 	// m_target_11_sub = m_nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1000, boost::bind(&MaxMinLPCentralNodeSimulation::updatePose, this, _1, 10));
 	// m_target_12_sub = m_nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1000, boost::bind(&MaxMinLPCentralNodeSimulation::updatePose, this, _1, 11));
 	// m_target_13_sub = m_nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1000, boost::bind(&MaxMinLPCentralNodeSimulation::updatePose, this, _1, 12));
@@ -86,6 +87,9 @@ m_num_robot(1), m_num_target(1), m_num_motion_primitive(10), m_num_layer(2), m_o
 	m_general_node_pub = m_nh.advertise<max_min_lp_msgs::general_node_array>("/central/max_min_lp_msgs/general_node_array", 1);
 	m_layered_node_pub = m_nh.advertise<max_min_lp_msgs::layered_node_array>("/central/max_min_lp_msgs/layered_node_array", 1);
 	m_response_to_robot_pub = m_nh.advertise<std_msgs::String>("/robot_status", 1);
+
+	ROS_INFO("----------------------------- Time Step %d -----------------------------", m_time_step);
+	ROS_INFO(" ");
 }
 
 bool MaxMinLPCentralNodeSimulation::initialize(max_min_lp_simulation::MessageRequest::Request &req, max_min_lp_simulation::MessageRequest::Response &res) {
@@ -95,12 +99,19 @@ bool MaxMinLPCentralNodeSimulation::initialize(max_min_lp_simulation::MessageReq
 		if (m_request_robot_id == req.robot_id) {
 			max_min_lp_msgs::server_to_robots temp_server_to_robots;
 			temp_server_to_robots.robot_id = req.robot_id;
+			temp_server_to_robots.r_x_pos = req.robot_info.position.x;
+			temp_server_to_robots.r_y_pos = req.robot_info.position.y;
 
 			// Obtain motion primitives.
 			for (int i = 0; i < m_num_motion_primitive; i++) {
 				temp_server_to_robots.primitive_id.push_back(i+1);
 				temp_server_to_robots.p_x_pos.push_back(req.motion_primitive_info[i].position.x);
 				temp_server_to_robots.p_y_pos.push_back(req.motion_primitive_info[i].position.y);
+			}
+
+			ROS_INFO("ROBOT %d : (%.2f, %.2f)", req.robot_id, req.robot_info.position.x, req.robot_info.position.y);
+			for (int i = 0; i < m_num_motion_primitive; i++) {
+				ROS_INFO("    motion primitive = %d (%.2f, %.2f)", i+1, req.motion_primitive_info[i].position.x, req.motion_primitive_info[i].position.y);
 			}
 
 			m_robot_info.each_robot.push_back(temp_server_to_robots);
@@ -139,6 +150,7 @@ bool MaxMinLPCentralNodeSimulation::initialize(max_min_lp_simulation::MessageReq
 				m_max_neighbor_hop.clear();
 				m_robot_id.clear();
 				m_robots_to_primitives.clear();
+				m_ROBOTs_to_targets.clear();
 				m_primitives_to_robots.clear();
 				m_primitives_to_targets.clear();
 				m_targets_to_primitives.clear();
@@ -163,6 +175,20 @@ bool MaxMinLPCentralNodeSimulation::initialize(max_min_lp_simulation::MessageReq
 					}
 				}
 
+				// Obtain ROBOTs to targets
+				for (vector<max_min_lp_msgs::server_to_robots>::iterator it = m_robot_info.each_robot.begin(); it != m_robot_info.each_robot.end(); ++it) {
+					vector<int> temp_ROBOTs_to_targets;
+					for (int i = 0; i < m_num_target; i++) {
+						float dist_ROBOT_to_target = sqrt(pow((m_target_x_pos[i] - it->r_x_pos), 2) + pow((m_target_y_pos[i] - it->r_y_pos), 2));
+
+						if (dist_ROBOT_to_target <= m_fov) {
+							temp_ROBOTs_to_targets.push_back(m_target_id[i]);
+						}
+					}
+
+					m_ROBOTs_to_targets.push_back(temp_ROBOTs_to_targets);
+				}
+
 				// Obtain primitives to targets
 				// Firstly, see all motion primitives to pair each with targets that are in the FoV.
 				if (m_verbal_flag) {
@@ -182,7 +208,7 @@ bool MaxMinLPCentralNodeSimulation::initialize(max_min_lp_simulation::MessageReq
 						for (int j = 0; j < m_target_id.size(); j++) {
 							float dist_primitive_to_target = sqrt(pow((m_target_x_pos[j] - it->p_x_pos[i]), 2) + pow((m_target_y_pos[j] - it->p_y_pos[i]), 2));
 
-							if (dist_primitive_to_target <= m_fov && dist_primitive_to_target > 0.6) { // Observed by the corresponding motion primitive. Second condition is for the collision avoidance.
+							if (dist_primitive_to_target <= m_fov && dist_primitive_to_target > 0.3) { // Observed by the corresponding motion primitive. Second condition is for the collision avoidance.
 								temp_primitives_to_targets.push_back(m_target_id[j]);
 
 								// Objective option must be taken into account here.
@@ -214,7 +240,7 @@ bool MaxMinLPCentralNodeSimulation::initialize(max_min_lp_simulation::MessageReq
 							m_dist_primitive_to_target.push_back(sum_dist_primitive_to_target);
 
 							if (m_verbal_flag) {
-								ROS_INFO("primitive id = %d, (x, y) = (%f, %f), original id = %d", m_num_survived_motion_primitive + 1, it->p_x_pos[i], it->p_y_pos[i], it->primitive_id[i]);
+								ROS_INFO("primitive id = %d, (x, y) = (%.2f, %.2f), original id = %d", m_num_survived_motion_primitive + 1, it->p_x_pos[i], it->p_y_pos[i], it->primitive_id[i]);
 							}
 
 							m_primitives_to_targets.push_back(temp_primitives_to_targets);
@@ -615,6 +641,9 @@ bool MaxMinLPCentralNodeSimulation::initialize(max_min_lp_simulation::MessageReq
 				m_gen_t_node = buildGeneralNode("t");
 
 				m_check_request_send = false;
+
+				m_ROBOT_x_pos.clear();
+				m_ROBOT_y_pos.clear();
 			} // if (m_check_request_send)
 
 			if (m_send_robot_id == req.robot_id) { // Here send local information to each robot.
@@ -927,7 +956,7 @@ void MaxMinLPCentralNodeSimulation::applySequentialLocalAlgorithm(const std_msgs
 
 		// Local algorithm is applied from here.
 		max_min_lp_core::MaxMinLPSequentialCore lps(m_gen_r_node, m_gen_p_r_node, m_gen_p_t_node, m_gen_t_node,
-			m_num_layer, m_verbal_flag, m_epsilon, m_ROBOT_num_robot, m_prev_accumulate_robot, m_num_survived_robot,
+			m_num_layer, m_verbal_local_flag, m_epsilon, m_ROBOT_num_robot, m_prev_accumulate_robot, m_num_survived_robot,
 			m_ROBOT_num_motion_primitive, m_prev_accumulate_motion_primitive, m_num_survived_motion_primitive, m_constraint_value);
 
 		// Step 2
@@ -996,8 +1025,11 @@ void MaxMinLPCentralNodeSimulation::applySequentialLocalAlgorithm(const std_msgs
 					// 	temp_optimal_primitive_id_for_plot = m_primitive_id[*it];
 					// }
 				}
-				ROS_INFO("temp_optimal_primitive_id = %d", temp_optimal_primitive_id);
-				ROS_INFO("temp_optimal_primitive_id_for_plot = %d", temp_optimal_primitive_id_for_plot);
+
+				if (m_verbal_flag) {
+					ROS_INFO("temp_optimal_primitive_id = %d", temp_optimal_primitive_id);
+					ROS_INFO("temp_optimal_primitive_id_for_plot = %d", temp_optimal_primitive_id_for_plot);
+				}
 
 				m_optimal_primitive_id.push_back(temp_optimal_primitive_id);
 				m_optimal_primitive_id_for_plot.push_back(temp_optimal_primitive_id_for_plot);
@@ -1007,6 +1039,8 @@ void MaxMinLPCentralNodeSimulation::applySequentialLocalAlgorithm(const std_msgs
 				m_optimal_primitive_id_for_plot.push_back(m_primitive_id[max_primitive_index[0]]);
 			}
 
+			ROS_INFO(" ");
+			ROS_INFO("ROBOT %d : selected primitive id = %d", i+1, m_optimal_primitive_id[i]);
 			if (m_verbal_flag) {
 				ROS_INFO("ROBOT %d : primitive id with maximum z_v = primitive %d", i+1, m_optimal_primitive_id[i]);
 			}
@@ -1110,11 +1144,17 @@ void MaxMinLPCentralNodeSimulation::applySequentialLocalAlgorithm(const std_msgs
 			}
 			m_target_outputFile<<endl;
 
-			// Find all targets observed by any motion primitives.
+			// Find all targets observed by any ROBOTs. (Current result)
+			ROS_INFO(" ");
+			ROS_INFO("Current result");
+
 			vector<int> found_all_targets;
-			for (vector<int>::iterator it = m_optimal_primitive_id_for_plot.begin(); it != m_optimal_primitive_id_for_plot.end(); ++it) {
-				for (vector<int>::iterator itt = m_primitives_to_targets[*it-1].begin(); itt != m_primitives_to_targets[*it-1].end(); ++itt) {
-					found_all_targets.push_back(*itt);
+			for (int i = 0; i < m_num_robot; i++) {
+				ROS_INFO("ROBOT %d :", i+1);
+
+				for (vector<int>::iterator it = m_ROBOTs_to_targets[i].begin(); it != m_ROBOTs_to_targets[i].end(); ++it) {
+					ROS_INFO("    target id = %d", *it);
+					found_all_targets.push_back(*it);
 				}
 			}
 
@@ -1124,12 +1164,36 @@ void MaxMinLPCentralNodeSimulation::applySequentialLocalAlgorithm(const std_msgs
 				found_all_targets.push_back(*it);
 			}
 
-			m_outputFile<<(int)found_all_targets.size()<<endl;
+			ROS_INFO("Number of observed targets = %d", (int)found_all_targets.size());
+
+			// Find all targets observed by any motion primitives. (Next result)
+			ROS_INFO(" ");
+			ROS_INFO("Next result");
+
+			vector<int> found_all_targets_next;
+			for (vector<int>::iterator it = m_optimal_primitive_id_for_plot.begin(); it != m_optimal_primitive_id_for_plot.end(); ++it) {
+				ROS_INFO("ROBOT %d :", (int)ceil(*it / m_num_motion_primitive));
+				for (vector<int>::iterator itt = m_primitives_to_targets[*it-1].begin(); itt != m_primitives_to_targets[*it-1].end(); ++itt) {
+					found_all_targets_next.push_back(*itt);
+					ROS_INFO("    target id = %d", *itt);
+				}
+			}
+
+			set<int> found_all_targets_next_set(found_all_targets_next.begin(), found_all_targets_next.end());
+			found_all_targets_next.clear();
+			for (set<int>::iterator it = found_all_targets_next_set.begin(); it != found_all_targets_next_set.end(); ++it) {
+				found_all_targets_next.push_back(*it);
+			}
+
+			ROS_INFO("Number of observed targets = %d", (int)found_all_targets_next.size());
+
+			m_outputFile<<(int)found_all_targets_next.size()<<endl;
 
 			m_time_step += 1;
 			ROS_INFO(" ");
-			ROS_INFO("----------------------------------- Step is successively complete -----------------------------------");
-			ROS_INFO("----------------------------------- Time Step %d -----------------------------------", m_time_step);
+			ROS_INFO("----------------------------- Step is successively complete -----------------------------");
+			ROS_INFO(" ");
+			ROS_INFO("----------------------------- Time Step %d -----------------------------", m_time_step);
 			ROS_INFO(" ");
 			// Reinitiate and recuresively apply the same algorithm that was applied so far.
 			// Reset all the values.
@@ -1153,6 +1217,8 @@ void MaxMinLPCentralNodeSimulation::applySequentialLocalAlgorithm(const std_msgs
 		    ss<<"recompute";
 		    msg.data = ss.str();
 		    m_response_to_robot_pub.publish(msg);
+
+		    usleep(1000000);
 		}
 	}
 }
