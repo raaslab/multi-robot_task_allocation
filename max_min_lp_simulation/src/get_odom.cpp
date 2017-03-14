@@ -11,7 +11,7 @@
 #include "max_min_lp_simulation/get_odom.hpp"
 
 get_odom::get_odom() : 
-m_num_robot(1), m_num_target(1), m_robot_id(1), m_robot_name(string("robot_1")), m_private_nh("~")
+m_num_robot(1), m_num_target(1), m_robot_id(1), m_robot_name(string("robot_1")), m_private_nh("~") 
 {
 	m_private_nh.getParam("num_robot", m_num_robot);
 	m_private_nh.getParam("num_target", m_num_target);
@@ -19,6 +19,7 @@ m_num_robot(1), m_num_target(1), m_robot_id(1), m_robot_name(string("robot_1")),
 	m_private_nh.getParam("robot_name", m_robot_name);
 
 	m_odom_sub = m_nh.subscribe("/gazebo/model_states", 1000, &get_odom::updateOdom, this);
+	m_odom_service = m_nh.advertiseService("/robot_"+boost::lexical_cast<string>(m_robot_id)+"/odom_request", &get_odom::return_odom, this);
 }
 
 void get_odom::updateOdom(const gazebo_msgs::ModelStates::ConstPtr& msg) {
@@ -33,6 +34,16 @@ void get_odom::updateOdom(const gazebo_msgs::ModelStates::ConstPtr& msg) {
 	m_pos = msg->pose[id];
 }
 
-geometry_msgs::Pose get_odom::return_odom() {
-	return m_pos;
+bool get_odom::return_odom(max_min_lp_simulation::GetOdom::Request &req, max_min_lp_simulation::GetOdom::Response &res) {
+	res.return_odom = m_pos;
+	return true;
+}
+
+int main(int argc, char **argv) {
+	ros::init(argc, argv, "get_odom");
+
+	get_odom gtom;
+
+	ros::spin();
+	return 0;
 }

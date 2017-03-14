@@ -7,6 +7,7 @@
 #include <nav_msgs/Odometry.h>
 #include <gazebo_msgs/ModelStates.h>
 #include <boost/lexical_cast.hpp>
+#include <max_min_lp_simulation/GetOdom.h>
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -27,6 +28,9 @@ private:
   // Publishers
   ros::Publisher m_general_node_pub;
 
+  // Services
+  ros::ServiceServer m_odom_service;
+
   string m_robot_name;
   int m_num_robot;
   int m_num_target;
@@ -38,7 +42,7 @@ public:
   get_odom(); // Constructor
 
   void updateOdom(const gazebo_msgs::ModelStates::ConstPtr& msg); // Update odometry information by subscribing to /robot/odom
-  geometry_msgs::Pose return_odom();
+  bool return_odom(max_min_lp_simulation::GetOdom::Request &req, max_min_lp_simulation::GetOdom::Response &res);
 };
 
 #endif

@@ -9,6 +9,8 @@
 #include "std_msgs/String.h"
 #include "geometry_msgs/Twist.h"
 #include <gazebo_msgs/ModelStates.h>
+#include <max_min_lp_simulation/get_odom.hpp>
+#include <max_min_lp_simulation/GetOdom.h>
 #include <boost/lexical_cast.hpp>
 #include <iostream>
 #include <sstream>
@@ -18,7 +20,7 @@
 
 using namespace std;
 
-#define phi 3.141592
+#define PHI 3.141592
 
 class Robot_Test {
 private:
@@ -30,6 +32,8 @@ private:
 
 	ros::Subscriber pos_robot_sub;
 	ros::Subscriber request_sub;
+
+	ros::ServiceClient m_odom_client;
 
 	int count_robot;
 	int interval;
@@ -76,7 +80,7 @@ public:
 		// timer = nh.createTimer(ros::Duration(5), &Robot_Test::applyMotionPrimitives, this);
 	}
 	void posRobotCallback(const gazebo_msgs::ModelStates::ConstPtr& msg) {
-		int size_msg = m_num_robot + 2 + 1; // 1 is for 'ground plane' in gazebo.
+		int size_msg = m_num_robot + 1; // 1 is for 'ground plane' in gazebo.
 		int id;
 
 		for (int i = 0; i < size_msg; i++) {
@@ -89,7 +93,7 @@ public:
 		// if (counter > 10) {
 		// 	counter = 0;
 			if (m_verbal_flag) {
-				ROS_INFO("ROBOT %d : global position (%.2f, %.2f)", m_robot_id, odom.position.x, odom.position.y);
+				// ROS_INFO("ROBOT %d : global position (%.2f, %.2f)", m_robot_id, odom.position.x, odom.position.y);
 			}
 		// }
 		// counter += 1;
@@ -114,7 +118,7 @@ public:
 		// 	double roll, pitch, yaw;
 		// 	m.getRPY(roll, pitch, yaw);
 
-		// 	yaw = yaw * 180 / phi;
+		// 	yaw = yaw * 180 / PHI;
 
 		// 	ROS_INFO("ROBOT %d (x: %.2f, y = %.2f, theta = %.2f)", m_robot_id, odom.position.x, odom.position.y, yaw);
 		// }
@@ -135,7 +139,7 @@ public:
 		// 	double roll, pitch, yaw;
 		// 	m.getRPY(roll, pitch, yaw);
 
-		// 	yaw = yaw * 180 / phi;
+		// 	yaw = yaw * 180 / PHI;
 
 		// 	ROS_INFO("ROBOT %d (x: %.2f, y = %.2f, theta = %.2f)", m_robot_id, odom.position.x, odom.position.y, yaw);
 		// }
@@ -147,7 +151,7 @@ public:
 			double roll, pitch, yaw;
 			m.getRPY(roll, pitch, yaw);
 
-			yaw = yaw * 180 / phi;
+			yaw = yaw * 180 / PHI;
 
 			// x value: 0.1 m/s = 0.06 m
 			// z value: 0.1 = 3.42 (degree)
@@ -164,27 +168,27 @@ public:
 			// This is hard-coded.
 			if (temp_orientation >= 0 && temp_orientation < 90) {
 				x_new = odom.position.x + 0.06 * (m_time_interval - abs(m_motion_case_rotation)) 
-						* cos(temp_orientation * phi / 180);
+						* cos(temp_orientation * PHI / 180);
 				y_new = odom.position.y + 0.06 * (m_time_interval - abs(m_motion_case_rotation)) 
-						* sin(temp_orientation * phi / 180);
+						* sin(temp_orientation * PHI / 180);
 			}
 			else if (temp_orientation >= 90 && temp_orientation < 180) {
 				x_new = odom.position.x - 0.06 * (m_time_interval - abs(m_motion_case_rotation)) 
-						* cos((180 - temp_orientation) * phi / 180);
+						* cos((180 - temp_orientation) * PHI / 180);
 				y_new = odom.position.y + 0.06 * (m_time_interval - abs(m_motion_case_rotation)) 
-						* sin((180 - temp_orientation) * phi / 180);
+						* sin((180 - temp_orientation) * PHI / 180);
 			}
 			else if (temp_orientation < 0 && temp_orientation >= -90) {
 				x_new = odom.position.x + 0.06 * (m_time_interval - abs(m_motion_case_rotation)) 
-						* cos((-1) * temp_orientation * phi / 180);
+						* cos((-1) * temp_orientation * PHI / 180);
 				y_new = odom.position.y - 0.06 * (m_time_interval - abs(m_motion_case_rotation)) 
-						* sin((-1) * temp_orientation * phi / 180);
+						* sin((-1) * temp_orientation * PHI / 180);
 			}
 			else if (temp_orientation < -90 && temp_orientation >= -180) {
 				x_new = odom.position.x - 0.06 * (m_time_interval - abs(m_motion_case_rotation)) 
-						* cos((180 + temp_orientation) * phi / 180);
+						* cos((180 + temp_orientation) * PHI / 180);
 				y_new = odom.position.y - 0.06 * (m_time_interval - abs(m_motion_case_rotation)) 
-						* sin((180 + temp_orientation) * phi / 180);
+						* sin((180 + temp_orientation) * PHI / 180);
 			}
 
 			if (m_verbal_flag) {
@@ -205,12 +209,26 @@ public:
 
 					cmd_vel_robot_pub.publish(cmd_vel_msg);
 
-					tf::Quaternion q(odom.orientation.x, odom.orientation.y, odom.orientation.z, odom.orientation.w);
-					tf::Matrix3x3 m(q);
-					double roll, pitch, yaw;
-					m.getRPY(roll, pitch, yaw);
+					m_odom_client = nh.serviceClient<max_min_lp_simulation::GetOdom>("/robot_"+boost::lexical_cast<string>(m_robot_id)+"/odom_request", true);
+					max_min_lp_simulation::GetOdom srv;
+					srv.request.request_odom = string("request");
+
+					if (m_odom_client.call(srv)) {
+						geometry_msgs::Pose temp_pos;
+						temp_pos = srv.response.return_odom;
+
+						tf::Quaternion q(temp_pos.orientation.x, temp_pos.orientation.y, temp_pos.orientation.z, temp_pos.orientation.w);
+						tf::Matrix3x3 m(q);
+						double roll, pitch, yaw;
+						m.getRPY(roll, pitch, yaw);
+
+						yaw = yaw * 180 / PHI;
+
+						ROS_INFO("ROBOT %d : (%.2f, %.2f, %.2f)",  m_robot_id, temp_pos.position.x, temp_pos.position.y, yaw);
+					}
+
 					// std::cout<<"at time "<<i+1<<std::endl;
-					// ROS_INFO("x: %.2f, y = %.2f, theta = %.2f", odom.position.x, odom.position.y, yaw*180/phi);
+					// ROS_INFO("x: %.2f, y = %.2f, theta = %.2f", odom.position.x, odom.position.y, yaw*180/PHI);
 
 					if (m_verbal_flag) {
 						// ROS_INFO("        ROBOT %d : cmd_vel = (%.1f, %.1f, %.1f) (%.1f, %.1f, %.1f)", 
@@ -232,12 +250,26 @@ public:
 
 					cmd_vel_robot_pub.publish(cmd_vel_msg);
 
-					tf::Quaternion q(odom.orientation.x, odom.orientation.y, odom.orientation.z, odom.orientation.w);
-					tf::Matrix3x3 m(q);
-					double roll, pitch, yaw;
-					m.getRPY(roll, pitch, yaw);
+					m_odom_client = nh.serviceClient<max_min_lp_simulation::GetOdom>("/robot_"+boost::lexical_cast<string>(m_robot_id)+"/odom_request", true);
+					max_min_lp_simulation::GetOdom srv;
+					srv.request.request_odom = string("request");
+
+					if (m_odom_client.call(srv)) {
+						geometry_msgs::Pose temp_pos;
+						temp_pos = srv.response.return_odom;
+
+						tf::Quaternion q(temp_pos.orientation.x, temp_pos.orientation.y, temp_pos.orientation.z, temp_pos.orientation.w);
+						tf::Matrix3x3 m(q);
+						double roll, pitch, yaw;
+						m.getRPY(roll, pitch, yaw);
+
+						yaw = yaw * 180 / PHI;
+
+						ROS_INFO("ROBOT %d : (%.2f, %.2f, %.2f)",  m_robot_id, temp_pos.position.x, temp_pos.position.y, yaw);
+					}
+
 					// std::cout<<"at time "<<i+1<<std::endl;
-					// ROS_INFO("x: %.2f, y = %.2f, theta = %.2f", odom.position.x, odom.position.y, yaw*180/phi);
+					// ROS_INFO("x: %.2f, y = %.2f, theta = %.2f", odom.position.x, odom.position.y, yaw*180/PHI);
 
 					if (m_verbal_flag) {
 						// ROS_INFO("        ROBOT %d : cmd_vel = (%.1f, %.1f, %.1f) (%.1f, %.1f, %.1f)", 
@@ -276,7 +308,7 @@ public:
 	// 	tf::Matrix3x3 m(q);
 	// 	double roll, pitch, yaw;
 	// 	m.getRPY(roll, pitch, yaw);
-	// 	// std::cout << "Roll: " << roll*180/phi << ", Pitch: " << pitch*180/phi << ", Yaw: " << yaw*180/phi << std::endl;
+	// 	// std::cout << "Roll: " << roll*180/PHI << ", Pitch: " << pitch*180/PHI << ", Yaw: " << yaw*180/PHI << std::endl;
 
 	// 	// ROS_INFO("Robot: linear.x=%f, linear.y=%f, angular.z=%f at count %d", 
 	// 	// 	cmd_vel_msg.linear.x, cmd_vel_msg.linear.y, cmd_vel_msg.angular.z, count_robot);

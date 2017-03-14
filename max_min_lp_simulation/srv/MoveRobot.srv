@@ -1,0 +1,6 @@
+geometry_msgs/Pose goal_pos
+int8 rotation_direction
+
+---
+
+string answer_msg

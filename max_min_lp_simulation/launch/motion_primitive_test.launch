@@ -1,42 +1,18 @@
 <launch>
-  <arg name="num_target" default="30"/>
-  <arg name="num_robot" default="5"/>
+  <arg name="num_target" default="0"/>
+  <arg name="num_robot" default="1"/>
   <arg name="num_layer" default="2"/>
   <!--<arg name="verbal_flag" default="true"/>-->
   <arg name="epsilon" default="0.1"/>
   <arg name="num_motion_primitive" default="2"/>
   <arg name="time_interval" default="15"/>
 
-  <node type="max_min_lp_simulation_central_node_simulation" pkg="max_min_lp_simulation" name="max_min_lp_simulation_central_node_simulation" output="screen">
-    <param name="num_target" type="int" value="$(arg num_target)"/>
-    <param name="num_robot" type="int" value="$(arg num_robot)"/>
-    <param name="num_motion_primitive" type="int" value="$(arg num_motion_primitive)"/>
-    <param name="num_layer" type="int" value="$(arg num_layer)"/>
-    <param name="fov" type="double" value="4"/>
-    <param name="objective_option" type="str" value="number_of_targets"/> <!--Two options: 1) "quality_of_tracking", and 2) "number_of_targets"-->
-    <param name="verbal_flag" type="bool" value="true"/>
-    <param name="verbal_local_flag" type="bool" value="false"/>
-    <param name="epsilon" type="double" value="$(arg epsilon)"/>
-  </node>
-
   <group ns="robot_1">
-    <node type="max_min_lp_simulation_robot_node_simulation" pkg="max_min_lp_simulation" name="max_min_lp_simulation_robot_node_simulation" output="screen">
-      <param name="num_target" type="int" value="$(arg num_target)"/>
+    <node type="motion_primitive_generator" pkg="max_min_lp_simulation" name="motion_primitive_generator" output="screen">
       <param name="num_robot" type="int" value="$(arg num_robot)"/>
       <param name="robot_id" type="int" value="1"/>
       <param name="robot_name" type="str" value="robot_1"/>
-      <param name="num_layer" type="int" value="$(arg num_layer)"/>
-      <param name="verbal_flag" type="bool" value="false"/>
-      <param name="epsilon" type="double" value="$(arg epsilon)"/>
-      <param name="num_motion_primitive" type="int" value="$(arg num_motion_primitive)"/>
-      <param name="time_interval" type="int" value="$(arg time_interval)"/>
-    </node>
-
-    <node type="apply_motion_primitive_node" pkg="max_min_lp_simulation" name="apply_motion_primitive_node" output="screen">
-      <param name="num_target" type="int" value="$(arg num_target)"/>
-      <param name="num_robot" type="int" value="$(arg num_robot)"/>
-      <param name="robot_id" type="int" value="1"/>
-      <param name="robot_name" type="str" value="robot_1"/>
+      <param name="verbal_flag" type="bool" value="false"/> 
     </node>
 
     <node type="get_odom_node" pkg="max_min_lp_simulation" name="get_odom_node" output="screen">
@@ -46,7 +22,7 @@
       <param name="robot_name" type="str" value="robot_1"/>
     </node>
   </group>
-  <group ns="robot_2">
+  <!--<group ns="robot_2">
     <node type="max_min_lp_simulation_robot_node_simulation" pkg="max_min_lp_simulation" name="max_min_lp_simulation_robot_node_simulation" output="screen">
       <param name="num_target" type="int" value="$(arg num_target)"/>
       <param name="num_robot" type="int" value="$(arg num_robot)"/>
@@ -57,20 +33,6 @@
       <param name="epsilon" type="double" value="$(arg epsilon)"/>
       <param name="num_motion_primitive" type="int" value="$(arg num_motion_primitive)"/>
       <param name="time_interval" type="int" value="$(arg time_interval)"/>
-    </node>
-
-    <node type="apply_motion_primitive_node" pkg="max_min_lp_simulation" name="apply_motion_primitive_node" output="screen">
-      <param name="num_target" type="int" value="$(arg num_target)"/>
-      <param name="num_robot" type="int" value="$(arg num_robot)"/>
-      <param name="robot_id" type="int" value="2"/>
-      <param name="robot_name" type="str" value="robot_2"/>
-    </node>
-
-    <node type="get_odom_node" pkg="max_min_lp_simulation" name="get_odom_node" output="screen">
-      <param name="num_target" type="int" value="$(arg num_target)"/>
-      <param name="num_robot" type="int" value="$(arg num_robot)"/>
-      <param name="robot_id" type="int" value="2"/>
-      <param name="robot_name" type="str" value="robot_2"/>
     </node>
   </group>
   <group ns="robot_3">
@@ -85,20 +47,6 @@
       <param name="num_motion_primitive" type="int" value="$(arg num_motion_primitive)"/>
       <param name="time_interval" type="int" value="$(arg time_interval)"/>
     </node>
-
-    <node type="apply_motion_primitive_node" pkg="max_min_lp_simulation" name="apply_motion_primitive_node" output="screen">
-      <param name="num_target" type="int" value="$(arg num_target)"/>
-      <param name="num_robot" type="int" value="$(arg num_robot)"/>
-      <param name="robot_id" type="int" value="3"/>
-      <param name="robot_name" type="str" value="robot_3"/>
-    </node>
-
-    <node type="get_odom_node" pkg="max_min_lp_simulation" name="get_odom_node" output="screen">
-      <param name="num_target" type="int" value="$(arg num_target)"/>
-      <param name="num_robot" type="int" value="$(arg num_robot)"/>
-      <param name="robot_id" type="int" value="3"/>
-      <param name="robot_name" type="str" value="robot_3"/>
-    </node>
   </group>
   <group ns="robot_4">
     <node type="max_min_lp_simulation_robot_node_simulation" pkg="max_min_lp_simulation" name="max_min_lp_simulation_robot_node_simulation" output="screen">
@@ -111,20 +59,6 @@
       <param name="epsilon" type="double" value="$(arg epsilon)"/>
       <param name="num_motion_primitive" type="int" value="$(arg num_motion_primitive)"/>
       <param name="time_interval" type="int" value="$(arg time_interval)"/>
-    </node>
-
-    <node type="apply_motion_primitive_node" pkg="max_min_lp_simulation" name="apply_motion_primitive_node" output="screen">
-      <param name="num_target" type="int" value="$(arg num_target)"/>
-      <param name="num_robot" type="int" value="$(arg num_robot)"/>
-      <param name="robot_id" type="int" value="4"/>
-      <param name="robot_name" type="str" value="robot_4"/>
-    </node>
-
-    <node type="get_odom_node" pkg="max_min_lp_simulation" name="get_odom_node" output="screen">
-      <param name="num_target" type="int" value="$(arg num_target)"/>
-      <param name="num_robot" type="int" value="$(arg num_robot)"/>
-      <param name="robot_id" type="int" value="4"/>
-      <param name="robot_name" type="str" value="robot_4"/>
     </node>
   </group>
   <group ns="robot_5">
@@ -139,22 +73,8 @@
       <param name="num_motion_primitive" type="int" value="$(arg num_motion_primitive)"/>
       <param name="time_interval" type="int" value="$(arg time_interval)"/>
     </node>
-
-    <node type="apply_motion_primitive_node" pkg="max_min_lp_simulation" name="apply_motion_primitive_node" output="screen">
-      <param name="num_target" type="int" value="$(arg num_target)"/>
-      <param name="num_robot" type="int" value="$(arg num_robot)"/>
-      <param name="robot_id" type="int" value="5"/>
-      <param name="robot_name" type="str" value="robot_5"/>
-    </node>
-
-    <node type="get_odom_node" pkg="max_min_lp_simulation" name="get_odom_node" output="screen">
-      <param name="num_target" type="int" value="$(arg num_target)"/>
-      <param name="num_robot" type="int" value="$(arg num_robot)"/>
-      <param name="robot_id" type="int" value="5"/>
-      <param name="robot_name" type="str" value="robot_5"/>
-    </node>
   </group>
-  <!--<group ns="robot_6">
+  <group ns="robot_6">
     <node type="max_min_lp_simulation_robot_node_simulation" pkg="max_min_lp_simulation" name="max_min_lp_simulation_robot_node_simulation" output="screen">
       <param name="num_target" type="int" value="$(arg num_target)"/>
       <param name="num_robot" type="int" value="$(arg num_robot)"/>

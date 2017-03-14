@@ -18,6 +18,8 @@
 #include <boost/lexical_cast.hpp>
 #include <tf/transform_datatypes.h>
 #include <max_min_lp_simulation/apply_motion_primitive.hpp>
+#include <max_min_lp_simulation/get_odom.hpp>
+#include <max_min_lp_simulation/apply_motion_primitive.hpp>
 #include <max_min_lp_msgs/general_node.h>
 #include <max_min_lp_msgs/general_node_array.h>
 #include <max_min_lp_msgs/layered_node.h>
@@ -27,6 +29,8 @@
 #include <max_min_lp_core/MaxMinLPDecentralizedCore.hpp>
 #include <max_min_lp_simulation/MessageRequest.h>
 #include <max_min_lp_simulation/MotionPrimitiveRequest.h>
+#include <max_min_lp_simulation/GetOdom.h>
+#include <max_min_lp_simulation/MoveRobot.h>
 
 using namespace std;
 
@@ -49,6 +53,8 @@ private:
   // Clients
   ros::ServiceClient m_client;
   ros::ServiceClient m_primitive_client;
+  ros::ServiceClient m_odom_client;
+  ros::ServiceClient m_move_client;
 
   // Variables from the launch file
   int m_num_robot;
@@ -65,6 +71,8 @@ private:
   int m_count_time_interval;
   int m_selected_primitive_id;
   vector<int> m_motion_case_rotation;
+  vector<geometry_msgs::Pose> m_motion_primitive_pose;
+  vector<int> m_check_rotation_direction;
 
   // Robot info
   geometry_msgs::Pose m_pos;

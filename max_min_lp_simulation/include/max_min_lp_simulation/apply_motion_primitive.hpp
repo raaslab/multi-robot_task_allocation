@@ -7,7 +7,10 @@
 #include <nav_msgs/Odometry.h>
 #include <gazebo_msgs/ModelStates.h>
 #include <max_min_lp_simulation/get_odom.hpp>
+#include <max_min_lp_simulation/GetOdom.h>
+#include <max_min_lp_simulation/MoveRobot.h>
 #include <boost/lexical_cast.hpp>
+#include <tf/transform_datatypes.h>
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -26,19 +29,27 @@ private:
   ros::Subscriber m_odom_sub;
 
   // Publishers
-  ros::Publisher m_general_node_pub;
+  ros::Publisher m_cmd_vel_robot_pub;
+
+  // Services
+  ros::ServiceServer m_move_service;
+
+  // Clients
+  ros::ServiceClient m_odom_client;
 
   string m_robot_name;
   int m_num_robot;
   int m_num_target;
   int m_robot_id;
+  int m_check_rotation_direction;
+  geometry_msgs::Pose m_goal_pos;
 
   geometry_msgs::Pose m_pos;
 
 public:
   apply_motion_primitive(); // Constructor
 
-  bool initialize();
+  bool move_robot(max_min_lp_simulation::MoveRobot::Request &req, max_min_lp_simulation::MoveRobot::Response &res);
 };
 
 #endif

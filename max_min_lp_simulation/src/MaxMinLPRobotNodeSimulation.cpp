@@ -57,7 +57,7 @@ void MaxMinLPRobotNodeSimulation::updateOdom(const gazebo_msgs::ModelStates::Con
 	m_pos = msg->pose[id];
 
 	if (m_check_start) {
-		ROS_INFO("ROBOT %d updateOdom() is working.", m_robot_id);
+		// ROS_INFO("ROBOT %d updateOdom() is working.", m_robot_id);
 	}
 }
 
@@ -149,25 +149,58 @@ void MaxMinLPRobotNodeSimulation::applyMotionPrimitives(const std_msgs::String::
 		// m_layered_node_pub.publish(temp_layered_msg);
 
 		// Obtain an optimal motion primitive.
-		bool result_get_primitive = getMotionPrimitive();
-		if (result_get_primitive) {
-			ROS_INFO(" ");
-			ROS_INFO("After applying motion primitives.");
-			ROS_INFO(" ROBOT %d : (%.2f, %.2f)", m_robot_id, m_pos.position.x, m_pos.position.y);
-			std_msgs::String msg;
-		    stringstream ss;
-		    ss<<"action is applied";
-		    msg.data = ss.str();
-		    m_response_to_server_pub.publish(msg);
+		// max_min_lp_simulation::apply_motion_primitive amp(m_num_robot, m_num_target, m_robot_id, m_robot_name, 
+		// 	m_motion_primitive_pose[(int)m_motion_primitive_pose.size()-1], m_check_rotation_direction);
+		// bool result_move_robot = amp.move_robot();
 
-		    if (m_verbal_flag) {
-				ROS_INFO("ROBOT %d's action is applied", m_robot_id);
+		m_primitive_client = m_nh.serviceClient<max_min_lp_simulation::MotionPrimitiveRequest>("/motion_primitive_request");
+		max_min_lp_simulation::MotionPrimitiveRequest srv;
+		srv.request.count_motion_primitive = m_count_time_interval;
+		srv.request.request_ROBOT_id = m_robot_id;
+
+		if (m_primitive_client.call(srv)) {
+			if (m_verbal_flag) {
+				ROS_INFO("ROBOT %d is in the getMotionPrimitive() step", m_robot_id);
+			}
+
+			m_count_time_interval = srv.response.return_count_motion_primitive;
+			m_selected_primitive_id = srv.response.selected_primitive_id;
+
+			// if (m_verbal_flag) {
+				ROS_INFO("ROBOT %d accepted a service call (in the getMotionPrimitive() step)", m_robot_id);
+				ROS_INFO("ROBOT %d : selected primitive id = %d", m_robot_id, m_selected_primitive_id);
+			// }
+
+			m_move_client = m_nh.serviceClient<max_min_lp_simulation::MoveRobot>("/robot_"+boost::lexical_cast<string>(m_robot_id)+"/move_request", true);
+			max_min_lp_simulation::MoveRobot srv;
+			srv.request.goal_pos = m_motion_primitive_pose[m_selected_primitive_id-1];
+			srv.request.rotation_direction = m_check_rotation_direction[m_selected_primitive_id-1];
+
+			// bool result_get_primitive = getMotionPrimitive();
+			// if (result_get_primitive) {
+			if (m_move_client.call(srv)) {
+				ROS_INFO(" ");
+				ROS_INFO("After applying motion primitives.");
+				ROS_INFO(" ROBOT %d : (%.2f, %.2f)", m_robot_id, m_pos.position.x, m_pos.position.y);
+				std_msgs::String msg;
+			    stringstream ss;
+			    ss<<"action is applied";
+			    msg.data = ss.str();
+			    m_response_to_server_pub.publish(msg);
+
+			    if (m_verbal_flag) {
+					ROS_INFO("ROBOT %d's action is applied", m_robot_id);
+				}
+			}
+			else {
+				// if (m_verbal_flag) {
+					ROS_INFO("ERROR: ROBOT %d's action failed.", m_robot_id);
+				// }
 			}
 		}
 		else {
-			if (m_verbal_flag) {
-				ROS_INFO("ERROR: ROBOT %d's action failed.", m_robot_id);
-			}
+			ROS_INFO("ERROR: Fail to communicate with the server. ROBOT %d is lost.", m_robot_id);
+			// return MaxMinLPRobotNodeSimulation::initialize();
 		}
 	}
 }
@@ -189,9 +222,9 @@ bool MaxMinLPRobotNodeSimulation::initialize() {
 	srv.request.robot_info = robot_pose;
 
 	// Compute motion primivites.
-  	vector<geometry_msgs::Pose> motion_primitive_pose;
-	motion_primitive_pose = computeMotionPrimitives();
-	srv.request.motion_primitive_info = motion_primitive_pose;
+  	m_motion_primitive_pose.clear();
+	m_motion_primitive_pose = computeMotionPrimitives();
+	srv.request.motion_primitive_info = m_motion_primitive_pose;
 
 	if (m_client.call(srv)) {
 		if (strcmp(srv.response.state_answer.c_str(), "start") == 0) {
@@ -315,6 +348,21 @@ bool MaxMinLPRobotNodeSimulation::getMotionPrimitive() {
 			usleep(1000000);
 		}
 
+		m_odom_client = m_nh.serviceClient<max_min_lp_simulation::GetOdom>("/robot_"+boost::lexical_cast<string>(m_robot_id)+"/odom_request", true);
+		max_min_lp_simulation::GetOdom srv;
+		srv.request.request_odom = string("request");
+
+		if (m_odom_client.call(srv)) {
+			geometry_msgs::Pose temp_pos;
+			temp_pos = srv.response.return_odom;
+
+			ROS_INFO("    ROBOT %d : (%.2f, %.2f)", m_robot_id, temp_pos.position.x, temp_pos.position.y);
+		}
+
+		// geometry_msgs::Pose temp_pos;
+		// max_min_lp_simulation::get_odom gom(m_num_robot, m_num_target, m_robot_id, m_robot_name);
+		// temp_pos = gom.return_odom();
+
 		if (m_count_time_interval == m_time_interval) {
 			m_count_time_interval = 0;
 			return true;
@@ -370,11 +418,25 @@ vector<geometry_msgs::Pose> MaxMinLPRobotNodeSimulation::computeMotionPrimitives
 	yaw = yaw * 180 / PHI;
 
 	double x_new, y_new;
+	double temp_orientation;
+
+	m_check_rotation_direction.clear();
 
 	for (int i = 0; i < m_num_motion_primitive; i++) {
 		if (i == 0) {
+			// Check if the rotation is cw, ccw or stationary
+			if (m_motion_case_rotation[i] > 0) {
+				m_check_rotation_direction.push_back(1);
+			}
+			else if (m_motion_case_rotation[i] < 0) {
+				m_check_rotation_direction.push_back(-1);
+			}
+			else {
+				m_check_rotation_direction.push_back(0);
+			}
+
 			geometry_msgs::Pose temp_motion_primitive_instance;
-			double temp_orientation = yaw + 3.42 * m_motion_case_rotation[i];
+			temp_orientation = yaw + 3.42 * m_motion_case_rotation[i];
 			if (temp_orientation > 180) {
 				temp_orientation -= 360;
 			}
@@ -409,6 +471,7 @@ vector<geometry_msgs::Pose> MaxMinLPRobotNodeSimulation::computeMotionPrimitives
 
 			temp_motion_primitive_instance.position.x = x_new;
 			temp_motion_primitive_instance.position.y = y_new;
+			temp_motion_primitive_instance.orientation.w = temp_orientation;
 
 			if (m_verbal_flag) {
 				ROS_INFO("ROBOT %d : %d'th motion primitiv = (%f, %f)", m_robot_id, i+1, x_new, y_new);
@@ -417,9 +480,19 @@ vector<geometry_msgs::Pose> MaxMinLPRobotNodeSimulation::computeMotionPrimitives
 			temp_motion_primitive.push_back(temp_motion_primitive_instance);
 		}
 		else if(i == 1) {
+			m_check_rotation_direction.push_back(0);
+			temp_orientation = yaw;
+			if (temp_orientation > 180) {
+				temp_orientation -= 360;
+			}
+			else if (temp_orientation < -180) {
+				temp_orientation += 360;
+			}
+
 			geometry_msgs::Pose temp_motion_primitive_instance;
 			temp_motion_primitive_instance.position.x = m_pos.position.x;
 			temp_motion_primitive_instance.position.y = m_pos.position.y;
+			temp_motion_primitive_instance.orientation.w = temp_orientation;
 
 			if (m_verbal_flag) {
 				ROS_INFO("ROBOT %d : %d'th motion primitiv = (%f, %f)", m_robot_id, i+1, m_pos.position.x, m_pos.position.y);

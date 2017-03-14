@@ -1,0 +1,764 @@
+<?xml version="1.0"?> 
+<sdf version="1.4">
+  <world name="target_spawn_world">
+
+    <!-- Ground Plane -->
+    <include>
+      <uri>model://ground_plane</uri>
+    </include>
+
+    <include>
+      <uri>model://sun</uri>
+    </include>
+
+    <model name="target_1">
+      <pose>0 0 0 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <cylinder>
+              <radius> 0.2 </radius>
+              <length> 0.4 </length>
+            </cylinder>
+          </geometry>
+        </collision>
+
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius> 0.2 </radius>
+              <length> 0.4 </length>
+            </cylinder>
+          </geometry>
+        </visual>
+      </link>
+
+      <plugin name="animated_box" filename="libanimated_box.so"/>
+    </model>
+
+    <model name="target_2">
+      <pose>0 0 0 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <cylinder>
+              <radius> 0.2 </radius>
+              <length> 0.4 </length>
+            </cylinder>
+          </geometry>
+        </collision>
+
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius> 0.2 </radius>
+              <length> 0.4 </length>
+            </cylinder>
+          </geometry>
+        </visual>
+      </link>
+
+      <plugin name="animated_box" filename="libanimated_box.so"/>
+    </model>
+
+    <model name="target_3">
+      <pose>0 0 0 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <cylinder>
+              <radius> 0.2 </radius>
+              <length> 0.4 </length>
+            </cylinder>
+          </geometry>
+        </collision>
+
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius> 0.2 </radius>
+              <length> 0.4 </length>
+            </cylinder>
+          </geometry>
+        </visual>
+      </link>
+
+      <plugin name="animated_box" filename="libanimated_box.so"/>
+    </model>
+
+    <model name="target_4">
+      <pose>0 0 0 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <cylinder>
+              <radius> 0.2 </radius>
+              <length> 0.4 </length>
+            </cylinder>
+          </geometry>
+        </collision>
+
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius> 0.2 </radius>
+              <length> 0.4 </length>
+            </cylinder>
+          </geometry>
+        </visual>
+      </link>
+
+      <plugin name="animated_box" filename="libanimated_box.so"/>
+    </model>
+
+    <model name="target_5">
+      <pose>0 0 0 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <cylinder>
+              <radius> 0.2 </radius>
+              <length> 0.4 </length>
+            </cylinder>
+          </geometry>
+        </collision>
+
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius> 0.2 </radius>
+              <length> 0.4 </length>
+            </cylinder>
+          </geometry>
+        </visual>
+      </link>
+
+      <plugin name="animated_box" filename="libanimated_box.so"/>
+    </model>
+
+    <model name="target_6">
+      <pose>0 0 0 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <cylinder>
+              <radius> 0.2 </radius>
+              <length> 0.4 </length>
+            </cylinder>
+          </geometry>
+        </collision>
+
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius> 0.2 </radius>
+              <length> 0.4 </length>
+            </cylinder>
+          </geometry>
+        </visual>
+      </link>
+
+      <plugin name="animated_box" filename="libanimated_box.so"/>
+    </model>
+
+    <model name="target_7">
+      <pose>0 0 0 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <cylinder>
+              <radius> 0.2 </radius>
+              <length> 0.4 </length>
+            </cylinder>
+          </geometry>
+        </collision>
+
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius> 0.2 </radius>
+              <length> 0.4 </length>
+            </cylinder>
+          </geometry>
+        </visual>
+      </link>
+
+      <plugin name="animated_box" filename="libanimated_box.so"/>
+    </model>
+
+    <model name="target_8">
+      <pose>0 0 0 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <cylinder>
+              <radius> 0.2 </radius>
+              <length> 0.4 </length>
+            </cylinder>
+          </geometry>
+        </collision>
+
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius> 0.2 </radius>
+              <length> 0.4 </length>
+            </cylinder>
+          </geometry>
+        </visual>
+      </link>
+
+      <plugin name="animated_box" filename="libanimated_box.so"/>
+    </model>
+
+    <model name="target_9">
+      <pose>0 0 0 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <cylinder>
+              <radius> 0.2 </radius>
+              <length> 0.4 </length>
+            </cylinder>
+          </geometry>
+        </collision>
+
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius> 0.2 </radius>
+              <length> 0.4 </length>
+            </cylinder>
+          </geometry>
+        </visual>
+      </link>
+
+      <plugin name="animated_box" filename="libanimated_box.so"/>
+    </model>
+
+    <model name="target_10">
+      <pose>0 0 0 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <cylinder>
+              <radius> 0.2 </radius>
+              <length> 0.4 </length>
+            </cylinder>
+          </geometry>
+        </collision>
+
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius> 0.2 </radius>
+              <length> 0.4 </length>
+            </cylinder>
+          </geometry>
+        </visual>
+      </link>
+
+      <plugin name="animated_box" filename="libanimated_box.so"/>
+    </model>
+
+    <model name="target_11">
+      <pose>0 0 0 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <cylinder>
+              <radius> 0.2 </radius>
+              <length> 0.4 </length>
+            </cylinder>
+          </geometry>
+        </collision>
+
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius> 0.2 </radius>
+              <length> 0.4 </length>
+            </cylinder>
+          </geometry>
+        </visual>
+      </link>
+
+      <plugin name="animated_box" filename="libanimated_box.so"/>
+    </model>
+
+    <model name="target_12">
+      <pose>0 0 0 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <cylinder>
+              <radius> 0.2 </radius>
+              <length> 0.4 </length>
+            </cylinder>
+          </geometry>
+        </collision>
+
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius> 0.2 </radius>
+              <length> 0.4 </length>
+            </cylinder>
+          </geometry>
+        </visual>
+      </link>
+
+      <plugin name="animated_box" filename="libanimated_box.so"/>
+    </model>
+
+    <model name="target_13">
+      <pose>0 0 0 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <cylinder>
+              <radius> 0.2 </radius>
+              <length> 0.4 </length>
+            </cylinder>
+          </geometry>
+        </collision>
+
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius> 0.2 </radius>
+              <length> 0.4 </length>
+            </cylinder>
+          </geometry>
+        </visual>
+      </link>
+
+      <plugin name="animated_box" filename="libanimated_box.so"/>
+    </model>
+
+    <model name="target_14">
+      <pose>0 0 0 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <cylinder>
+              <radius> 0.2 </radius>
+              <length> 0.4 </length>
+            </cylinder>
+          </geometry>
+        </collision>
+
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius> 0.2 </radius>
+              <length> 0.4 </length>
+            </cylinder>
+          </geometry>
+        </visual>
+      </link>
+
+      <plugin name="animated_box" filename="libanimated_box.so"/>
+    </model>
+
+    <model name="target_15">
+      <pose>0 0 0 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <cylinder>
+              <radius> 0.2 </radius>
+              <length> 0.4 </length>
+            </cylinder>
+          </geometry>
+        </collision>
+
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius> 0.2 </radius>
+              <length> 0.4 </length>
+            </cylinder>
+          </geometry>
+        </visual>
+      </link>
+
+      <plugin name="animated_box" filename="libanimated_box.so"/>
+    </model>
+
+    <model name="target_16">
+      <pose>0 0 0 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <cylinder>
+              <radius> 0.2 </radius>
+              <length> 0.4 </length>
+            </cylinder>
+          </geometry>
+        </collision>
+
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius> 0.2 </radius>
+              <length> 0.4 </length>
+            </cylinder>
+          </geometry>
+        </visual>
+      </link>
+
+      <plugin name="animated_box" filename="libanimated_box.so"/>
+    </model>
+
+    <model name="target_17">
+      <pose>0 0 0 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <cylinder>
+              <radius> 0.2 </radius>
+              <length> 0.4 </length>
+            </cylinder>
+          </geometry>
+        </collision>
+
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius> 0.2 </radius>
+              <length> 0.4 </length>
+            </cylinder>
+          </geometry>
+        </visual>
+      </link>
+
+      <plugin name="animated_box" filename="libanimated_box.so"/>
+    </model>
+
+    <model name="target_18">
+      <pose>0 0 0 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <cylinder>
+              <radius> 0.2 </radius>
+              <length> 0.4 </length>
+            </cylinder>
+          </geometry>
+        </collision>
+
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius> 0.2 </radius>
+              <length> 0.4 </length>
+            </cylinder>
+          </geometry>
+        </visual>
+      </link>
+
+      <plugin name="animated_box" filename="libanimated_box.so"/>
+    </model>
+
+    <model name="target_19">
+      <pose>0 0 0 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <cylinder>
+              <radius> 0.2 </radius>
+              <length> 0.4 </length>
+            </cylinder>
+          </geometry>
+        </collision>
+
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius> 0.2 </radius>
+              <length> 0.4 </length>
+            </cylinder>
+          </geometry>
+        </visual>
+      </link>
+
+      <plugin name="animated_box" filename="libanimated_box.so"/>
+    </model>
+
+    <model name="target_20">
+      <pose>0 0 0 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <cylinder>
+              <radius> 0.2 </radius>
+              <length> 0.4 </length>
+            </cylinder>
+          </geometry>
+        </collision>
+
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius> 0.2 </radius>
+              <length> 0.4 </length>
+            </cylinder>
+          </geometry>
+        </visual>
+      </link>
+
+      <plugin name="animated_box" filename="libanimated_box.so"/>
+    </model>
+
+    <model name="target_21">
+      <pose>0 0 0 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <cylinder>
+              <radius> 0.2 </radius>
+              <length> 0.4 </length>
+            </cylinder>
+          </geometry>
+        </collision>
+
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius> 0.2 </radius>
+              <length> 0.4 </length>
+            </cylinder>
+          </geometry>
+        </visual>
+      </link>
+
+      <plugin name="animated_box" filename="libanimated_box.so"/>
+    </model>
+
+    <model name="target_22">
+      <pose>0 0 0 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <cylinder>
+              <radius> 0.2 </radius>
+              <length> 0.4 </length>
+            </cylinder>
+          </geometry>
+        </collision>
+
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius> 0.2 </radius>
+              <length> 0.4 </length>
+            </cylinder>
+          </geometry>
+        </visual>
+      </link>
+
+      <plugin name="animated_box" filename="libanimated_box.so"/>
+    </model>
+
+    <model name="target_23">
+      <pose>0 0 0 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <cylinder>
+              <radius> 0.2 </radius>
+              <length> 0.4 </length>
+            </cylinder>
+          </geometry>
+        </collision>
+
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius> 0.2 </radius>
+              <length> 0.4 </length>
+            </cylinder>
+          </geometry>
+        </visual>
+      </link>
+
+      <plugin name="animated_box" filename="libanimated_box.so"/>
+    </model>
+
+    <model name="target_24">
+      <pose>0 0 0 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <cylinder>
+              <radius> 0.2 </radius>
+              <length> 0.4 </length>
+            </cylinder>
+          </geometry>
+        </collision>
+
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius> 0.2 </radius>
+              <length> 0.4 </length>
+            </cylinder>
+          </geometry>
+        </visual>
+      </link>
+
+      <plugin name="animated_box" filename="libanimated_box.so"/>
+    </model>
+
+    <model name="target_25">
+      <pose>0 0 0 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <cylinder>
+              <radius> 0.2 </radius>
+              <length> 0.4 </length>
+            </cylinder>
+          </geometry>
+        </collision>
+
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius> 0.2 </radius>
+              <length> 0.4 </length>
+            </cylinder>
+          </geometry>
+        </visual>
+      </link>
+
+      <plugin name="animated_box" filename="libanimated_box.so"/>
+    </model>
+
+    <model name="target_26">
+      <pose>0 0 0 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <cylinder>
+              <radius> 0.2 </radius>
+              <length> 0.4 </length>
+            </cylinder>
+          </geometry>
+        </collision>
+
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius> 0.2 </radius>
+              <length> 0.4 </length>
+            </cylinder>
+          </geometry>
+        </visual>
+      </link>
+
+      <plugin name="animated_box" filename="libanimated_box.so"/>
+    </model>
+
+    <model name="target_27">
+      <pose>0 0 0 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <cylinder>
+              <radius> 0.2 </radius>
+              <length> 0.4 </length>
+            </cylinder>
+          </geometry>
+        </collision>
+
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius> 0.2 </radius>
+              <length> 0.4 </length>
+            </cylinder>
+          </geometry>
+        </visual>
+      </link>
+
+      <plugin name="animated_box" filename="libanimated_box.so"/>
+    </model>
+
+    <model name="target_28">
+      <pose>0 0 0 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <cylinder>
+              <radius> 0.2 </radius>
+              <length> 0.4 </length>
+            </cylinder>
+          </geometry>
+        </collision>
+
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius> 0.2 </radius>
+              <length> 0.4 </length>
+            </cylinder>
+          </geometry>
+        </visual>
+      </link>
+
+      <plugin name="animated_box" filename="libanimated_box.so"/>
+    </model>
+
+    <model name="target_29">
+      <pose>0 0 0 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <cylinder>
+              <radius> 0.2 </radius>
+              <length> 0.4 </length>
+            </cylinder>
+          </geometry>
+        </collision>
+
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius> 0.2 </radius>
+              <length> 0.4 </length>
+            </cylinder>
+          </geometry>
+        </visual>
+      </link>
+
+      <plugin name="animated_box" filename="libanimated_box.so"/>
+    </model>
+
+    <model name="target_30">
+      <pose>0 0 0 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <cylinder>
+              <radius> 0.2 </radius>
+              <length> 0.4 </length>
+            </cylinder>
+          </geometry>
+        </collision>
+
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius> 0.2 </radius>
+              <length> 0.4 </length>
+            </cylinder>
+          </geometry>
+        </visual>
+      </link>
+
+      <plugin name="animated_box" filename="libanimated_box.so"/>
+    </model>
+  </world>
+</sdf>

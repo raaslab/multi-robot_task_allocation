@@ -50,16 +50,16 @@ m_num_robot(1), m_num_target(1), m_num_motion_primitive(10), m_num_layer(2), m_o
 		m_temp_target_name.push_back("target_"+boost::lexical_cast<string>(i+1));
 		m_temp_target_pos.push_back(dummy_target_pos);
 	}
-	m_target_1_sub = m_nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1000, boost::bind(&MaxMinLPCentralNodeSimulation::updatePose, this, _1, 0));
-	m_target_2_sub = m_nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1000, boost::bind(&MaxMinLPCentralNodeSimulation::updatePose, this, _1, 1));
-	m_target_3_sub = m_nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1000, boost::bind(&MaxMinLPCentralNodeSimulation::updatePose, this, _1, 2));
-	m_target_4_sub = m_nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1000, boost::bind(&MaxMinLPCentralNodeSimulation::updatePose, this, _1, 3));
-	m_target_5_sub = m_nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1000, boost::bind(&MaxMinLPCentralNodeSimulation::updatePose, this, _1, 4));
-	m_target_6_sub = m_nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1000, boost::bind(&MaxMinLPCentralNodeSimulation::updatePose, this, _1, 5));
-	m_target_7_sub = m_nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1000, boost::bind(&MaxMinLPCentralNodeSimulation::updatePose, this, _1, 6));
-	m_target_8_sub = m_nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1000, boost::bind(&MaxMinLPCentralNodeSimulation::updatePose, this, _1, 7));
-	m_target_9_sub = m_nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1000, boost::bind(&MaxMinLPCentralNodeSimulation::updatePose, this, _1, 8));
-	m_target_10_sub = m_nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1000, boost::bind(&MaxMinLPCentralNodeSimulation::updatePose, this, _1, 9));
+	// m_target_1_sub = m_nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1000, boost::bind(&MaxMinLPCentralNodeSimulation::updatePose, this, _1, 0));
+	// m_target_2_sub = m_nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1000, boost::bind(&MaxMinLPCentralNodeSimulation::updatePose, this, _1, 1));
+	// m_target_3_sub = m_nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1000, boost::bind(&MaxMinLPCentralNodeSimulation::updatePose, this, _1, 2));
+	// m_target_4_sub = m_nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1000, boost::bind(&MaxMinLPCentralNodeSimulation::updatePose, this, _1, 3));
+	// m_target_5_sub = m_nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1000, boost::bind(&MaxMinLPCentralNodeSimulation::updatePose, this, _1, 4));
+	// m_target_6_sub = m_nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1000, boost::bind(&MaxMinLPCentralNodeSimulation::updatePose, this, _1, 5));
+	// m_target_7_sub = m_nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1000, boost::bind(&MaxMinLPCentralNodeSimulation::updatePose, this, _1, 6));
+	// m_target_8_sub = m_nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1000, boost::bind(&MaxMinLPCentralNodeSimulation::updatePose, this, _1, 7));
+	// m_target_9_sub = m_nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1000, boost::bind(&MaxMinLPCentralNodeSimulation::updatePose, this, _1, 8));
+	// m_target_10_sub = m_nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1000, boost::bind(&MaxMinLPCentralNodeSimulation::updatePose, this, _1, 9));
 	// m_target_11_sub = m_nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1000, boost::bind(&MaxMinLPCentralNodeSimulation::updatePose, this, _1, 10));
 	// m_target_12_sub = m_nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1000, boost::bind(&MaxMinLPCentralNodeSimulation::updatePose, this, _1, 11));
 	// m_target_13_sub = m_nh.subscribe<gazebo_msgs::ModelStates>("/gazebo/model_states", 1000, boost::bind(&MaxMinLPCentralNodeSimulation::updatePose, this, _1, 12));
@@ -1039,8 +1039,8 @@ void MaxMinLPCentralNodeSimulation::applySequentialLocalAlgorithm(const std_msgs
 				m_optimal_primitive_id_for_plot.push_back(m_primitive_id[max_primitive_index[0]]);
 			}
 
-			ROS_INFO(" ");
-			ROS_INFO("ROBOT %d : selected primitive id = %d", i+1, m_optimal_primitive_id[i]);
+			// ROS_INFO(" ");
+			// ROS_INFO("ROBOT %d : selected primitive id = %d", i+1, m_optimal_primitive_id[i]);
 			if (m_verbal_flag) {
 				ROS_INFO("ROBOT %d : primitive id with maximum z_v = primitive %d", i+1, m_optimal_primitive_id[i]);
 			}
@@ -1172,7 +1172,7 @@ void MaxMinLPCentralNodeSimulation::applySequentialLocalAlgorithm(const std_msgs
 
 			vector<int> found_all_targets_next;
 			for (vector<int>::iterator it = m_optimal_primitive_id_for_plot.begin(); it != m_optimal_primitive_id_for_plot.end(); ++it) {
-				ROS_INFO("ROBOT %d :", (int)ceil(*it / m_num_motion_primitive));
+				ROS_INFO("ROBOT %d :", (int)ceil(double(*it) / m_num_motion_primitive));
 				for (vector<int>::iterator itt = m_primitives_to_targets[*it-1].begin(); itt != m_primitives_to_targets[*it-1].end(); ++itt) {
 					found_all_targets_next.push_back(*itt);
 					ROS_INFO("    target id = %d", *itt);
