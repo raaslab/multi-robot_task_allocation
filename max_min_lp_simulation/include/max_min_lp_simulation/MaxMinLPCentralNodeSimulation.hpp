@@ -20,6 +20,8 @@
 #include <max_min_lp_msgs/server_to_robots_array.h>
 #include <max_min_lp_msgs/target_node.h>
 #include <max_min_lp_msgs/primitive_node.h>
+#include <max_min_lp_simulation/get_odom.hpp>
+#include <max_min_lp_simulation/GetOdom.h>
 #include <max_min_lp_simulation/MessageRequest.h>
 #include <max_min_lp_simulation/MotionPrimitiveRequest.h>
 
@@ -72,6 +74,9 @@ private:
   // Services
   ros::ServiceServer m_service;
   ros::ServiceServer m_primitive_service;
+
+  // Clients
+  ros::ServiceClient m_target_odom_client;
 
   // Variables from the launch file
   max_min_lp_msgs::server_to_robots_array m_robot_info;

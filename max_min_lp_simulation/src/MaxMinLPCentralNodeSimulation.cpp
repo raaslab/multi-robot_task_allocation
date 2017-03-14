@@ -165,6 +165,17 @@ bool MaxMinLPCentralNodeSimulation::initialize(max_min_lp_simulation::MessageReq
 					ROS_INFO("\nTarget information");
 				}
 
+				m_target_odom_client = m_nh.serviceClient<max_min_lp_simulation::GetOdom>("/target_odom_request");
+				max_min_lp_simulation::GetOdom srv;
+				srv.request.request_odom = string("request");
+
+				if (m_target_odom_client.call(srv)) {
+					m_temp_target_pos = srv.response.return_target_odom;
+				}
+				else {
+					ROS_INFO("ERROR: Targets are not property obtained.");
+				}
+
 				for (int i = 0; i < m_num_target; i++) {
 					m_target_id.push_back(i+1);
 					m_target_x_pos.push_back(m_temp_target_pos[i].position.x);

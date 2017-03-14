@@ -19,6 +19,8 @@
     <param name="epsilon" type="double" value="$(arg epsilon)"/>
   </node>
 
+  <node type="get_target_odom_node" pkg="max_min_lp_simulation" name="get_target_odom_node" output="screen"/>
+
   <group ns="robot_1">
     <node type="max_min_lp_simulation_robot_node_simulation" pkg="max_min_lp_simulation" name="max_min_lp_simulation_robot_node_simulation" output="screen">
       <param name="num_target" type="int" value="$(arg num_target)"/>

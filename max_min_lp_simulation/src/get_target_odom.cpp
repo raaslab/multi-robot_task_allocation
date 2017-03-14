@@ -40,7 +40,7 @@ void getTargetPos(double t_x, double t_y, double t_z, int t_id) {
 	temp_pos.position.y = t_y;
 	temp_pos.position.z = t_z;
 
-	target_pos[t_id] = temp_pos;
+	target_pos.push_back(temp_pos);
 
 	// ROS_INFO("target %d : (%.2f, %.2f, %.2f)", t_id, t_x, t_y, t_z);
 }
@@ -57,196 +57,167 @@ void posesStampedCallback(ConstPosesStampedPtr &posesStamped) {
 	double temp_y = 0;
 	double temp_z = 0;
 
+	bool t_1 = true;bool t_2 = true;bool t_3 = true;bool t_4 = true;bool t_5 = true;bool t_6 = true;bool t_7 = true;bool t_8 = true;bool t_9 = true;
+	bool t_10 = true;bool t_11 = true;bool t_12 = true;bool t_13 = true;bool t_14 = true;bool t_15 = true;bool t_16 = true;bool t_17 = true;
+	bool t_18 = true;bool t_19 = true;bool t_20 = true;bool t_21 = true;bool t_22 = true;bool t_23 = true;bool t_24 = true;bool t_25 = true;bool t_26 = true;
+	bool t_27 = true;bool t_28 = true;bool t_29 = true;bool t_30 = true;
+
 	target_pos.clear();
 
 	// ROS_INFO("posesStampedCallback() is called!!");
 	for (int i = 0; i < posesStamped->pose_size(); ++i) {
 		const ::gazebo::msgs::Pose &pose = posesStamped->pose(i);
 		string name = pose.name();
-		if (name == std::string("target_1")) {
+		if (name == std::string("target_1") && t_1) {
 			const ::gazebo::msgs::Vector3d &position = pose.position();
-			temp_x = position.x();
-			temp_y = position.y();
-			temp_z = position.z();
+			temp_x = position.x();temp_y = position.y();temp_z = position.z();
+			t_1 = false;getTargetPos(temp_x, temp_y, temp_z, target_id);target_id += 1;
 		}
-		else if (name == std::string("target_2")) {
+		else if (name == std::string("target_2") && t_2) {
 			const ::gazebo::msgs::Vector3d &position = pose.position();
-			temp_x = position.x();
-			temp_y = position.y();
-			temp_z = position.z();
+			temp_x = position.x();temp_y = position.y();temp_z = position.z();
+			t_2 = false;getTargetPos(temp_x, temp_y, temp_z, target_id);target_id += 1;
 		}
-		else if (name == std::string("target_3")) {
+		else if (name == std::string("target_3") && t_3) {
 			const ::gazebo::msgs::Vector3d &position = pose.position();
-			temp_x = position.x();
-			temp_y = position.y();
-			temp_z = position.z();
+			temp_x = position.x();temp_y = position.y();temp_z = position.z();
+			t_3 = false;getTargetPos(temp_x, temp_y, temp_z, target_id);target_id += 1;
 		}
-		else if (name == std::string("target_4")) {
+		else if (name == std::string("target_4") && t_4) {
 			const ::gazebo::msgs::Vector3d &position = pose.position();
-			temp_x = position.x();
-			temp_y = position.y();
-			temp_z = position.z();
+			temp_x = position.x();temp_y = position.y();temp_z = position.z();
+			t_4 = false;getTargetPos(temp_x, temp_y, temp_z, target_id);target_id += 1;
 		}
-		else if (name == std::string("target_5")) {
+		else if (name == std::string("target_5") && t_5) {
 			const ::gazebo::msgs::Vector3d &position = pose.position();
-			temp_x = position.x();
-			temp_y = position.y();
-			temp_z = position.z();
+			temp_x = position.x();temp_y = position.y();temp_z = position.z();
+			t_5 = false;getTargetPos(temp_x, temp_y, temp_z, target_id);target_id += 1;
 		}
-		else if (name == std::string("target_6")) {
+		else if (name == std::string("target_6") && t_6) {
 			const ::gazebo::msgs::Vector3d &position = pose.position();
-			temp_x = position.x();
-			temp_y = position.y();
-			temp_z = position.z();
+			temp_x = position.x();temp_y = position.y();temp_z = position.z();
+			t_6 = false;getTargetPos(temp_x, temp_y, temp_z, target_id);target_id += 1;
 		}
-		else if (name == std::string("target_7")) {
+		else if (name == std::string("target_7") && t_7) {
 			const ::gazebo::msgs::Vector3d &position = pose.position();
-			temp_x = position.x();
-			temp_y = position.y();
-			temp_z = position.z();
+			temp_x = position.x();temp_y = position.y();temp_z = position.z();
+			t_7 = false;getTargetPos(temp_x, temp_y, temp_z, target_id);target_id += 1;
 		}
-		else if (name == std::string("target_8")) {
+		else if (name == std::string("target_8") && t_8) {
 			const ::gazebo::msgs::Vector3d &position = pose.position();
-			temp_x = position.x();
-			temp_y = position.y();
-			temp_z = position.z();
+			temp_x = position.x();temp_y = position.y();temp_z = position.z();
+			t_8 = false;getTargetPos(temp_x, temp_y, temp_z, target_id);target_id += 1;
 		}
-		else if (name == std::string("target_9")) {
+		else if (name == std::string("target_9") && t_9) {
 			const ::gazebo::msgs::Vector3d &position = pose.position();
-			temp_x = position.x();
-			temp_y = position.y();
-			temp_z = position.z();
+			temp_x = position.x();temp_y = position.y();temp_z = position.z();
+			t_9 = false;getTargetPos(temp_x, temp_y, temp_z, target_id);target_id += 1;
 		}
-		else if (name == std::string("target_10")) {
+		else if (name == std::string("target_10") && t_10) {
 			const ::gazebo::msgs::Vector3d &position = pose.position();
-			temp_x = position.x();
-			temp_y = position.y();
-			temp_z = position.z();
+			temp_x = position.x();temp_y = position.y();temp_z = position.z();
+			t_10 = false;getTargetPos(temp_x, temp_y, temp_z, target_id);target_id += 1;
 		}
-		else if (name == std::string("target_11")) {
+		else if (name == std::string("target_11") && t_11) {
 			const ::gazebo::msgs::Vector3d &position = pose.position();
-			temp_x = position.x();
-			temp_y = position.y();
-			temp_z = position.z();
+			temp_x = position.x();temp_y = position.y();temp_z = position.z();
+			t_11 = false;getTargetPos(temp_x, temp_y, temp_z, target_id);target_id += 1;
 		}
-		else if (name == std::string("target_12")) {
+		else if (name == std::string("target_12") && t_12) {
 			const ::gazebo::msgs::Vector3d &position = pose.position();
-			temp_x = position.x();
-			temp_y = position.y();
-			temp_z = position.z();
+			temp_x = position.x();temp_y = position.y();temp_z = position.z();
+			t_12 = false;getTargetPos(temp_x, temp_y, temp_z, target_id);target_id += 1;
 		}
-		else if (name == std::string("target_13")) {
+		else if (name == std::string("target_13") && t_13) {
 			const ::gazebo::msgs::Vector3d &position = pose.position();
-			temp_x = position.x();
-			temp_y = position.y();
-			temp_z = position.z();
+			temp_x = position.x();temp_y = position.y();temp_z = position.z();
+			t_13 = false;getTargetPos(temp_x, temp_y, temp_z, target_id);target_id += 1;
 		}
-		else if (name == std::string("target_14")) {
+		else if (name == std::string("target_14") && t_14) {
 			const ::gazebo::msgs::Vector3d &position = pose.position();
-			temp_x = position.x();
-			temp_y = position.y();
-			temp_z = position.z();
+			temp_x = position.x();temp_y = position.y();temp_z = position.z();
+			t_14 = false;getTargetPos(temp_x, temp_y, temp_z, target_id);target_id += 1;
 		}
-		else if (name == std::string("target_15")) {
+		else if (name == std::string("target_15") && t_15) {
 			const ::gazebo::msgs::Vector3d &position = pose.position();
-			temp_x = position.x();
-			temp_y = position.y();
-			temp_z = position.z();
+			temp_x = position.x();temp_y = position.y();temp_z = position.z();
+			t_15 = false;getTargetPos(temp_x, temp_y, temp_z, target_id);target_id += 1;
 		}
-		else if (name == std::string("target_16")) {
+		else if (name == std::string("target_16") && t_16) {
 			const ::gazebo::msgs::Vector3d &position = pose.position();
-			temp_x = position.x();
-			temp_y = position.y();
-			temp_z = position.z();
+			temp_x = position.x();temp_y = position.y();temp_z = position.z();
+			t_16 = false;getTargetPos(temp_x, temp_y, temp_z, target_id);target_id += 1;
 		}
-		else if (name == std::string("target_17")) {
+		else if (name == std::string("target_17") && t_17) {
 			const ::gazebo::msgs::Vector3d &position = pose.position();
-			temp_x = position.x();
-			temp_y = position.y();
-			temp_z = position.z();
+			temp_x = position.x();temp_y = position.y();temp_z = position.z();
+			t_17 = false;getTargetPos(temp_x, temp_y, temp_z, target_id);target_id += 1;
 		}
-		else if (name == std::string("target_18")) {
+		else if (name == std::string("target_18") && t_18) {
 			const ::gazebo::msgs::Vector3d &position = pose.position();
-			temp_x = position.x();
-			temp_y = position.y();
-			temp_z = position.z();
+			temp_x = position.x();temp_y = position.y();temp_z = position.z();
+			t_18 = false;getTargetPos(temp_x, temp_y, temp_z, target_id);target_id += 1;
 		}
-		else if (name == std::string("target_19")) {
+		else if (name == std::string("target_19") && t_19) {
 			const ::gazebo::msgs::Vector3d &position = pose.position();
-			temp_x = position.x();
-			temp_y = position.y();
-			temp_z = position.z();
+			temp_x = position.x();temp_y = position.y();temp_z = position.z();
+			t_19 =false;getTargetPos(temp_x, temp_y, temp_z, target_id);target_id += 1;
 		}
-		else if (name == std::string("target_20")) {
+		else if (name == std::string("target_20") && t_20) {
 			const ::gazebo::msgs::Vector3d &position = pose.position();
-			temp_x = position.x();
-			temp_y = position.y();
-			temp_z = position.z();
+			temp_x = position.x();temp_y = position.y();temp_z = position.z();
+			t_20 = false;getTargetPos(temp_x, temp_y, temp_z, target_id);target_id += 1;
 		}
-		else if (name == std::string("target_21")) {
+		else if (name == std::string("target_21") && t_21) {
 			const ::gazebo::msgs::Vector3d &position = pose.position();
-			temp_x = position.x();
-			temp_y = position.y();
-			temp_z = position.z();
+			temp_x = position.x();temp_y = position.y();temp_z = position.z();
+			t_21 = false;getTargetPos(temp_x, temp_y, temp_z, target_id);target_id += 1;
 		}
-		else if (name == std::string("target_22")) {
+		else if (name == std::string("target_22") && t_22) {
 			const ::gazebo::msgs::Vector3d &position = pose.position();
-			temp_x = position.x();
-			temp_y = position.y();
-			temp_z = position.z();
+			temp_x = position.x();temp_y = position.y();temp_z = position.z();
+			t_22 = false;getTargetPos(temp_x, temp_y, temp_z, target_id);target_id += 1;
 		}
-		else if (name == std::string("target_23")) {
+		else if (name == std::string("target_23") && t_23) {
 			const ::gazebo::msgs::Vector3d &position = pose.position();
-			temp_x = position.x();
-			temp_y = position.y();
-			temp_z = position.z();
+			temp_x = position.x();temp_y = position.y();temp_z = position.z();
+			t_23 = false;getTargetPos(temp_x, temp_y, temp_z, target_id);target_id += 1;
 		}
-		else if (name == std::string("target_24")) {
+		else if (name == std::string("target_24") && t_24) {
 			const ::gazebo::msgs::Vector3d &position = pose.position();
-			temp_x = position.x();
-			temp_y = position.y();
-			temp_z = position.z();
+			temp_x = position.x();temp_y = position.y();temp_z = position.z();
+			t_24 = false;getTargetPos(temp_x, temp_y, temp_z, target_id);target_id += 1;
 		}
-		else if (name == std::string("target_25")) {
+		else if (name == std::string("target_25") && t_25) {
 			const ::gazebo::msgs::Vector3d &position = pose.position();
-			temp_x = position.x();
-			temp_y = position.y();
-			temp_z = position.z();
+			temp_x = position.x();temp_y = position.y();temp_z = position.z();
+			t_25 = false;getTargetPos(temp_x, temp_y, temp_z, target_id);target_id += 1;
 		}
-		else if (name == std::string("target_26")) {
+		else if (name == std::string("target_26") && t_26) {
 			const ::gazebo::msgs::Vector3d &position = pose.position();
-			temp_x = position.x();
-			temp_y = position.y();
-			temp_z = position.z();
+			temp_x = position.x();temp_y = position.y();temp_z = position.z();
+			t_26 = false;getTargetPos(temp_x, temp_y, temp_z, target_id);target_id += 1;
 		}
-		else if (name == std::string("target_27")) {
+		else if (name == std::string("target_27") && t_27) {
 			const ::gazebo::msgs::Vector3d &position = pose.position();
-			temp_x = position.x();
-			temp_y = position.y();
-			temp_z = position.z();
+			temp_x = position.x();temp_y = position.y();temp_z = position.z();
+			t_27 = false;getTargetPos(temp_x, temp_y, temp_z, target_id);target_id += 1;
 		}
-		else if (name == std::string("target_28")) {
+		else if (name == std::string("target_28") && t_28 ) {
 			const ::gazebo::msgs::Vector3d &position = pose.position();
-			temp_x = position.x();
-			temp_y = position.y();
-			temp_z = position.z();
+			temp_x = position.x();temp_y = position.y();temp_z = position.z();
+			t_28 = false;getTargetPos(temp_x, temp_y, temp_z, target_id);target_id += 1;
 		}
-		else if (name == std::string("target_29")) {
+		else if (name == std::string("target_29") & t_29) {
 			const ::gazebo::msgs::Vector3d &position = pose.position();
-			temp_x = position.x();
-			temp_y = position.y();
-			temp_z = position.z();
+			temp_x = position.x();temp_y = position.y();temp_z = position.z();
+			t_29 = false;getTargetPos(temp_x, temp_y, temp_z, target_id);target_id += 1;
 		}
-		else if (name == std::string("target_30")) {
+		else if (name == std::string("target_30") && t_30) {
 			const ::gazebo::msgs::Vector3d &position = pose.position();
-			temp_x = position.x();
-			temp_y = position.y();
-			temp_z = position.z();
+			temp_x = position.x();temp_y = position.y();temp_z = position.z();
+			t_30 = false;getTargetPos(temp_x, temp_y, temp_z, target_id);target_id += 1;
 		}
-
-		getTargetPos(temp_x, temp_y, temp_z, target_id);
-
-		target_id += 1;
 	}
 }
 
@@ -267,6 +238,13 @@ int main(int argc, char **argv) {
 	gazebo::transport::SubscriberPtr sub = node->Subscribe("~/pose/info", posesStampedCallback);
 
 	odom_service = nh.advertiseService("/target_odom_request", return_odom);
+
+	// while (true) {
+	//     gazebo::common::Time::MSleep(10);
+	// }
+
+	// // Make sure to shut everything down.
+	// gazebo::client::shutdown();
 
 	ros::spin();
 	return 0;
