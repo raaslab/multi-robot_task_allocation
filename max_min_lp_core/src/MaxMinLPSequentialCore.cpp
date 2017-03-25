@@ -1117,7 +1117,9 @@ bool MaxMinLPSequentialCore::computeRecursive(int _count_red_layer_zero, float _
 							getMapPointer("p"+boost::lexical_cast<string>(temp_robot_pointer->second.loc_neighbor_id[k]), i, "blue");
 
 						// Here the variable "m_constraint_value" is applied in the case of |V_i| > 2.
-						temp_z_r.push_back((m_constraint_value[temp_ROBOT_id-1] - temp_robot_pointer->second.edge_weight[k] * temp_blue_pointer->second.z_b) 
+						// temp_z_r.push_back((m_constraint_value[temp_ROBOT_id-1] - temp_robot_pointer->second.edge_weight[k] * temp_blue_pointer->second.z_b) 
+						// 	/ temp_red_pointer->second.edge_weight[j]);
+							temp_z_r.push_back((1 - temp_robot_pointer->second.edge_weight[k] * temp_blue_pointer->second.z_b) 
 							/ temp_red_pointer->second.edge_weight[j]);
 					}
 				}

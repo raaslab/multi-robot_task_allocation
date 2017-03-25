@@ -32,6 +32,7 @@ bool apply_motion_primitive::move_robot(max_min_lp_simulation::MoveRobot::Reques
 	ROS_INFO("ROBOT %d rotation direction = %d", m_robot_id, m_check_rotation_direction);
 
 	// m_goal_pos.orientation.w
+	float ang_vel = 0.5;
 	while (1) {
 		geometry_msgs::Twist cmd_vel_msg;
 
@@ -41,7 +42,7 @@ bool apply_motion_primitive::move_robot(max_min_lp_simulation::MoveRobot::Reques
 			cmd_vel_msg.linear.z = 0;
 			cmd_vel_msg.angular.x = 0;
 			cmd_vel_msg.angular.y = 0;
-			cmd_vel_msg.angular.z = 0.5;
+			cmd_vel_msg.angular.z = ang_vel;
 
 			m_cmd_vel_robot_pub.publish(cmd_vel_msg);
 		}
@@ -51,7 +52,7 @@ bool apply_motion_primitive::move_robot(max_min_lp_simulation::MoveRobot::Reques
 			cmd_vel_msg.linear.z = 0;
 			cmd_vel_msg.angular.x = 0;
 			cmd_vel_msg.angular.y = 0;
-			cmd_vel_msg.angular.z = -0.5;
+			cmd_vel_msg.angular.z = -1*ang_vel;
 
 			m_cmd_vel_robot_pub.publish(cmd_vel_msg);
 		}
@@ -76,6 +77,10 @@ bool apply_motion_primitive::move_robot(max_min_lp_simulation::MoveRobot::Reques
 
 			// ROS_INFO("ROBOT %d : (%.2f, %.2f, %.2f)",  m_robot_id, temp_pos.position.x, temp_pos.position.y, yaw);
 
+			if (yaw > (m_goal_pos.orientation.w-5) && yaw < (m_goal_pos.orientation.w+5)) {
+				ang_vel = 0.3;
+			}
+
 			if (yaw > (m_goal_pos.orientation.w-1) && yaw < (m_goal_pos.orientation.w+1)) {
 				ROS_INFO("ROBOT %d angular velocity was applied.", m_robot_id);
 				ROS_INFO("ROBOT %d yaw = %.2f, goal_orient. = %.2f", m_robot_id, yaw, m_goal_pos.orientation.w);
@@ -88,10 +93,11 @@ bool apply_motion_primitive::move_robot(max_min_lp_simulation::MoveRobot::Reques
 	}
 
 	// m_goal_pos.position.x, m_goal_pos.position.y
+	float linear_vel = 0.5;
 	while (1) {
 		geometry_msgs::Twist cmd_vel_msg;
 
-		cmd_vel_msg.linear.x = 0.5;
+		cmd_vel_msg.linear.x = linear_vel;
 		cmd_vel_msg.linear.y = 0;
 		cmd_vel_msg.linear.z = 0;
 		cmd_vel_msg.angular.x = 0;
@@ -116,6 +122,10 @@ bool apply_motion_primitive::move_robot(max_min_lp_simulation::MoveRobot::Reques
 			yaw = yaw * 180 / PHI;
 
 			// ROS_INFO("ROBOT %d : (%.2f, %.2f, %.2f)",  m_robot_id, temp_pos.position.x, temp_pos.position.y, yaw);
+			if (temp_pos.position.x > m_goal_pos.position.x - 0.2 && temp_pos.position.x < m_goal_pos.position.x + 0.2 &&
+				temp_pos.position.y > m_goal_pos.position.y - 0.2 && temp_pos.position.y < m_goal_pos.position.y + 0.2) {
+				linear_vel = 0.3;
+			}
 
 			if (temp_pos.position.x > m_goal_pos.position.x - 0.05 && temp_pos.position.x < m_goal_pos.position.x + 0.05 &&
 				temp_pos.position.y > m_goal_pos.position.y - 0.05 && temp_pos.position.y < m_goal_pos.position.y + 0.05) {

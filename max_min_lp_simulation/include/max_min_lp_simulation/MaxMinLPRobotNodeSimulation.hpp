@@ -17,7 +17,6 @@
 #include <vector>
 #include <boost/lexical_cast.hpp>
 #include <tf/transform_datatypes.h>
-#include <max_min_lp_simulation/apply_motion_primitive.hpp>
 #include <max_min_lp_simulation/get_odom.hpp>
 #include <max_min_lp_simulation/apply_motion_primitive.hpp>
 #include <max_min_lp_msgs/general_node.h>
@@ -107,10 +106,22 @@ private:
 
   bool m_check_start;
 
+  int count_computeMotionPrimitives;
+  int * m_random_number_1;
+  int * m_random_number_2;
+  int * m_random_number_3;
+  int * m_random_number_4;
+  int * m_random_number_5;
+
 public:
   MaxMinLPRobotNodeSimulation(); // Constructor
   ~MaxMinLPRobotNodeSimulation() {
     m_robot_outputFile.close();
+    delete[] m_random_number_1;
+    delete[] m_random_number_2;
+    delete[] m_random_number_3;
+    delete[] m_random_number_4;
+    delete[] m_random_number_5;
   }
 
   void updateOdom(const gazebo_msgs::ModelStates::ConstPtr& msg); // Update odometry information by subscribing to /robot/odom

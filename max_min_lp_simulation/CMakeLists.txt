@@ -22,6 +22,7 @@ add_service_files(
   MotionPrimitiveRequest.srv
   GetOdom.srv
   MoveRobot.srv
+  GetTotalNumTarget.srv
 )
 
 generate_messages(
@@ -86,3 +87,7 @@ add_dependencies(get_odom_node max_min_lp_simulation_gencpp)
 add_executable(get_target_odom_node src/get_target_odom.cpp)
 target_link_libraries(get_target_odom_node ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES} pthread)
 add_dependencies(get_target_odom_node max_min_lp_simulation_gencpp)
+
+add_executable(get_total_num_target_node src/get_result_target_num.cpp)
+target_link_libraries(get_total_num_target_node ${catkin_LIBRARIES})
+add_dependencies(get_total_num_target_node max_min_lp_simulation_gencpp)

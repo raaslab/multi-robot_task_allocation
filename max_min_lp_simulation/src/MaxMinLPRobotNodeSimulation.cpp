@@ -25,7 +25,7 @@ m_verbal_flag(false), m_epsilon(0.1), m_num_motion_primitive(10), m_time_interva
 
 	// Output files
 	string line;
-	string temp_file_path = "/home/yoon/yoon/max_min_ws/src/max_min_lp_simulation/data/robots_"+boost::lexical_cast<string>(m_robot_id)+".txt";
+	string temp_file_path = "/home/yoon/yoon/max_min_ws/src/max_min_lp_simulation/data/local/robots_"+boost::lexical_cast<string>(m_robot_id)+".txt";
 	m_robot_outputFile.open(temp_file_path.c_str());
 
 	// Publishers
@@ -43,6 +43,28 @@ m_verbal_flag(false), m_epsilon(0.1), m_num_motion_primitive(10), m_time_interva
 	m_count_time_interval = 0;
 
 	m_check_start = false;
+
+	count_computeMotionPrimitives = 0;
+
+	m_random_number_1 = new int[200];
+	m_random_number_2 = new int[200];
+	m_random_number_3 = new int[200];
+	m_random_number_4 = new int[200];
+	m_random_number_5 = new int[200];
+
+	int temp_random_number_1[] = {3,-9,6,-9,-9,3,-3,3,6,3,6,-6,6,12,9,-9,-3,-3,3,3,6,-3,-6,-9,6,-6,-3,0,-6,3,0,-9,6,-9,-6,-6,0,-9,-3,-9,-9,6,-6,3,12,-3,6,6,-3,3,-9,9,-9,-6,6,0,6,-3,-6,-12,3,-3,0,3,-12,-3,6,6,-9,-9,-9,-12,-3,3,6,0,-9,3,-9,-9,-9,-9,-9,-6,-3,-3,-6,-6,9,6,0,-9,-6,-9,9,6,0,-3,-9,3,12,-9,-6,-3,-9,3,-3,12,-3,3,-9,-3,-9,6,9,-3,3,-6,0,9,3,-3,-6,0,-3,-3,0,6,-3,-3,-9,-12,-6,-3,3,12,9,0,-6,6,6,6,6,-9,3,0,-6,-9,9,-9,-9,3,9,0,6,-9,12,0,3,-12,6,6,-9,0,-3,0,-3,-3,-9,-6,-12,9,3,9,-9,9,6,3,0,-6,6,-6,-9,6,3,6,3,-3,-3,9,-3,9,6,9,0,3,12,0,-12,9};
+	int temp_random_number_2[] = {9,0,9,6,3,9,9,12,-12,9,3,12,0,0,6,-6,0,9,3,9,6,3,-6,3,-9,3,3,6,9,12,6,3,9,3,-12,-9,9,0,9,-6,0,3,-12,3,-3,-12,0,-6,-9,-6,-9,-6,-12,3,-6,0,6,0,0,0,-9,0,9,9,-6,-6,3,3,-3,-6,12,-9,-9,-9,-9,3,3,-12,9,6,6,-9,9,9,12,9,6,0,-9,-3,-9,-12,12,-6,-6,-3,0,3,-12,9,0,9,-3,0,-12,-9,3,-3,9,-9,12,0,6,12,-6,-3,0,6,9,-9,-9,-3,-12,0,-3,-9,-6,9,3,0,9,-9,6,6,0,-9,3,-6,-9,-6,9,-9,-6,-12,0,-12,9,-6,-9,-6,0,-9,12,-3,-6,-12,-6,-12,0,6,3,-9,-9,6,9,0,-9,9,-3,-6,6,-12,-12,3,3,0,6,6,6,-6,6,0,-3,-12,6,-3,3,6,-9,-9,0,0,9,6,6,-12,-9,-9,6,12};
+	int temp_random_number_3[] = {-3,-9,3,0,6,6,3,-12,-9,-3,0,3,-3,9,6,12,0,-3,-9,3,6,-3,-9,-6,-9,-6,0,0,0,9,0,12,3,12,-6,3,-6,3,6,-9,-6,-6,3,9,-3,6,3,-12,3,-3,9,-12,0,-3,0,6,-3,6,0,-12,-9,6,0,-9,-3,3,-6,6,-6,9,-6,6,-6,-6,-9,3,3,0,-3,3,3,3,3,12,-6,6,-6,-9,3,0,0,3,6,-3,3,-3,9,9,-6,3,3,0,9,-6,-3,-9,12,3,0,3,0,3,0,6,0,12,-6,-9,-9,-9,-3,0,-3,6,3,6,9,12,-6,-9,6,-9,0,0,9,0,-3,3,6,0,-3,-9,3,-6,-12,6,-6,0,6,-3,6,-3,3,6,0,-12,-3,-3,-6,-6,9,-3,9,-3,6,-3,6,6,-3,-6,6,12,-3,3,0,9,6,-9,9,12,0,9,3,-9,-6,-3,6,9,6,-3,0,-9,-9,-9,3,0,-6,0,-9,-12};
+	int temp_random_number_4[] = {3,-3,12,-6,3,3,-3,-9,-12,-3,-9,6,-3,9,6,3,-9,12,-6,9,-6,-3,-9,3,-9,-12,6,-3,3,-3,3,-12,9,6,6,9,-3,3,3,0,-6,-6,0,-6,6,12,-12,0,-9,6,12,-9,12,-12,3,6,0,9,9,3,-9,-6,-9,-12,-9,3,12,-3,-3,12,12,3,12,6,-3,3,-6,-6,3,0,-3,3,6,3,0,3,0,-9,6,12,-3,12,-3,9,0,-3,-6,-9,-6,6,6,6,-12,9,9,6,-12,-3,6,6,-6,-6,3,0,3,-6,-9,9,6,9,-9,-9,-9,0,-6,9,-9,-12,0,6,-6,-9,-3,-6,0,9,3,-9,-3,-12,0,-3,12,6,0,9,-9,-3,9,9,6,3,-3,9,-9,6,3,9,-3,6,9,-3,0,12,0,-3,3,-3,6,-3,0,6,12,-3,9,6,12,-12,-3,3,-6,-6,6,3,3,3,-12,-3,0,-6,6,9,-6,6,-9,9,-9,3,-3,6};
+	int temp_random_number_5[] = {0,0,9,-3,0,12,-12,12,-6,3,3,3,-3,3,6,-12,-9,12,3,-6,-3,-9,-6,-6,-3,-9,-3,-9,9,-9,9,-3,-12,-3,6,6,0,3,9,-12,-6,-12,-6,6,6,9,3,-9,9,6,-6,0,12,6,9,-3,0,0,-6,6,0,3,-6,-9,0,-3,6,6,3,-9,-12,0,-6,12,12,-6,6,9,3,9,12,0,6,3,-12,0,3,0,-3,9,9,9,-3,3,9,9,3,-6,3,-9,-3,3,9,6,0,6,-3,12,12,9,-3,0,-6,6,9,9,0,3,-9,9,0,-6,9,6,9,-6,3,3,-9,-3,-6,6,-6,9,9,-3,0,6,9,3,3,-3,0,6,9,6,-12,3,0,0,-9,9,-3,-6,-3,-3,0,0,-3,-3,0,3,12,6,-3,9,-9,-12,-9,-9,-3,-6,-12,0,-9,-9,3,9,12,3,12,0,0,-3,-3,0,-9,9,-9,-3,9,-3,3,9,9,9,-6,-6,9,3};
+
+	for (int i = 0; i < 200; i++) {
+		m_random_number_1[i] = temp_random_number_1[i];
+		m_random_number_2[i] = temp_random_number_2[i];
+		m_random_number_3[i] = temp_random_number_3[i];
+		m_random_number_4[i] = temp_random_number_4[i];
+		m_random_number_5[i] = temp_random_number_5[i];
+	}
 }
 
 void MaxMinLPRobotNodeSimulation::updateOdom(const gazebo_msgs::ModelStates::ConstPtr& msg) {
@@ -167,8 +189,7 @@ void MaxMinLPRobotNodeSimulation::applyMotionPrimitives(const std_msgs::String::
 			m_selected_primitive_id = srv.response.selected_primitive_id;
 
 			// if (m_verbal_flag) {
-				ROS_INFO("ROBOT %d accepted a service call (in the getMotionPrimitive() step)", m_robot_id);
-				ROS_INFO("ROBOT %d : selected primitive id = %d", m_robot_id, m_selected_primitive_id);
+				ROS_INFO("ROBOT %d : selected primitive id = %d : (%.2f, %.2f)", m_robot_id, m_selected_primitive_id, m_motion_primitive_pose[m_selected_primitive_id-1].position.x, m_motion_primitive_pose[m_selected_primitive_id-1].position.y);
 			// }
 
 			m_move_client = m_nh.serviceClient<max_min_lp_simulation::MoveRobot>("/robot_"+boost::lexical_cast<string>(m_robot_id)+"/move_request", true);
@@ -222,8 +243,11 @@ bool MaxMinLPRobotNodeSimulation::initialize() {
 	srv.request.robot_info = robot_pose;
 
 	// Compute motion primivites.
-  	m_motion_primitive_pose.clear();
-	m_motion_primitive_pose = computeMotionPrimitives();
+	if (m_count_initialize_func == 0) {
+	  	m_motion_primitive_pose.clear();
+		m_motion_primitive_pose = computeMotionPrimitives();
+	}
+
 	srv.request.motion_primitive_info = m_motion_primitive_pose;
 
 	if (m_client.call(srv)) {
@@ -266,6 +290,7 @@ bool MaxMinLPRobotNodeSimulation::initialize() {
 			if (m_verbal_flag) {
 				ROS_INFO("ROBOT %d called initizlize() %d times", m_robot_id, m_count_initialize_func);
 			}
+
 			return MaxMinLPRobotNodeSimulation::initialize();
 		}
 	}
@@ -276,105 +301,105 @@ bool MaxMinLPRobotNodeSimulation::initialize() {
 	}
 }
 
-bool MaxMinLPRobotNodeSimulation::getMotionPrimitive() {
-	m_primitive_client = m_nh.serviceClient<max_min_lp_simulation::MotionPrimitiveRequest>("/motion_primitive_request");
-	max_min_lp_simulation::MotionPrimitiveRequest srv;
-	srv.request.count_motion_primitive = m_count_time_interval;
-	srv.request.request_ROBOT_id = m_robot_id;
+// bool MaxMinLPRobotNodeSimulation::getMotionPrimitive() {
+// 	m_primitive_client = m_nh.serviceClient<max_min_lp_simulation::MotionPrimitiveRequest>("/motion_primitive_request");
+// 	max_min_lp_simulation::MotionPrimitiveRequest srv;
+// 	srv.request.count_motion_primitive = m_count_time_interval;
+// 	srv.request.request_ROBOT_id = m_robot_id;
 
-	if (m_primitive_client.call(srv)) {
-		if (m_verbal_flag) {
-			ROS_INFO("ROBOT %d is in the getMotionPrimitive() step", m_robot_id);
-		}
+// 	if (m_primitive_client.call(srv)) {
+// 		if (m_verbal_flag) {
+// 			ROS_INFO("ROBOT %d is in the getMotionPrimitive() step", m_robot_id);
+// 		}
 
-		m_count_time_interval = srv.response.return_count_motion_primitive;
-		m_selected_primitive_id = srv.response.selected_primitive_id;
+// 		m_count_time_interval = srv.response.return_count_motion_primitive;
+// 		m_selected_primitive_id = srv.response.selected_primitive_id;
 
-		if (m_verbal_flag) {
-			ROS_INFO("ROBOT %d accepted a service call (in the getMotionPrimitive() step)", m_robot_id);
-			ROS_INFO("    ROBOT %d : selected primitive id = %d", m_robot_id, m_selected_primitive_id);
-		}
+// 		if (m_verbal_flag) {
+// 			ROS_INFO("ROBOT %d accepted a service call (in the getMotionPrimitive() step)", m_robot_id);
+// 			ROS_INFO("    ROBOT %d : selected primitive id = %d", m_robot_id, m_selected_primitive_id);
+// 		}
 
-		// Publish cmd_vel to the ROBOT.
-		if (m_selected_primitive_id == 1) {
-			if (m_count_time_interval <= abs(m_motion_case_rotation[m_selected_primitive_id-1])) { // Rotation
-				geometry_msgs::Twist cmd_vel_msg;
+// 		// Publish cmd_vel to the ROBOT.
+// 		if (m_selected_primitive_id == 1) {
+// 			if (m_count_time_interval <= abs(m_motion_case_rotation[m_selected_primitive_id-1])) { // Rotation
+// 				geometry_msgs::Twist cmd_vel_msg;
 
-				cmd_vel_msg.linear.x = 0;
-				cmd_vel_msg.linear.y = 0;
-				cmd_vel_msg.linear.z = 0;
-				cmd_vel_msg.angular.x = 0;
-				cmd_vel_msg.angular.y = 0;
+// 				cmd_vel_msg.linear.x = 0;
+// 				cmd_vel_msg.linear.y = 0;
+// 				cmd_vel_msg.linear.z = 0;
+// 				cmd_vel_msg.angular.x = 0;
+// 				cmd_vel_msg.angular.y = 0;
 
-				if (m_motion_case_rotation[m_selected_primitive_id-1] > 0) {
-					cmd_vel_msg.angular.z = 0.1;
-				}
-				else {
-					cmd_vel_msg.angular.z = -0.1;	
-				}
+// 				if (m_motion_case_rotation[m_selected_primitive_id-1] > 0) {
+// 					cmd_vel_msg.angular.z = 0.1;
+// 				}
+// 				else {
+// 					cmd_vel_msg.angular.z = -0.1;	
+// 				}
 
-				m_cmd_vel_robot_pub.publish(cmd_vel_msg);
+// 				m_cmd_vel_robot_pub.publish(cmd_vel_msg);
 
-				// if (m_verbal_flag) {
-					ROS_INFO("        ROBOT %d : time interval = %d, motion case = %d, cmd_vel = (%.1f, %.1f, %.1f) (%.1f, %.1f, %.1f)", 
-						m_robot_id, m_count_time_interval, m_motion_case_rotation[m_selected_primitive_id-1], cmd_vel_msg.linear.x, cmd_vel_msg.linear.y,
-						cmd_vel_msg.linear.z, cmd_vel_msg.angular.x, cmd_vel_msg.angular.y, cmd_vel_msg.angular.z);
-				// }
+// 				// if (m_verbal_flag) {
+// 					ROS_INFO("        ROBOT %d : time interval = %d, motion case = %d, cmd_vel = (%.1f, %.1f, %.1f) (%.1f, %.1f, %.1f)", 
+// 						m_robot_id, m_count_time_interval, m_motion_case_rotation[m_selected_primitive_id-1], cmd_vel_msg.linear.x, cmd_vel_msg.linear.y,
+// 						cmd_vel_msg.linear.z, cmd_vel_msg.angular.x, cmd_vel_msg.angular.y, cmd_vel_msg.angular.z);
+// 				// }
 
-				usleep(1000000); // Sleeping is required so that robot can move step by step.
-			}
-			else { // Moving forward
-				geometry_msgs::Twist cmd_vel_msg;
+// 				usleep(1000000); // Sleeping is required so that robot can move step by step.
+// 			}
+// 			else { // Moving forward
+// 				geometry_msgs::Twist cmd_vel_msg;
 
-				cmd_vel_msg.linear.x = 0.1;
-				cmd_vel_msg.linear.y = 0;
-				cmd_vel_msg.linear.z = 0;
-				cmd_vel_msg.angular.x = 0;
-				cmd_vel_msg.angular.y = 0;
-				cmd_vel_msg.angular.z = 0;
+// 				cmd_vel_msg.linear.x = 0.1;
+// 				cmd_vel_msg.linear.y = 0;
+// 				cmd_vel_msg.linear.z = 0;
+// 				cmd_vel_msg.angular.x = 0;
+// 				cmd_vel_msg.angular.y = 0;
+// 				cmd_vel_msg.angular.z = 0;
 
-				m_cmd_vel_robot_pub.publish(cmd_vel_msg);
+// 				m_cmd_vel_robot_pub.publish(cmd_vel_msg);
 
-				// if (m_verbal_flag) {
-					ROS_INFO("        ROBOT %d : time interval = %d, motion case = %d, cmd_vel = (%.1f, %.1f, %.1f) (%.1f, %.1f, %.1f)", 
-						m_robot_id, m_count_time_interval, m_motion_case_rotation[m_selected_primitive_id-1], cmd_vel_msg.linear.x, cmd_vel_msg.linear.y,
-						cmd_vel_msg.linear.z, cmd_vel_msg.angular.x, cmd_vel_msg.angular.y, cmd_vel_msg.angular.z);
-				// }
+// 				// if (m_verbal_flag) {
+// 					ROS_INFO("        ROBOT %d : time interval = %d, motion case = %d, cmd_vel = (%.1f, %.1f, %.1f) (%.1f, %.1f, %.1f)", 
+// 						m_robot_id, m_count_time_interval, m_motion_case_rotation[m_selected_primitive_id-1], cmd_vel_msg.linear.x, cmd_vel_msg.linear.y,
+// 						cmd_vel_msg.linear.z, cmd_vel_msg.angular.x, cmd_vel_msg.angular.y, cmd_vel_msg.angular.z);
+// 				// }
 
-				usleep(1000000);
-			}
-		}
-		else {
-			usleep(1000000);
-		}
+// 				usleep(1000000);
+// 			}
+// 		}
+// 		else {
+// 			usleep(1000000);
+// 		}
 
-		m_odom_client = m_nh.serviceClient<max_min_lp_simulation::GetOdom>("/robot_"+boost::lexical_cast<string>(m_robot_id)+"/odom_request", true);
-		max_min_lp_simulation::GetOdom srv;
-		srv.request.request_odom = string("request");
+// 		m_odom_client = m_nh.serviceClient<max_min_lp_simulation::GetOdom>("/robot_"+boost::lexical_cast<string>(m_robot_id)+"/odom_request", true);
+// 		max_min_lp_simulation::GetOdom srv;
+// 		srv.request.request_odom = string("request");
 
-		if (m_odom_client.call(srv)) {
-			geometry_msgs::Pose temp_pos;
-			temp_pos = srv.response.return_odom;
+// 		if (m_odom_client.call(srv)) {
+// 			geometry_msgs::Pose temp_pos;
+// 			temp_pos = srv.response.return_odom;
 
-			ROS_INFO("    ROBOT %d : (%.2f, %.2f)", m_robot_id, temp_pos.position.x, temp_pos.position.y);
-		}
+// 			ROS_INFO("    ROBOT %d : (%.2f, %.2f)", m_robot_id, temp_pos.position.x, temp_pos.position.y);
+// 		}
 
-		// geometry_msgs::Pose temp_pos;
-		// max_min_lp_simulation::get_odom gom(m_num_robot, m_num_target, m_robot_id, m_robot_name);
-		// temp_pos = gom.return_odom();
+// 		// geometry_msgs::Pose temp_pos;
+// 		// max_min_lp_simulation::get_odom gom(m_num_robot, m_num_target, m_robot_id, m_robot_name);
+// 		// temp_pos = gom.return_odom();
 
-		if (m_count_time_interval == m_time_interval) {
-			m_count_time_interval = 0;
-			return true;
-		}
-		else {
-			getMotionPrimitive();
-		}
-	}
-	else {
-		return getMotionPrimitive();
-	}
-}
+// 		if (m_count_time_interval == m_time_interval) {
+// 			m_count_time_interval = 0;
+// 			return true;
+// 		}
+// 		else {
+// 			getMotionPrimitive();
+// 		}
+// 	}
+// 	else {
+// 		return getMotionPrimitive();
+// 	}
+// }
 
 vector<geometry_msgs::Pose> MaxMinLPRobotNodeSimulation::computeMotionPrimitives() {
 	// At this moment, tweak this part. Just consider the case when the number of motion primitives considered is five. This should be changed later.
@@ -400,15 +425,37 @@ vector<geometry_msgs::Pose> MaxMinLPRobotNodeSimulation::computeMotionPrimitives
 	// 		m_motion_case_rotation.push_back(i*3);
 	// 	}
 	// }
-	srand (time(NULL));
-	int random_case = rand() % 7 + (-3); // Pick randomly one from -3 to 3
-	random_case *= 3; // From -9 to 9
+	// srand (time(NULL));
+	// int random_case = rand() % 7 + (-3); // Pick randomly one from -3 to 3
+	// random_case *= 3; // From -9 to 9
 
 	// x value: 0.1 m/s * 10 = 0.60 m
 	// z value: 0.1 * 10 = 33 (degree)
 
+	int random_case;
+	if (m_robot_id == 1) {
+		random_case = m_random_number_1[count_computeMotionPrimitives];
+	}
+	else if (m_robot_id == 2) {
+		random_case = m_random_number_2[count_computeMotionPrimitives];
+	}
+	else if (m_robot_id == 3) {
+		random_case = m_random_number_3[count_computeMotionPrimitives];
+	}
+	else if (m_robot_id == 4) {
+		random_case = m_random_number_4[count_computeMotionPrimitives];
+	}
+	else if (m_robot_id == 5) {
+		random_case = m_random_number_5[count_computeMotionPrimitives];
+	}
+
+	count_computeMotionPrimitives += 1;
+
 	m_motion_case_rotation.clear();
 	m_motion_case_rotation.push_back(random_case);
+
+	/////////// HERE!!
+	// m_motion_case_rotation.push_back(0);m_motion_case_rotation.push_back(-9);m_motion_case_rotation.push_back(-5);m_motion_case_rotation.push_back(5);m_motion_case_rotation.push_back(9);
 
 	tf::Quaternion q(m_pos.orientation.x, m_pos.orientation.y, m_pos.orientation.z, m_pos.orientation.w);
 	tf::Matrix3x3 m(q);
@@ -421,6 +468,87 @@ vector<geometry_msgs::Pose> MaxMinLPRobotNodeSimulation::computeMotionPrimitives
 	double temp_orientation;
 
 	m_check_rotation_direction.clear();
+
+	/////////// HERE!!
+	// for (int i = 0; i < m_num_motion_primitive; i++) {
+	// 	if (i == 0) {
+	// 		m_check_rotation_direction.push_back(0);
+	// 		temp_orientation = yaw;
+	// 		if (temp_orientation > 180) {
+	// 			temp_orientation -= 360;
+	// 		}
+	// 		else if (temp_orientation < -180) {
+	// 			temp_orientation += 360;
+	// 		}
+
+	// 		geometry_msgs::Pose temp_motion_primitive_instance;
+	// 		temp_motion_primitive_instance.position.x = m_pos.position.x;
+	// 		temp_motion_primitive_instance.position.y = m_pos.position.y;
+	// 		temp_motion_primitive_instance.orientation.w = temp_orientation;
+
+	// 		if (m_verbal_flag) {
+	// 			ROS_INFO("ROBOT %d : %d'th motion primitiv = (%f, %f)", m_robot_id, i+1, m_pos.position.x, m_pos.position.y);
+	// 		}
+
+	// 		temp_motion_primitive.push_back(temp_motion_primitive_instance);
+	// 	}
+	// 	else if(i > 0) {
+	// 		// Check if the rotation is cw, ccw or stationary
+	// 		if (m_motion_case_rotation[i] > 0) {
+	// 			m_check_rotation_direction.push_back(1);
+	// 		}
+	// 		else if (m_motion_case_rotation[i] < 0) {
+	// 			m_check_rotation_direction.push_back(-1);
+	// 		}
+	// 		else {
+	// 			m_check_rotation_direction.push_back(0);
+	// 		}
+
+	// 		geometry_msgs::Pose temp_motion_primitive_instance;
+	// 		temp_orientation = yaw + 3.42 * m_motion_case_rotation[i];
+	// 		if (temp_orientation > 180) {
+	// 			temp_orientation -= 360;
+	// 		}
+	// 		else if (temp_orientation < -180) {
+	// 			temp_orientation += 360;
+	// 		}
+	// 		// This is hard-coded.
+	// 		if (temp_orientation >= 0 && temp_orientation < 90) {
+	// 			x_new = m_pos.position.x + 0.06 * (m_time_interval - abs(m_motion_case_rotation[i])) 
+	// 					* cos(temp_orientation * PHI / 180);
+	// 			y_new = m_pos.position.y + 0.06 * (m_time_interval - abs(m_motion_case_rotation[i])) 
+	// 					* sin(temp_orientation * PHI / 180);
+	// 		}
+	// 		else if (temp_orientation >= 90 && temp_orientation < 180) {
+	// 			x_new = m_pos.position.x - 0.06 * (m_time_interval - abs(m_motion_case_rotation[i])) 
+	// 					* cos((180 - temp_orientation) * PHI / 180);
+	// 			y_new = m_pos.position.y + 0.06 * (m_time_interval - abs(m_motion_case_rotation[i])) 
+	// 					* sin((180 - temp_orientation) * PHI / 180);
+	// 		}
+	// 		else if (temp_orientation < 0 && temp_orientation >= -90) {
+	// 			x_new = m_pos.position.x + 0.06 * (m_time_interval - abs(m_motion_case_rotation[i])) 
+	// 					* cos((-1) * temp_orientation * PHI / 180);
+	// 			y_new = m_pos.position.y - 0.06 * (m_time_interval - abs(m_motion_case_rotation[i])) 
+	// 					* sin((-1) * temp_orientation * PHI / 180);
+	// 		}
+	// 		else if (temp_orientation < -90 && temp_orientation >= -180) {
+	// 			x_new = m_pos.position.x - 0.06 * (m_time_interval - abs(m_motion_case_rotation[i])) 
+	// 					* cos((180 + temp_orientation) * PHI / 180);
+	// 			y_new = m_pos.position.y - 0.06 * (m_time_interval - abs(m_motion_case_rotation[i])) 
+	// 					* sin((180 + temp_orientation) * PHI / 180);
+	// 		}
+
+	// 		temp_motion_primitive_instance.position.x = x_new;
+	// 		temp_motion_primitive_instance.position.y = y_new;
+	// 		temp_motion_primitive_instance.orientation.w = temp_orientation;
+
+	// 		if (m_verbal_flag) {
+	// 			ROS_INFO("ROBOT %d : %d'th motion primitiv = (%f, %f)", m_robot_id, i+1, x_new, y_new);
+	// 		}
+
+	// 		temp_motion_primitive.push_back(temp_motion_primitive_instance);
+	// 	}
+	// }
 
 	for (int i = 0; i < m_num_motion_primitive; i++) {
 		if (i == 0) {

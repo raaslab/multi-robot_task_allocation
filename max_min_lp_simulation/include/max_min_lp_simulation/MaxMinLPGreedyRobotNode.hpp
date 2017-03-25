@@ -14,6 +14,8 @@
 #include <vector>
 #include <boost/lexical_cast.hpp>
 #include <tf/transform_datatypes.h>
+#include <max_min_lp_simulation/get_odom.hpp>
+#include <max_min_lp_simulation/apply_motion_primitive.hpp>
 #include <max_min_lp_msgs/general_node.h>
 #include <max_min_lp_msgs/general_node_array.h>
 #include <max_min_lp_msgs/layered_node.h>
@@ -22,6 +24,9 @@
 #include <max_min_lp_msgs/server_to_robots_array.h>
 #include <max_min_lp_core/MaxMinLPCore.hpp>
 #include <max_min_lp_simulation/MessageRequest.h>
+#include <max_min_lp_simulation/MotionPrimitiveRequest.h>
+#include <max_min_lp_simulation/GetOdom.h>
+#include <max_min_lp_simulation/MoveRobot.h>
 
 using namespace std;
 
@@ -30,13 +35,17 @@ private:
   ros::NodeHandle m_nh;
   ros::NodeHandle m_private_nh;
 
-  ros::Subscriber request_sub;
+  // Publisher
+  ros::Publisher m_response_to_server_pub;
 
   // Subscriber
+  ros::Subscriber m_request_sub;
   ros::Subscriber m_odom_sub;
 
   // Clients
   ros::ServiceClient m_client;
+  ros::ServiceClient m_primitive_client;
+  ros::ServiceClient m_move_client;
 
   // General node values
   vector<max_min_lp_msgs::general_node> m_gen_r_node;
@@ -60,10 +69,35 @@ private:
   // Robot info
   geometry_msgs::Pose m_pos;
 
+  int m_count_initialize_func;
+
   // int m_motion_case_rotation[];
+
+  // Optimal motion primitive that is applied at the end of algorithm at each time
+  int m_selected_primitive_id;
+  vector<int> m_motion_case_rotation;
+  vector<int> m_check_rotation_direction;
+  vector<geometry_msgs::Pose> m_motion_primitive_pose;
+
+  ofstream m_robot_outputFile;
+
+  int count_computeMotionPrimitives;
+  int * m_random_number_1;
+  int * m_random_number_2;
+  int * m_random_number_3;
+  int * m_random_number_4;
+  int * m_random_number_5;
 
 public:
   MaxMinLPGreedyRobotNode(); // Constructor
+  ~MaxMinLPGreedyRobotNode() {
+    m_robot_outputFile.close();
+    delete[] m_random_number_1;
+    delete[] m_random_number_2;
+    delete[] m_random_number_3;
+    delete[] m_random_number_4;
+    delete[] m_random_number_5;
+  }
 
   void updateOdom(const gazebo_msgs::ModelStates::ConstPtr& msg); // Update odometry information by subscribing to /robot/odom
   bool initialize();

@@ -41,8 +41,8 @@ m_num_robot(1), m_num_target(1), m_num_motion_primitive(10), m_num_layer(2), m_o
 
 	m_time_step = 0;
 
-	m_target_outputFile.open("/home/yoon/yoon/max_min_ws/src/max_min_lp_simulation/data/targets.txt");
-	m_outputFile.open("/home/yoon/yoon/max_min_ws/src/max_min_lp_simulation/data/results.txt");
+	m_target_outputFile.open("/home/yoon/yoon/max_min_ws/src/max_min_lp_simulation/data/local/targets.txt");
+	m_outputFile.open("/home/yoon/yoon/max_min_ws/src/max_min_lp_simulation/data/local/results.txt");
 
 	// Subscribers
 	geometry_msgs::Pose dummy_target_pos;
@@ -834,7 +834,7 @@ vector<max_min_lp_msgs::general_node> MaxMinLPCentralNodeSimulation::buildGenera
 			temp_node.type = "robot";
 			for (vector<int>::iterator it = m_robots_to_primitives[i].begin(); it != m_robots_to_primitives[i].end(); ++it) {
 				temp_node.loc_neighbor.push_back(*it);
-				temp_node.loc_edge_weight.push_back(1);
+				temp_node.loc_edge_weight.push_back(float(1.0)/2*m_num_motion_primitive);
 			}
 
 			gen_return_node.push_back(temp_node);
@@ -842,7 +842,7 @@ vector<max_min_lp_msgs::general_node> MaxMinLPCentralNodeSimulation::buildGenera
 			if (m_verbal_flag) {
 				ROS_INFO("        type = %s, id = %d, loc_deg = %d", "robot", m_robot_id[i], (int)m_robots_to_primitives[i].size());
 				for (vector<int>::iterator it = m_robots_to_primitives[i].begin(); it != m_robots_to_primitives[i].end(); ++it) {
-					ROS_INFO("            loc_id = %d, loc_edge_weight = %f", *it, (float)1);
+					ROS_INFO("            loc_id = %d, loc_edge_weight = %f", *it, float(1.0)/2*m_num_motion_primitive);
 				}
 			}
 		}
@@ -860,7 +860,7 @@ vector<max_min_lp_msgs::general_node> MaxMinLPCentralNodeSimulation::buildGenera
 			temp_node.type = "red";
 			for (vector<int>::iterator it = m_primitives_to_robots[i].begin(); it != m_primitives_to_robots[i].end(); ++it) {
 				temp_node.loc_neighbor.push_back(*it);
-				temp_node.loc_edge_weight.push_back(1);
+				temp_node.loc_edge_weight.push_back(float(1.0)/2*m_num_motion_primitive);
 			}
 
 			gen_return_node.push_back(temp_node);
@@ -868,7 +868,7 @@ vector<max_min_lp_msgs::general_node> MaxMinLPCentralNodeSimulation::buildGenera
 			if (m_verbal_flag) {
 				ROS_INFO("        type = %s, id = %d, loc_deg = %d", "red", m_primitive_id[i], (int)m_primitives_to_robots[i].size());
 				for (vector<int>::iterator it = m_primitives_to_robots[i].begin(); it != m_primitives_to_robots[i].end(); ++it) {
-					ROS_INFO("            loc_id = %d, loc_edge_weight = %f", *it, (float)1);
+					ROS_INFO("            loc_id = %d, loc_edge_weight = %f", *it, float(1.0)/2*m_num_motion_primitive);
 				}
 			}
 		}
@@ -1025,6 +1025,12 @@ void MaxMinLPCentralNodeSimulation::applySequentialLocalAlgorithm(const std_msgs
 				int temp_optimal_primitive_id = 0;
 				int temp_optimal_primitive_id_for_plot = 0;
 				for (vector<int>::iterator it = max_primitive_index.begin(); it != max_primitive_index.end(); ++it) {
+
+					/////////// HERE!!
+					// temp_optimal_primitive_id = m_primitive_original_id[*it]; // At this moment, when there are more than one optimal motion primitive, just choose the first one. Later, maybe distance information can be taken into consideration for this.
+					// temp_optimal_primitive_id_for_plot = m_primitive_id[*it];
+
+					// if (m_primitive_original_id[*it] == 1) {
 					if (m_primitive_original_id[*it] == 2) {
 						temp_optimal_primitive_id = m_primitive_original_id[*it];
 						temp_optimal_primitive_id_for_plot = m_primitive_id[*it];
@@ -1038,14 +1044,19 @@ void MaxMinLPCentralNodeSimulation::applySequentialLocalAlgorithm(const std_msgs
 				}
 
 				if (m_verbal_flag) {
-					ROS_INFO("temp_optimal_primitive_id = %d", temp_optimal_primitive_id);
-					ROS_INFO("temp_optimal_primitive_id_for_plot = %d", temp_optimal_primitive_id_for_plot);
+					ROS_INFO("ROBOT %d : optimal_primitive_id = %d", i+1, temp_optimal_primitive_id);
+					ROS_INFO("ROBOT %d : optimal_primitive_id_for_plot = %d", i+1, temp_optimal_primitive_id_for_plot);
 				}
 
 				m_optimal_primitive_id.push_back(temp_optimal_primitive_id);
 				m_optimal_primitive_id_for_plot.push_back(temp_optimal_primitive_id_for_plot);
 			}
 			else { // When there was only one optimal motion primitive.
+				if (m_verbal_flag) {
+					ROS_INFO("ROBOT %d : optimal_primitive_id = %d", i+1, m_primitive_original_id[max_primitive_index[0]]);
+					ROS_INFO("ROBOT %d : optimal_primitive_id_for_plot = %d", i+1, m_primitive_id[max_primitive_index[0]]);
+				}
+
 				m_optimal_primitive_id.push_back(m_primitive_original_id[max_primitive_index[0]]);
 				m_optimal_primitive_id_for_plot.push_back(m_primitive_id[max_primitive_index[0]]);
 			}
@@ -1198,7 +1209,7 @@ void MaxMinLPCentralNodeSimulation::applySequentialLocalAlgorithm(const std_msgs
 
 			ROS_INFO("Number of observed targets = %d", (int)found_all_targets_next.size());
 
-			m_outputFile<<(int)found_all_targets_next.size()<<endl;
+			m_outputFile<<setprecision(2)<<ros::Time::now()<<" "<<(int)found_all_targets_next.size()<<endl;
 
 			m_time_step += 1;
 			ROS_INFO(" ");
