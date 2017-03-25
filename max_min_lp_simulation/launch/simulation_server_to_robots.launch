@@ -4,7 +4,7 @@
   <arg name="num_layer" default="2"/>
   <!--<arg name="verbal_flag" default="true"/>-->
   <arg name="epsilon" default="0.1"/>
-  <arg name="num_motion_primitive" default="2"/>
+  <arg name="num_motion_primitive" default="5"/>
   <arg name="time_interval" default="20"/>
 
   <node type="max_min_lp_simulation_central_node_simulation" pkg="max_min_lp_simulation" name="max_min_lp_simulation_central_node_simulation" output="screen">

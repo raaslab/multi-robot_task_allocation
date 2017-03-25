@@ -1027,11 +1027,11 @@ void MaxMinLPCentralNodeSimulation::applySequentialLocalAlgorithm(const std_msgs
 				for (vector<int>::iterator it = max_primitive_index.begin(); it != max_primitive_index.end(); ++it) {
 
 					/////////// HERE!!
-					// temp_optimal_primitive_id = m_primitive_original_id[*it]; // At this moment, when there are more than one optimal motion primitive, just choose the first one. Later, maybe distance information can be taken into consideration for this.
-					// temp_optimal_primitive_id_for_plot = m_primitive_id[*it];
+					temp_optimal_primitive_id = m_primitive_original_id[*it]; // At this moment, when there are more than one optimal motion primitive, just choose the one that is the lastly considered. Later, maybe distance information can be taken into consideration for this.
+					temp_optimal_primitive_id_for_plot = m_primitive_id[*it];
 
 					// if (m_primitive_original_id[*it] == 1) {
-					if (m_primitive_original_id[*it] == 2) {
+					if (m_primitive_original_id[*it] == m_num_motion_primitive) {
 						temp_optimal_primitive_id = m_primitive_original_id[*it];
 						temp_optimal_primitive_id_for_plot = m_primitive_id[*it];
 					}

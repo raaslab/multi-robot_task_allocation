@@ -452,7 +452,9 @@ vector<geometry_msgs::Pose> MaxMinLPRobotNodeSimulation::computeMotionPrimitives
 	count_computeMotionPrimitives += 1;
 
 	m_motion_case_rotation.clear();
-	m_motion_case_rotation.push_back(random_case);
+	// m_motion_case_rotation.push_back(random_case);
+
+	m_motion_case_rotation.push_back(-9);m_motion_case_rotation.push_back(-4);m_motion_case_rotation.push_back(4);m_motion_case_rotation.push_back(9);
 
 	/////////// HERE!!
 	// m_motion_case_rotation.push_back(0);m_motion_case_rotation.push_back(-9);m_motion_case_rotation.push_back(-5);m_motion_case_rotation.push_back(5);m_motion_case_rotation.push_back(9);
@@ -551,7 +553,7 @@ vector<geometry_msgs::Pose> MaxMinLPRobotNodeSimulation::computeMotionPrimitives
 	// }
 
 	for (int i = 0; i < m_num_motion_primitive; i++) {
-		if (i == 0) {
+		if (i < m_num_motion_primitive-1) {
 			// Check if the rotation is cw, ccw or stationary
 			if (m_motion_case_rotation[i] > 0) {
 				m_check_rotation_direction.push_back(1);
@@ -607,7 +609,7 @@ vector<geometry_msgs::Pose> MaxMinLPRobotNodeSimulation::computeMotionPrimitives
 
 			temp_motion_primitive.push_back(temp_motion_primitive_instance);
 		}
-		else if(i == 1) {
+		else if(i == m_num_motion_primitive-1) {
 			m_check_rotation_direction.push_back(0);
 			temp_orientation = yaw;
 			if (temp_orientation > 180) {
