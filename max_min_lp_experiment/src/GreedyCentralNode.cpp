@@ -19,7 +19,7 @@ m_num_robot(1), m_sensing_range(10), m_private_nh("~")
 	// Publishers
 	m_response_to_robot_pub = m_nh.advertise<std_msgs::String>("/center_response", 1);
 	// Subscribers
-	m_comm_graph_by_robots_sub = m_nh.subscribe<std_msgs::String>("/robot_comm_graph", 1000, &GreedyCentralNode::applySequentialLocalAlgorithm, this);
+	m_comm_graph_by_robots_sub = m_nh.subscribe<std_msgs::String>("/robot_after_motion", 10, &GreedyCentralNode::afterAppliedMotionPrimitive, this);
 	
 	m_request_robot_id = 0;
 	m_send_robot_id = 0;
@@ -97,7 +97,7 @@ bool GreedyCentralNode::requestInitialize(max_min_lp_experiment::RobotRequest::R
 	return true;
 }
 
-void GreedyCentralNode::applySequentialLocalAlgorithm(const std_msgs::String::ConstPtr& msg) {
+void GreedyCentralNode::afterAppliedMotionPrimitive(const std_msgs::String::ConstPtr& msg) {
 	if (strcmp(msg->data.c_str(), "action is applied") == 0) {
 		m_check_finish_action_apply += 1;
 

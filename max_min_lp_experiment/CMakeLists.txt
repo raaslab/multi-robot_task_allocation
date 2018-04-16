@@ -34,7 +34,11 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
-add_executable(max_min_lp_experiment_node src/GreedyCentralNode.cpp)
-target_link_libraries(max_min_lp_experiment_node
+add_executable(central_node src/GreedyCentralNode.cpp)
+target_link_libraries(central_node
+  ${catkin_LIBRARIES}
+)
+add_executable(robot_node src/GreedyRobotNode.cpp)
+target_link_libraries(robot_node
   ${catkin_LIBRARIES}
 )

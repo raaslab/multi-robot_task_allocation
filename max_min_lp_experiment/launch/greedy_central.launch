@@ -2,7 +2,7 @@
 	<arg name="SENSING_RANGE" value="4"/>
 	<arg name="TIME_PERIOD" value="5"/>
 
-	<node type="max_min_lp_experiment_node" pkg="max_min_lp_experiment" name="greedy_central">
+	<node type="central_node" pkg="max_min_lp_experiment" name="greedy_central">
 		<param name="num_robot" type="int" value="1"/>
 		<param name="sensing_range" type="int" value="$(arg SENSING_RANGE)"/>
 		<param name="time_period", type="int" value="$(arg TIME_PERIOD)"/>

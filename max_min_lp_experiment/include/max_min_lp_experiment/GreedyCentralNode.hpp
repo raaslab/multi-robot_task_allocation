@@ -13,14 +13,6 @@
 #include <vector>
 #include <math.h>
 #include <max_min_lp_experiment/RobotRequest.h>
-// #include <max_min_lp_msgs/server_to_robots.h>
-// #include <max_min_lp_msgs/server_to_robots_array.h>
-// #include <max_min_lp_msgs/target_node.h>
-// #include <max_min_lp_msgs/primitive_node.h>
-// #include <max_min_lp_simulation/get_odom.hpp>
-// #include <max_min_lp_simulation/GetOdom.h>
-// #include <max_min_lp_simulation/MotionPrimitiveRequest.h>
-// #include <max_min_lp_simulation/GetTotalNumTarget.h>
 
 using namespace std;
 
@@ -73,7 +65,7 @@ public:
   GreedyCentralNode(); // Constructor
 
   bool requestInitialize(max_min_lp_experiment::RobotRequest::Request &req, max_min_lp_experiment::RobotRequest::Response &res);
-  void applySequentialLocalAlgorithm(const std_msgs::String::ConstPtr& msg);
+  void afterAppliedMotionPrimitive(const std_msgs::String::ConstPtr& msg);
   void targetInitialize();
 };
 
