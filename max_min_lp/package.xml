@@ -10,6 +10,7 @@
   <exec_depend>max_min_lp_msgs</exec_depend>
   <exec_depend>max_min_lp_demo</exec_depend>
   <exec_depend>max_min_lp_simulation</exec_depend>
+  <exec_depend>max_min_lp_experiment</exec_depend>
   <exec_depend>max_min_lp_visualization</exec_depend>
   <export>
     <metapackage />

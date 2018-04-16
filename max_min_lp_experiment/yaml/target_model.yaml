@@ -1,0 +1,9 @@
+num_of_targets: 1
+
+target_id: [0] # ID starts with 0.
+
+pose_x: [2] # In meters.
+pose_y: [0]
+
+velocity: [0.1] # In meters/second.
+orientation: [30] # In degree.
