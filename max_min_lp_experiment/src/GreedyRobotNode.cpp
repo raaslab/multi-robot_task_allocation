@@ -28,14 +28,31 @@ m_robot_angular_vel(0.1), m_private_nh("~")
 }
 
 void GreedyRobotNode::applyMotionPrimitives(const std_msgs::String::ConstPtr& msg) {
+	// Orienteering.
+	double init_time = ros::Time::now().toSec();
 	double cur_time = ros::Time::now().toSec();
 	int time_for_orient = 2;
 	int time_for_translate = 2;
 
-	while (cur_time < time_for_orient) {
+	while (cur_time-init_time > time_for_orient) {
+		cur_time = ros::Time::now().toSec();
+
 		geometry_msgs::Twist cmd_vel;
 		cmd_vel.linear.x = 0; cmd_vel.linear.y = 0; cmd_vel.linear.z = 0;
 		cmd_vel.angular.x = 0; cmd_vel.angular.y = 0; cmd_vel.linear.z = m_robot_angular_vel;
+		m_cmd_vel_pub.publish(cmd_vel);
+	}
+
+	// Translating.
+	init_time = ros::Time::now().toSec();
+	cur_time = ros::Time::now().toSec();
+
+	while (cur_time-init_time > time_for_translate) {
+		cur_time = ros::Time::now().toSec();
+
+		geometry_msgs::Twist cmd_vel;
+		cmd_vel.linear.x = m_robot_velocity; cmd_vel.linear.y = 0; cmd_vel.linear.z = 0;
+		cmd_vel.angular.x = 0; cmd_vel.angular.y = 0; cmd_vel.linear.z = 0;
 		m_cmd_vel_pub.publish(cmd_vel);
 	}
 
