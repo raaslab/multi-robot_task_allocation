@@ -9,10 +9,11 @@
 #include "max_min_lp_experiment/GreedyCentralNode.hpp"
 
 GreedyCentralNode::GreedyCentralNode() :
-m_num_robot(1), m_sensing_range(10), m_private_nh("~")
+m_num_robot(1), m_sensing_range(10), m_time_period(5), m_private_nh("~")
 {
 	m_private_nh.getParam("num_robot", m_num_robot);
 	m_private_nh.getParam("sensing_range", m_sensing_range);
+	m_private_nh.getParam("time_period", m_time_period);
 
 	// Services
 	m_request_service = m_nh.advertiseService("/robot_request", &GreedyCentralNode::requestInitialize, this);

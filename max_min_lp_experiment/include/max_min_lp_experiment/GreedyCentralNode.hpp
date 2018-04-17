@@ -33,6 +33,7 @@ private:
   // Params from the launch file
   int m_num_robot;
   int m_sensing_range;
+  int m_time_period;
 
   int m_send_robot_id;
   int m_request_robot_id;
