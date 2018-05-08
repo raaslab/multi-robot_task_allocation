@@ -14,6 +14,7 @@ find_package(catkin REQUIRED COMPONENTS
 add_service_files(
   FILES
   RobotRequest.srv
+  TargetRequest.srv
 )
 
 generate_messages(
