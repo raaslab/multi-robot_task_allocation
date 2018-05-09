@@ -13,6 +13,7 @@
 #include <vector>
 #include <math.h>
 #include <max_min_lp_experiment/RobotRequest.h>
+#include <max_min_lp_experiment/TargetRequest.h>
 
 using namespace std;
 
@@ -23,12 +24,12 @@ private:
 
   // Publishers
   ros::Publisher m_response_to_robot_pub;
-
   // Subscribers
   ros::Subscriber m_comm_graph_by_robots_sub;
-
   // Services
-  ros::ServiceServer m_request_service;
+  ros::ServiceServer m_center_request_service;
+  // Clients
+  ros::ServiceClient m_center_request_client;
 
   // Params from the launch file
   int m_num_robot;

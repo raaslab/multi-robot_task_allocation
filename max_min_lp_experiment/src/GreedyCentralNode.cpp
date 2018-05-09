@@ -16,7 +16,7 @@ m_num_robot(1), m_sensing_range(10), m_time_period(5), m_private_nh("~")
 	m_private_nh.getParam("time_period", m_time_period);
 
 	// Services
-	m_request_service = m_nh.advertiseService("/robot_request", &GreedyCentralNode::requestInitialize, this);
+	m_center_request_service = m_nh.advertiseService("/robot_request", &GreedyCentralNode::requestInitialize, this);
 	// Publishers
 	m_response_to_robot_pub = m_nh.advertise<std_msgs::String>("/center_response", 1);
 	// Subscribers
@@ -54,6 +54,12 @@ bool GreedyCentralNode::requestInitialize(max_min_lp_experiment::RobotRequest::R
 
 				// Compute observable targets and communicative last robot for each robot.
 				vector<int> observed_target_id;
+
+				// Service of request to target_node.
+				m_center_request_client = m_nh.serviceClient<max_min_lp_experiment::TargetRequest>("/target_request");
+				max_min_lp_experiment::TargetRequest srv;
+				srv.request.state_request = "center_ready";
+
 				for (int i = 0; i < m_num_target; i++) {
 					double dist_target_robot = sqrt(pow(m_target_pose_x[i]-req.robot_pose.x,2)
 						+pow(m_target_pose_y[i]-req.robot_pose.y,2));

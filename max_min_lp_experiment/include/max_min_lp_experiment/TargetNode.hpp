@@ -5,13 +5,13 @@
 #include <std_msgs/String.h>
 #include <geometry_msgs/Pose.h>
 #include <geometry_msgs/Point.h>
-#include <nav_msgs/Odometry.h>
 #include <boost/lexical_cast.hpp>
 #include <iostream>
 #include <sstream>
 #include <string>
 #include <vector>
 #include <math.h>
+#include <max_min_lp_experiment/TargetRequest.h>
 
 using namespace std;
 
@@ -33,6 +33,7 @@ private:
   vector<float> m_target_pose_y;
   vector<float> m_target_velocity;
   vector<float> m_target_orientation;
+  int m_time_step;
 
 public:
   TargetNode(); // Constructor

@@ -39,7 +39,13 @@ add_executable(central_node src/GreedyCentralNode.cpp)
 target_link_libraries(central_node
   ${catkin_LIBRARIES}
 )
+
 add_executable(robot_node src/GreedyRobotNode.cpp)
 target_link_libraries(robot_node
+  ${catkin_LIBRARIES}
+)
+
+add_executable(target_node src/TargetNode.cpp)
+target_link_libraries(target_node
   ${catkin_LIBRARIES}
 )

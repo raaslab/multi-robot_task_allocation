@@ -1,6 +1,4 @@
 string state_request
-int8 robot_id
-geometry_msgs/Point robot_pose
 
 ---
 
@@ -9,6 +7,3 @@ string state_answer
 # Target info
 int8[] target_id
 geometry_msgs/Point[] target_pose
-
-# Communicative last robot info
-int8 comm_robot_id
