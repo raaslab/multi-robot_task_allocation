@@ -52,6 +52,9 @@ link_directories(
 add_library(animated_box SHARED src/animated_box.cc)
 target_link_libraries(animated_box ${GAZEBO_LIBRARIES})
 
+add_library(animated_box_journal SHARED src/animated_box_journal.cc)
+target_link_libraries(animated_box_journal ${GAZEBO_LIBRARIES})
+
 add_executable(motion_primitive_generator src/motion_primitive_generator.cpp)
 target_link_libraries(motion_primitive_generator ${catkin_LIBRARIES})
 
