@@ -9,6 +9,7 @@
 #include "max_min_lp_core/MaxMinLPCore.hpp"
 
 #define MAX_VALUE 10000
+#define PRECISION_VALUE 0.0001 // This handles the issue of the computer precision issue.
 
 namespace max_min_lp_core {
 
@@ -507,7 +508,7 @@ vector<max_min_lp_msgs::general_node> MaxMinLPCore::applyLocalAlgorithm() {
 
 			minimum_g_t.at(i) -= m_epsilon;
 
-			if (minimum_g_t[i] < init_minimum_g_t / 2) {
+			if (minimum_g_t[i] + PRECISION_VALUE  < init_minimum_g_t / 2) {
 				cout<<"ERROR: t_r becomes below 1/2*t_r at "<<i+1<<"'s red tree"<<endl;
 				exit (EXIT_FAILURE);
 			}
@@ -1081,7 +1082,7 @@ bool MaxMinLPCore::computeRecursive(int _count_red_layer_zero, float _minimum_g_
 				int temp_min_index = distance(temp_z_r.begin(), temp_min_iterator);
 				temp_red_pointer->second.z_r = temp_z_r[temp_min_index];
 
-				if (temp_red_pointer->second.z_r < -0.0001) {
+				if (temp_red_pointer->second.z_r < -1 * PRECISION_VALUE) {
 					check_z_negative = true;
 					break;
 				}

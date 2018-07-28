@@ -41,12 +41,14 @@ private:
   // Variables from the launch file
   string m_input_type;
   string m_output_type;
+  string m_output_type_journal;
   int m_num_layer; // Number of layers in the layered model
   int m_num_text_files;
   bool m_verbal_flag;
   double m_epsilon;
 
   ofstream m_outputFile;
+  ofstream m_outputFile_journal;
 
   int m_count;
   bool check_start;

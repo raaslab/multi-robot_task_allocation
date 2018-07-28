@@ -32,6 +32,8 @@ m_input_type(string("yaml")), m_num_layer(2), m_num_text_files(1), m_verbal_flag
 	m_nh.getParam("output_path", partial_path);
 	m_output_type = partial_path+"output.txt";
 	m_outputFile.open(m_output_type.c_str());
+	m_output_type_journal = partial_path+"output_journal.txt";
+	m_outputFile_journal.open(m_output_type_journal.c_str());
 }
 
 void MaxMinLPDemo::maxMinCallback(const std_msgs::String::ConstPtr& msg) {
@@ -239,6 +241,12 @@ void MaxMinLPDemo::maxMinCallback(const std_msgs::String::ConstPtr& msg) {
 					getline(output_file,line);
 					getline(output_file,line);
 					getline(output_file,line);
+
+					if (i == 0) {
+						m_outputFile_journal<<num_robot_node<<endl;
+						m_outputFile_journal<<num_p_t_node<<endl;
+						m_outputFile_journal<<num_target_node<<endl;
+					}
 
 					// Build A matrix. (Related with robot and p_r)
 					int A[num_robot_node][num_p_r_node];
@@ -560,6 +568,12 @@ void MaxMinLPDemo::computeLocalAlgorithm(const std_msgs::String::ConstPtr& msg, 
 
 		// Get the solution from local algorithm.
 		vector<max_min_lp_msgs::general_node> returned_gen_p_r_node = lpc.applyLocalAlgorithm();
+
+		// This part is added for the journal version.
+		for (vector<max_min_lp_msgs::general_node>::iterator it = returned_gen_p_r_node.begin(); it != returned_gen_p_r_node.end(); ++it) {
+			m_outputFile_journal<<it->z_v<<" ";
+		}
+		m_outputFile_journal<<endl;
 
 		vector<int> selected_primitive_id;
 		for (int i = 0; i < num_robot_node; i++) {
