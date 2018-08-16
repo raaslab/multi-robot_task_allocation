@@ -57,7 +57,7 @@ void posesStampedCallback(ConstPosesStampedPtr &posesStamped) {
 	double temp_y = 0;
 	double temp_z = 0;
 
-	bool t_1 = true;bool t_2 = true;bool t_3 = true;bool t_4 = true;bool t_5 = true;bool t_6 = true;bool t_7 = true;bool t_8 = true;bool t_9 = true;
+	bool t_0 = true;bool t_1 = true;bool t_2 = true;bool t_3 = true;bool t_4 = true;bool t_5 = true;bool t_6 = true;bool t_7 = true;bool t_8 = true;bool t_9 = true;
 	bool t_10 = true;bool t_11 = true;bool t_12 = true;bool t_13 = true;bool t_14 = true;bool t_15 = true;bool t_16 = true;bool t_17 = true;
 	bool t_18 = true;bool t_19 = true;bool t_20 = true;bool t_21 = true;bool t_22 = true;bool t_23 = true;bool t_24 = true;bool t_25 = true;bool t_26 = true;
 	bool t_27 = true;bool t_28 = true;bool t_29 = true;bool t_30 = true;
@@ -68,16 +68,61 @@ void posesStampedCallback(ConstPosesStampedPtr &posesStamped) {
 	for (int i = 0; i < posesStamped->pose_size(); ++i) {
 		const ::gazebo::msgs::Pose &pose = posesStamped->pose(i);
 		string name = pose.name();
-		if (name == std::string("target_1") && t_1) {
+		if (name == std::string("target_0") && t_0) {
 			const ::gazebo::msgs::Vector3d &position = pose.position();
 			temp_x = position.x();temp_y = position.y();temp_z = position.z();
-			t_1 = false;getTargetPos(temp_x, temp_y, temp_z, target_id);target_id += 1;
+			t_0 = false;getTargetPos(temp_x, temp_y, temp_z, target_id);target_id += 1;
 		}
+		// else if (name == std::string("target_1") && t_1) {
+		// 	const ::gazebo::msgs::Vector3d &position = pose.position();
+		// 	temp_x = position.x();temp_y = position.y();temp_z = position.z();
+		// 	t_1 = false;getTargetPos(temp_x, temp_y, temp_z, target_id);target_id += 1;
+		// }
+		// else if (name == std::string("target_2") && t_2) {
+		// 	const ::gazebo::msgs::Vector3d &position = pose.position();
+		// 	temp_x = position.x();temp_y = position.y();temp_z = position.z();
+		// 	t_2 = false;getTargetPos(temp_x, temp_y, temp_z, target_id);target_id += 1;
+		// }
+		// else if (name == std::string("target_3") && t_3) {
+		// 	const ::gazebo::msgs::Vector3d &position = pose.position();
+		// 	temp_x = position.x();temp_y = position.y();temp_z = position.z();
+		// 	t_3 = false;getTargetPos(temp_x, temp_y, temp_z, target_id);target_id += 1;
+		// }
+		// else if (name == std::string("target_4") && t_4) {
+		// 	const ::gazebo::msgs::Vector3d &position = pose.position();
+		// 	temp_x = position.x();temp_y = position.y();temp_z = position.z();
+		// 	t_4 = false;getTargetPos(temp_x, temp_y, temp_z, target_id);target_id += 1;
+		// }
+		// else if (name == std::string("target_5") && t_5) {
+		// 	const ::gazebo::msgs::Vector3d &position = pose.position();
+		// 	temp_x = position.x();temp_y = position.y();temp_z = position.z();
+		// 	t_5 = false;getTargetPos(temp_x, temp_y, temp_z, target_id);target_id += 1;
+		// }
+		// else if (name == std::string("target_6") && t_6) {
+		// 	const ::gazebo::msgs::Vector3d &position = pose.position();
+		// 	temp_x = position.x();temp_y = position.y();temp_z = position.z();
+		// 	t_6 = false;getTargetPos(temp_x, temp_y, temp_z, target_id);target_id += 1;
+		// }
+		// else if (name == std::string("target_7") && t_7) {
+		// 	const ::gazebo::msgs::Vector3d &position = pose.position();
+		// 	temp_x = position.x();temp_y = position.y();temp_z = position.z();
+		// 	t_7 = false;getTargetPos(temp_x, temp_y, temp_z, target_id);target_id += 1;
+		// }
+		// else if (name == std::string("target_8") && t_8) {
+		// 	const ::gazebo::msgs::Vector3d &position = pose.position();
+		// 	temp_x = position.x();temp_y = position.y();temp_z = position.z();
+		// 	t_8 = false;getTargetPos(temp_x, temp_y, temp_z, target_id);target_id += 1;
+		// }
+		// else if (name == std::string("target_9") && t_9) {
+		// 	const ::gazebo::msgs::Vector3d &position = pose.position();
+		// 	temp_x = position.x();temp_y = position.y();temp_z = position.z();
+		// 	t_9 = false;getTargetPos(temp_x, temp_y, temp_z, target_id);target_id += 1;
+		// }
 	}
 }
 
 int main(int argc, char **argv) {
-	ros::init(argc, argv, "get_target_odom");
+	ros::init(argc, argv, "get_target_odom_journal_node");
 	ros::NodeHandle nh;
 
 	ros::ServiceServer odom_service;

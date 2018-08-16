@@ -505,7 +505,6 @@ vector<max_min_lp_msgs::general_node> MaxMinLPCore::applyLocalAlgorithm() {
 				//	break;
 				//}
 			}
-
 			minimum_g_t.at(i) -= m_epsilon;
 
 			if (minimum_g_t[i] + PRECISION_VALUE  < init_minimum_g_t / 2) {

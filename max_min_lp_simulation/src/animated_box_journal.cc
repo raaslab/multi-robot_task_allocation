@@ -35,8 +35,8 @@ namespace gazebo
 
       // Parameters
       int time_duration = 10; // time duration (seconds) for each step
-      int tot_num_steps = 10; // Total number of steps
-      int num_targets = 10; // Number of targets
+      int tot_num_steps = 30; // Total number of steps
+      int num_targets = 1; // Number of targets
       time_t t;
       srand((unsigned) time(&t));
       int env_size = 20; // Size of the bounded environment
@@ -67,11 +67,11 @@ namespace gazebo
       for (int i = 0; i < num_targets; i++) {
         target_pos_x.push_back(rand()%env_size-env_size/2);
         target_pos_y.push_back(rand()%env_size-env_size/2);
-        std::string temp_name = "target_"+boost::lexical_cast<std::string>(i+1);
+        std::string temp_name = "target_"+boost::lexical_cast<std::string>(i);
         gazebo::common::PoseAnimationPtr temp_anim(
             new gazebo::common::PoseAnimation(temp_name, 1000.0, false));
         anim.push_back(temp_anim);
-        std::string temp_name_next = "target_"+boost::lexical_cast<std::string>(i+1)+"_next_pose";
+        std::string temp_name_next = "target_"+boost::lexical_cast<std::string>(i)+"_next_pose";
         gazebo::common::PoseAnimationPtr temp_anim_next(
             new gazebo::common::PoseAnimation(temp_name_next, 1000.0, false));
         anim_next.push_back(temp_anim_next);

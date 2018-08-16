@@ -11,7 +11,7 @@
 #include "max_min_lp_simulation/get_odom.hpp"
 
 get_odom::get_odom() : 
-m_num_robot(1), m_num_target(1), m_robot_id(1), m_robot_name(string("robot_1")), m_private_nh("~") 
+m_num_robot(1), m_num_target(1), m_robot_id(1), m_robot_name(string("robot_0")), m_private_nh("~") 
 {
 	m_private_nh.getParam("num_robot", m_num_robot);
 	m_private_nh.getParam("num_target", m_num_target);
@@ -24,14 +24,15 @@ m_num_robot(1), m_num_target(1), m_robot_id(1), m_robot_name(string("robot_1")),
 
 void get_odom::updateOdom(const gazebo_msgs::ModelStates::ConstPtr& msg) {
 	int size_msg = m_num_robot + m_num_target + 1; // 1 is for 'ground plane' in gazebo.
-	int id;
-
+	int id = -1;
 	for (int i = 0; i < size_msg; i++) {
 		if (strcmp(msg->name[i].c_str(), m_robot_name.c_str()) == 0) {
 			id = i;
 		}
 	}
-	m_pos = msg->pose[id];
+	if (id != -1) {
+		m_pos = msg->pose[id];
+	}
 }
 
 bool get_odom::return_odom(max_min_lp_simulation::GetOdom::Request &req, max_min_lp_simulation::GetOdom::Response &res) {

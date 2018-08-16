@@ -15,6 +15,7 @@ find_package(catkin REQUIRED COMPONENTS
 )
 
 find_package(gazebo REQUIRED)
+find_package(Eigen3 REQUIRED)
 
 add_service_files(
   FILES
@@ -36,18 +37,22 @@ catkin_package(
   INCLUDE_DIRS include
   LIBRARIES max_min_lp_simulation
   CATKIN_DEPENDS roscpp std_msgs max_min_lp_msgs max_min_lp_core message_runtime
-#  DEPENDS system_lib
+  # DEPENDS Eigen3
 )
 
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
   ${GAZEBO_INCLUDE_DIRS}
+  ${EIGEN_INCLUDE_DIRS}
 )
 
 link_directories(
   ${GAZEBO_LIBRARY_DIRS}
 )
+
+add_library(kalman src/kalman.cpp)
+target_link_libraries(kalman ${catkin_LIBRARIES})
 
 add_library(animated_box SHARED src/animated_box.cc)
 target_link_libraries(animated_box ${GAZEBO_LIBRARIES})
@@ -94,3 +99,10 @@ add_dependencies(get_target_odom_node max_min_lp_simulation_gencpp)
 add_executable(get_total_num_target_node src/get_result_target_num.cpp)
 target_link_libraries(get_total_num_target_node ${catkin_LIBRARIES})
 add_dependencies(get_total_num_target_node max_min_lp_simulation_gencpp)
+
+# Journal-related
+add_executable(max_min_lp_simulation_robot_journal src/RobotGreedyJournal.cpp)
+target_link_libraries(max_min_lp_simulation_robot_journal kalman ${catkin_LIBRARIES})
+add_executable(get_target_odom_journal_node src/get_target_odom_journal.cpp)
+target_link_libraries(get_target_odom_journal_node ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES} pthread)
+add_dependencies(get_target_odom_journal_node max_min_lp_simulation_gencpp)
