@@ -43,7 +43,7 @@
       <plugin name="animated_box_journal" filename="libanimated_box_journal.so"/>
     </model>
 
-    <model name="target_0_next_pose">
+    <!--<model name="target_0_next_pose">
       <pose>0 0 0 0 0 0</pose>
       <link name="link">
         <collision name="collision">
@@ -70,7 +70,7 @@
       </link>
 
       <plugin name="animated_box_journal" filename="libanimated_box_journal.so"/>
-    </model>
+    </model>-->
 
     
   </world>

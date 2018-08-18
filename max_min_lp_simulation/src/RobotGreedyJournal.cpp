@@ -12,7 +12,8 @@
 RobotGreedyJournal::RobotGreedyJournal() :
 m_num_robot(1), m_num_target(1), m_robot_id(0), m_robot_name(string("robot_0")),  
 m_verbal_flag(false), m_num_motion_primitive(10), m_time_interval(10), m_robot_time(1), 
-m_sensing_range(5), m_comm_range(5), m_private_nh("~")
+m_robot_trans_speed(0.5), m_robot_ang_speed(0.5), m_sensing_range(5), m_comm_range(5), 
+m_private_nh("~")
 {
 	m_private_nh.getParam("num_robot", m_num_robot);
 	m_private_nh.getParam("num_target", m_num_target);
@@ -22,6 +23,8 @@ m_sensing_range(5), m_comm_range(5), m_private_nh("~")
 	m_private_nh.getParam("num_motion_primitive", m_num_motion_primitive);
 	m_private_nh.getParam("time_interval", m_time_interval);
 	m_private_nh.getParam("robot_time", m_robot_time);
+	m_private_nh.getParam("robot_trans_speed", m_robot_trans_speed);
+	m_private_nh.getParam("robot_ang_speed", m_robot_ang_speed);
 	m_private_nh.getParam("sensing_range", m_sensing_range);
 	m_private_nh.getParam("comm_range", m_comm_range);
 
@@ -36,6 +39,7 @@ m_sensing_range(5), m_comm_range(5), m_private_nh("~")
 		m_target_predicted_pose_pub.push_back(m_nh.advertise<geometry_msgs::PoseWithCovariance>("/target_"+boost::lexical_cast<string>(i)+"/predicted_pose", 1));
 		m_target_measurement_pose_pub.push_back(m_nh.advertise<geometry_msgs::Pose>("/target_"+boost::lexical_cast<string>(i)+"/measurement_pose", 1));
 	}
+	m_cmd_vel_robot_pub = m_nh.advertise<geometry_msgs::Twist>("/robot_"+boost::lexical_cast<string>(m_robot_id)+"/cmd_vel_mux/input/teleop", 1);
 
 	m_cur_time =ros::Time::now().toSec();
 	m_prev_time =ros::Time::now().toSec();
@@ -56,6 +60,8 @@ void RobotGreedyJournal::activateRobots(const std_msgs::String::ConstPtr& msg) {
 		m_measure_target_pos.clear();
 		m_predicted_target_pos.clear();
 		m_motion_primitive_pose.clear();
+		m_motion_trans_duration.clear();
+		m_motion_ang_duration.clear();
 		m_c.clear();
 		m_w.clear(); // # = number of targets.
 		m_w_prime.clear(); // # = number of motion primitives.
@@ -68,10 +74,10 @@ void RobotGreedyJournal::activateRobots(const std_msgs::String::ConstPtr& msg) {
 
 			// Compute c (i.e., the tracking quality) by using the sensing range.
 			m_target_odom_client = m_nh.serviceClient<max_min_lp_simulation::GetOdom>("/target_odom_request");
-			max_min_lp_simulation::GetOdom srv;
+			max_min_lp_simulation::GetOdom srv_odom;
 
-			if (m_target_odom_client.call(srv)) {
-				m_measure_target_pos = srv.response.return_target_odom;
+			if (m_target_odom_client.call(srv_odom)) {
+				m_measure_target_pos = srv_odom.response.return_target_odom;
 
 				ROS_INFO("\nTarget prediction starts.");
 
@@ -143,7 +149,7 @@ void RobotGreedyJournal::activateRobots(const std_msgs::String::ConstPtr& msg) {
 						double v_x = (m_measure_target_pos[i].position.x-m_prev_target_pos[i].position.x)/m_time_interval;
 						double v_y = (m_measure_target_pos[i].position.y-m_prev_target_pos[i].position.y)/m_time_interval;
 						U << v_x, v_y;
-						ROS_INFO("Control input = %.2f, %.2f", v_x, v_y);
+						// ROS_INFO("Control input = %.2f, %.2f", v_x, v_y);
 
 						Eigen::VectorXd x_prev(n);
 						x_prev << m_prev_target_pos[i].position.x, m_prev_target_pos[i].position.y;
@@ -214,6 +220,7 @@ void RobotGreedyJournal::activateRobots(const std_msgs::String::ConstPtr& msg) {
 			m_motion_primitive_pose = computeMotionPrimitives();
 
 			for (int i = 0; i < m_num_motion_primitive; i++) {
+				ROS_INFO("motion primitive %d = %.2f, %.2f", i, m_motion_primitive_pose[i].position.x, m_motion_primitive_pose[i].position.y);
 				// Compute c values and consider a sensing graph.
 				vector<double> c_for_primitive;
 				for (int j = 0; j < m_num_target; j++) {
@@ -230,11 +237,27 @@ void RobotGreedyJournal::activateRobots(const std_msgs::String::ConstPtr& msg) {
 						c_for_primitive.push_back(1/dist_target_primitive);
 					// }
 				}
-
 				m_c.push_back(c_for_primitive);
+
+				// Compute w_prime.
+				double w_prime = 0;
+				for (int j = 0; j < m_num_target; j++) {
+					if (m_w[j] >= m_c[i][j]) {
+						w_prime += m_w[j];
+					}
+					else {
+						w_prime += m_c[i][j];
+					}
+					// ROS_INFO("Target %d's w_prime = %.2f", j, w_prime);
+				}
+				m_w_prime.push_back(w_prime);
 			}
 
-			// Publishers
+			// Determine a motion primitive.
+			vector<double>::iterator max_iterator = max_element(m_w_prime.begin(), m_w_prime.end());
+			int max_primitive_index = distance(m_w_prime.begin(), max_iterator);
+
+			// Update w_j and publish it to sucessor robots.
 			// w_j
 
 			ROS_INFO("Local computaion of Robot %d finished.", m_robot_id);
@@ -248,6 +271,30 @@ void RobotGreedyJournal::activateRobots(const std_msgs::String::ConstPtr& msg) {
 
 			// Moving over a selected motion primitive starts.
 			ROS_INFO("Robot %d starts moving.", m_robot_id);
+
+			m_move_client = m_nh.serviceClient<max_min_lp_simulation::MoveRobot>("/robot_"+boost::lexical_cast<string>(m_robot_id)+"/move_request", true);
+			max_min_lp_simulation::MoveRobot srv_move;
+			srv_move.request.rotation_direction = m_check_rotation_direction[max_primitive_index];
+			srv_move.request.trans_duration = m_motion_trans_duration[max_primitive_index];
+			srv_move.request.ang_duration = m_motion_ang_duration[max_primitive_index];
+			srv_move.request.trans_speed = m_robot_trans_speed;
+			srv_move.request.ang_speed = m_robot_ang_speed;
+
+			if (m_move_client.call(srv_move)) {
+				ROS_INFO("Sucess!!!");
+				ROS_INFO("m_cur_time = %.2f", m_cur_time);
+				ROS_INFO("m_prev_time = %.2f", m_prev_time);
+
+				while(1) {
+					if (strcmp(srv_move.response.answer_msg.c_str(), "success") == 0) {
+						ROS_INFO("Robot %d arrived the waypoint.", m_robot_id);
+						break;
+					}
+				}
+			}
+			else {
+				ROS_ERROR("ERROR: Robot %d's action failed.", m_robot_id);
+			}
 		}
 	}
 }
@@ -267,14 +314,13 @@ void RobotGreedyJournal::updateOdom(const gazebo_msgs::ModelStates::ConstPtr& ms
 
 vector<geometry_msgs::Pose> RobotGreedyJournal::computeMotionPrimitives() {
 	if (m_verbal_flag) {
-		ROS_INFO("ROBOT %d is in the computeMotionPrimitives() step", m_robot_id);
+		ROS_INFO("Robot %d is in the computeMotionPrimitives() step", m_robot_id);
 	}
 	tf::Quaternion q(m_pos.orientation.x, m_pos.orientation.y, m_pos.orientation.z, m_pos.orientation.w);
 	tf::Matrix3x3 m(q);
 	double roll, pitch, yaw;
 	m.getRPY(roll, pitch, yaw);
-
-	yaw = yaw * 180 / PHI;
+	ROS_INFO("Robot %d's pose = (%.2f, %.2f, %.2f)", m_robot_id, m_pos.orientation.x, m_pos.orientation.y, yaw*180/PHI);
 
 	vector<geometry_msgs::Pose> motion_primitive;
 	double x_new, y_new;
@@ -282,36 +328,40 @@ vector<geometry_msgs::Pose> RobotGreedyJournal::computeMotionPrimitives() {
 	
 	for (int i = 0; i < m_num_motion_primitive; i++) {
 		geometry_msgs::Pose motion_primitive_instance;
-		orientation = yaw + 3.42 * m_motion_case_rotation[i]; // 3.42 is degree.
+		orientation = yaw + m_robot_ang_speed * m_motion_case_rotation[i];
+		orientation = orientation * 180 / PHI;
 		if (orientation > 180) {
 			orientation -= 360;
 		}
 		else if (orientation < -180) {
 			orientation += 360;
 		}
-		// This is hard-coded.
+
+		m_motion_trans_duration.push_back(m_time_interval - abs(m_motion_case_rotation[i]));
+		m_motion_ang_duration.push_back(abs(m_motion_case_rotation[i]));
+
 		if (orientation >= 0 && orientation < 90) {
-			x_new = m_pos.position.x + 0.06 * (m_time_interval - abs(m_motion_case_rotation[i])) 
+			x_new = m_pos.position.x + m_robot_trans_speed * (m_time_interval - abs(m_motion_case_rotation[i])) 
 					* cos(orientation * PHI / 180);
-			y_new = m_pos.position.y + 0.06 * (m_time_interval - abs(m_motion_case_rotation[i])) 
+			y_new = m_pos.position.y + m_robot_trans_speed * (m_time_interval - abs(m_motion_case_rotation[i])) 
 					* sin(orientation * PHI / 180);
 		}
 		else if (orientation >= 90 && orientation < 180) {
-			x_new = m_pos.position.x - 0.06 * (m_time_interval - abs(m_motion_case_rotation[i])) 
+			x_new = m_pos.position.x - m_robot_trans_speed * (m_time_interval - abs(m_motion_case_rotation[i])) 
 					* cos((180 - orientation) * PHI / 180);
-			y_new = m_pos.position.y + 0.06 * (m_time_interval - abs(m_motion_case_rotation[i])) 
+			y_new = m_pos.position.y + m_robot_trans_speed * (m_time_interval - abs(m_motion_case_rotation[i])) 
 					* sin((180 - orientation) * PHI / 180);
 		}
 		else if (orientation < 0 && orientation >= -90) {
-			x_new = m_pos.position.x + 0.06 * (m_time_interval - abs(m_motion_case_rotation[i])) 
+			x_new = m_pos.position.x + m_robot_trans_speed * (m_time_interval - abs(m_motion_case_rotation[i])) 
 					* cos((-1) * orientation * PHI / 180);
-			y_new = m_pos.position.y - 0.06 * (m_time_interval - abs(m_motion_case_rotation[i])) 
+			y_new = m_pos.position.y - m_robot_trans_speed * (m_time_interval - abs(m_motion_case_rotation[i])) 
 					* sin((-1) * orientation * PHI / 180);
 		}
 		else if (orientation < -90 && orientation >= -180) {
-			x_new = m_pos.position.x - 0.06 * (m_time_interval - abs(m_motion_case_rotation[i])) 
+			x_new = m_pos.position.x - m_robot_trans_speed * (m_time_interval - abs(m_motion_case_rotation[i])) 
 					* cos((180 + orientation) * PHI / 180);
-			y_new = m_pos.position.y - 0.06 * (m_time_interval - abs(m_motion_case_rotation[i])) 
+			y_new = m_pos.position.y - m_robot_trans_speed * (m_time_interval - abs(m_motion_case_rotation[i])) 
 					* sin((180 + orientation) * PHI / 180);
 		}
 
@@ -319,9 +369,9 @@ vector<geometry_msgs::Pose> RobotGreedyJournal::computeMotionPrimitives() {
 		motion_primitive_instance.position.y = y_new;
 		motion_primitive_instance.orientation.w = orientation;
 
-		if (m_verbal_flag) {
-			ROS_INFO("ROBOT %d : %d'th motion primitive = (%f, %f)", m_robot_id, i+1, x_new, y_new);
-		}
+		// if (m_verbal_flag) {
+			ROS_INFO("Robot %d : %d'th motion primitive = (%.2f, %.2f, %.2f)", m_robot_id, i, x_new, y_new, orientation);
+		// }
 
 		motion_primitive.push_back(motion_primitive_instance);
 	}
@@ -341,6 +391,9 @@ void RobotGreedyJournal::getMotionCaseRotation() {
 
 	double rotation_time = m_moving_time/2;
 	int resol_rotation = floor(rotation_time/num_rotation);
+	if (resol_rotation == 0) {
+		resol_rotation = 1;
+	}
 
 	for (int i = 0; i < m_num_motion_primitive; i++) {
 		if (m_num_motion_primitive%2 == 0) {

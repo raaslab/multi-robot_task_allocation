@@ -33,6 +33,9 @@ namespace gazebo
       // Store the pointer to the model
       this->model = _parent;
 
+      // Next position of target.
+      bool flag_next = false;
+
       // Parameters
       int time_duration = 10; // time duration (seconds) for each step
       int tot_num_steps = 30; // Total number of steps
@@ -71,10 +74,12 @@ namespace gazebo
         gazebo::common::PoseAnimationPtr temp_anim(
             new gazebo::common::PoseAnimation(temp_name, 1000.0, false));
         anim.push_back(temp_anim);
-        std::string temp_name_next = "target_"+boost::lexical_cast<std::string>(i)+"_next_pose";
-        gazebo::common::PoseAnimationPtr temp_anim_next(
-            new gazebo::common::PoseAnimation(temp_name_next, 1000.0, false));
-        anim_next.push_back(temp_anim_next);
+        if (flag_next) {
+          std::string temp_name_next = "target_"+boost::lexical_cast<std::string>(i)+"_next_pose";
+          gazebo::common::PoseAnimationPtr temp_anim_next(
+              new gazebo::common::PoseAnimation(temp_name_next, 1000.0, false));
+          anim_next.push_back(temp_anim_next);
+        }
 
         gazebo::common::PoseKeyFrame *temp_key = anim[i]->CreateKeyFrame(0);
         temp_key->Translation(ignition::math::Vector3d(target_pos_x[i], target_pos_y[i], 0));
@@ -102,22 +107,30 @@ namespace gazebo
           // printf("Target_%d pose: (%.2f, %.2f)\n", i+1, target_pos_x[i], target_pos_y[i]);
           // printf("Distance traveled: %.2f\n", sqrt((prev_target_pos_x[i]-target_pos_x[i])*(prev_target_pos_x[i]-target_pos_x[i])
           //   +(prev_target_pos_y[i]-target_pos_y[i])*(prev_target_pos_y[i]-target_pos_y[i])));
-          gazebo::common::PoseKeyFrame *temp_key_next = anim_next[i]->CreateKeyFrame(time_duration*j);
-          temp_key_next->Translation(ignition::math::Vector3d(target_pos_x[i], target_pos_y[i], 0));
-          temp_key_next->Rotation(ignition::math::Quaterniond(0, 0, 0));
+          if (flag_next) {
+            gazebo::common::PoseKeyFrame *temp_key_next = anim_next[i]->CreateKeyFrame(time_duration*j);
+            temp_key_next->Translation(ignition::math::Vector3d(target_pos_x[i], target_pos_y[i], 0));
+            temp_key_next->Rotation(ignition::math::Quaterniond(0, 0, 0));
+          }
           temp_key = anim[i]->CreateKeyFrame(time_duration*(j+1));
           temp_key->Translation(ignition::math::Vector3d(target_pos_x[i], target_pos_y[i], 0));
           temp_key->Rotation(ignition::math::Quaterniond(0, 0, 0));
-          temp_key_next = anim_next[i]->CreateKeyFrame(time_duration*(j+1)-1);
-          temp_key_next->Translation(ignition::math::Vector3d(target_pos_x[i], target_pos_y[i], 0));
-          temp_key_next->Rotation(ignition::math::Quaterniond(0, 0, 0));
+          if (flag_next) {
+            gazebo::common::PoseKeyFrame *temp_key_next = anim_next[i]->CreateKeyFrame(time_duration*j);
+            temp_key_next = anim_next[i]->CreateKeyFrame(time_duration*(j+1)-1);
+            temp_key_next->Translation(ignition::math::Vector3d(target_pos_x[i], target_pos_y[i], 0));
+            temp_key_next->Rotation(ignition::math::Quaterniond(0, 0, 0));
+          }
         }
 
         if (std::strcmp(_parent->GetName().c_str(), temp_name.c_str()) == 0) {
           _parent->SetAnimation(anim[i]);
         }
-        if (std::strcmp(_parent->GetName().c_str(), temp_name_next.c_str()) == 0) {
-          _parent->SetAnimation(anim_next[i]);
+        if (flag_next) {
+          std::string temp_name_next = "target_"+boost::lexical_cast<std::string>(i)+"_next_pose";
+          if (std::strcmp(_parent->GetName().c_str(), temp_name_next.c_str()) == 0) {
+            _parent->SetAnimation(anim_next[i]);
+          }
         }
       }
     }

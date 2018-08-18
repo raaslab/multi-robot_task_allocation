@@ -8,12 +8,12 @@
  * Copyright 2017. All Rights Reserved.
  */
 
-#include "max_min_lp_simulation/apply_motion_primitive.hpp"
+#include "max_min_lp_simulation/apply_motion_primitive_journal.hpp"
 
 #define PHI 3.141592
 
 apply_motion_primitive::apply_motion_primitive() :
-m_num_robot(1), m_num_target(1), m_robot_id(1), m_robot_name(string("robot_1")), m_private_nh("~")
+m_num_robot(1), m_num_target(1), m_robot_id(1), m_robot_name(string("robot_0")), m_private_nh("~")
 {
 	m_private_nh.getParam("num_robot", m_num_robot);
 	m_private_nh.getParam("num_target", m_num_target);
@@ -25,15 +25,21 @@ m_num_robot(1), m_num_target(1), m_robot_id(1), m_robot_name(string("robot_1")),
 }
 
 bool apply_motion_primitive::move_robot(max_min_lp_simulation::MoveRobot::Request &req, max_min_lp_simulation::MoveRobot::Response &res) {
-	m_goal_pos = req.goal_pos;
 	m_check_rotation_direction = req.rotation_direction;
+	m_trans_duration = req.trans_duration;
+	m_ang_duration = req.ang_duration;
+	m_trans_speed = req.trans_speed;
+	m_ang_speed = req.ang_speed;
 
-	ROS_INFO("Robot %d goal pos (%.2f, %.2f, %.2f)", m_robot_id, m_goal_pos.position.x, m_goal_pos.position.y, m_goal_pos.orientation.w);
+	ROS_INFO("Robot %d trans_duration = %d, ang_duration = %d, trans_speed = %.2f, ang_speed = %.2f", m_robot_id, m_trans_duration, m_ang_duration, m_trans_speed, m_ang_speed);
 	ROS_INFO("Robot %d rotation direction = %d", m_robot_id, m_check_rotation_direction);
 
+	double cur_time =ros::Time::now().toSec();
+	double prev_time =ros::Time::now().toSec();
+
 	// m_goal_pos.orientation.w
-	float ang_vel = 0.5;
 	while (1) {
+		cur_time =ros::Time::now().toSec();
 		geometry_msgs::Twist cmd_vel_msg;
 
 		if (m_check_rotation_direction == 1) { // CW
@@ -42,7 +48,7 @@ bool apply_motion_primitive::move_robot(max_min_lp_simulation::MoveRobot::Reques
 			cmd_vel_msg.linear.z = 0;
 			cmd_vel_msg.angular.x = 0;
 			cmd_vel_msg.angular.y = 0;
-			cmd_vel_msg.angular.z = ang_vel;
+			cmd_vel_msg.angular.z = m_ang_speed;
 
 			m_cmd_vel_robot_pub.publish(cmd_vel_msg);
 		}
@@ -52,52 +58,27 @@ bool apply_motion_primitive::move_robot(max_min_lp_simulation::MoveRobot::Reques
 			cmd_vel_msg.linear.z = 0;
 			cmd_vel_msg.angular.x = 0;
 			cmd_vel_msg.angular.y = 0;
-			cmd_vel_msg.angular.z = -1*ang_vel;
+			cmd_vel_msg.angular.z = -1*m_ang_speed;
 
 			m_cmd_vel_robot_pub.publish(cmd_vel_msg);
 		}
 		else { // Remaining stationary
 			break;
 		}
-
-		m_odom_client = m_nh.serviceClient<max_min_lp_simulation::GetOdom>("/robot_"+boost::lexical_cast<string>(m_robot_id)+"/odom_request");
-		max_min_lp_simulation::GetOdom srv;
-		srv.request.request_odom = string("request");
-
-		if (m_odom_client.call(srv)) {
-			geometry_msgs::Pose temp_pos;
-			temp_pos = srv.response.return_odom;
-
-			tf::Quaternion q(temp_pos.orientation.x, temp_pos.orientation.y, temp_pos.orientation.z, temp_pos.orientation.w);
-			tf::Matrix3x3 m(q);
-			double roll, pitch, yaw;
-			m.getRPY(roll, pitch, yaw);
-
-			yaw = yaw * 180 / PHI;
-
-			// ROS_INFO("Robot %d : (%.2f, %.2f, %.2f)",  m_robot_id, temp_pos.position.x, temp_pos.position.y, yaw);
-
-			if (yaw > (m_goal_pos.orientation.w-5) && yaw < (m_goal_pos.orientation.w+5)) {
-				ang_vel = 0.3;
-			}
-
-			if (yaw > (m_goal_pos.orientation.w-1) && yaw < (m_goal_pos.orientation.w+1)) {
-				ROS_INFO("Robot %d angular velocity was applied.", m_robot_id);
-				ROS_INFO("Robot %d yaw = %.2f, goal_orient. = %.2f", m_robot_id, yaw, m_goal_pos.orientation.w);
-				break;
-			}
-		}
-		else {
-			ROS_INFO("ERROR: Robot %d's move is failed when giving an angular velocity.", m_robot_id);
+		if (cur_time-prev_time > m_ang_duration) {
+			break;
 		}
 	}
 
+	cur_time =ros::Time::now().toSec();
+	prev_time =ros::Time::now().toSec();
+
 	// m_goal_pos.position.x, m_goal_pos.position.y
-	float linear_vel = 0.5;
 	while (1) {
+		cur_time =ros::Time::now().toSec();
 		geometry_msgs::Twist cmd_vel_msg;
 
-		cmd_vel_msg.linear.x = linear_vel;
+		cmd_vel_msg.linear.x = m_trans_speed;
 		cmd_vel_msg.linear.y = 0;
 		cmd_vel_msg.linear.z = 0;
 		cmd_vel_msg.angular.x = 0;
@@ -106,36 +87,8 @@ bool apply_motion_primitive::move_robot(max_min_lp_simulation::MoveRobot::Reques
 
 		m_cmd_vel_robot_pub.publish(cmd_vel_msg);
 
-		m_odom_client = m_nh.serviceClient<max_min_lp_simulation::GetOdom>("/robot_"+boost::lexical_cast<string>(m_robot_id)+"/odom_request");
-		max_min_lp_simulation::GetOdom srv;
-		srv.request.request_odom = string("request");
-
-		if (m_odom_client.call(srv)) {
-			geometry_msgs::Pose temp_pos;
-			temp_pos = srv.response.return_odom;
-
-			tf::Quaternion q(temp_pos.orientation.x, temp_pos.orientation.y, temp_pos.orientation.z, temp_pos.orientation.w);
-			tf::Matrix3x3 m(q);
-			double roll, pitch, yaw;
-			m.getRPY(roll, pitch, yaw);
-
-			yaw = yaw * 180 / PHI;
-
-			// ROS_INFO("ROBOT %d : (%.2f, %.2f, %.2f)",  m_robot_id, temp_pos.position.x, temp_pos.position.y, yaw);
-			if (temp_pos.position.x > m_goal_pos.position.x - 0.2 && temp_pos.position.x < m_goal_pos.position.x + 0.2 &&
-				temp_pos.position.y > m_goal_pos.position.y - 0.2 && temp_pos.position.y < m_goal_pos.position.y + 0.2) {
-				linear_vel = 0.3;
-			}
-
-			if (temp_pos.position.x > m_goal_pos.position.x - 0.05 && temp_pos.position.x < m_goal_pos.position.x + 0.05 &&
-				temp_pos.position.y > m_goal_pos.position.y - 0.05 && temp_pos.position.y < m_goal_pos.position.y + 0.05) {
-				ROS_INFO("Robot %d linear velocity was applied.", m_robot_id);
-				ROS_INFO("Robot %d pos = (%.2f, %.2f), goal_pos = (%.2f, %.2f)", m_robot_id, temp_pos.position.x, temp_pos.position.y, m_goal_pos.position.x, m_goal_pos.position.y);
-				break;
-			}
-		}
-		else {
-			ROS_INFO("ERROR: Robot %d's move is failed when giving a linear velocity.", m_robot_id);
+		if (cur_time-prev_time > m_trans_duration) {
+			break;
 		}
 	}
 
@@ -162,11 +115,8 @@ bool apply_motion_primitive::move_robot(max_min_lp_simulation::MoveRobot::Reques
 		tf::Matrix3x3 m(q);
 		double roll, pitch, yaw;
 		m.getRPY(roll, pitch, yaw);
-
 		yaw = yaw * 180 / PHI;
-
 		ROS_INFO("Robot %d : (%.2f, %.2f, %.2f)",  m_robot_id, temp_pos.position.x, temp_pos.position.y, yaw);
-
 		res.answer_msg = string("success");
 
 		return true;
@@ -180,7 +130,7 @@ bool apply_motion_primitive::move_robot(max_min_lp_simulation::MoveRobot::Reques
 }
 
 int main(int argc, char **argv) {
-	ros::init(argc, argv, "apply_motion_primitive");
+	ros::init(argc, argv, "apply_motion_primitive_journal");
 
 	apply_motion_primitive amp;
 

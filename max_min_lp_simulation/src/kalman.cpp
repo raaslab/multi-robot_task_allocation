@@ -48,19 +48,19 @@ void KalmanFilter::update(const Eigen::VectorXd& y, const Eigen::VectorXd& u) {
   if(!initialized)
     throw std::runtime_error("Filter is not initialized!");
 
-  std::cout<<"x_hat = "<<x_hat[0]<<", "<<x_hat[1]<<std::endl;
+  // std::cout<<"x_hat = "<<x_hat[0]<<", "<<x_hat[1]<<std::endl;
   x_hat_new = A * x_hat + B * u;
-  std::cout<<"x_hat_new = "<<x_hat_new[0]<<", "<<x_hat_new[1]<<std::endl;
+  // std::cout<<"x_hat_new = "<<x_hat_new[0]<<", "<<x_hat_new[1]<<std::endl;
   P = A*P*A.transpose() + Q;
-  std::cout<<"P = "<<P<<std::endl;
+  // std::cout<<"P = "<<P<<std::endl;
   K = P*C.transpose()*(C*P*C.transpose() + R).inverse();
-  std::cout<<"K = "<<K<<std::endl;
+  // std::cout<<"K = "<<K<<std::endl;
   x_hat_new += K * (y - C*x_hat_new);
-  std::cout<<"x_hat_new = "<<x_hat_new[0]<<", "<<x_hat_new[1]<<std::endl;
+  // std::cout<<"x_hat_new = "<<x_hat_new[0]<<", "<<x_hat_new[1]<<std::endl;
   P = (I - K*C)*P;
-  std::cout<<"P = "<<P<<std::endl;
+  // std::cout<<"P = "<<P<<std::endl;
   x_hat = x_hat_new;
-  std::cout<<"x_hat = "<<x_hat[0]<<", "<<x_hat[1]<<std::endl;
+  // std::cout<<"x_hat = "<<x_hat[0]<<", "<<x_hat[1]<<std::endl;
 
   t += dt;
 }

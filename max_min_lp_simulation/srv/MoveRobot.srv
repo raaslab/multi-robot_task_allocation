@@ -1,5 +1,9 @@
 geometry_msgs/Pose goal_pos
 int8 rotation_direction
+int8 trans_duration
+int8 ang_duration
+float64 trans_speed
+float64 ang_speed
 
 ---
 

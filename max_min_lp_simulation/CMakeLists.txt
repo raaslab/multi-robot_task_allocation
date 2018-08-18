@@ -106,3 +106,6 @@ target_link_libraries(max_min_lp_simulation_robot_journal kalman ${catkin_LIBRAR
 add_executable(get_target_odom_journal_node src/get_target_odom_journal.cpp)
 target_link_libraries(get_target_odom_journal_node ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES} pthread)
 add_dependencies(get_target_odom_journal_node max_min_lp_simulation_gencpp)
+add_executable(apply_motion_primitive_journal src/apply_motion_primitive_journal.cpp)
+target_link_libraries(apply_motion_primitive_journal ${catkin_LIBRARIES})
+add_dependencies(apply_motion_primitive_journal max_min_lp_simulation_gencpp)

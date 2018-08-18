@@ -9,6 +9,7 @@
 #include <nav_msgs/Odometry.h>
 #include <gazebo_msgs/ModelStates.h>
 #include <iostream>
+#include <algorithm>
 #include <sstream>
 #include <stdio.h>
 #include <stdlib.h>
@@ -38,9 +39,11 @@ private:
   // Publishers
   vector<ros::Publisher> m_target_predicted_pose_pub;
   vector<ros::Publisher> m_target_measurement_pose_pub;
+  ros::Publisher m_cmd_vel_robot_pub;
 
   // Clients
   ros::ServiceClient m_target_odom_client;
+  ros::ServiceClient m_move_client;
 
   // Variables from the launch file
   int m_num_robot;
@@ -49,6 +52,8 @@ private:
   int m_num_motion_primitive;
   int m_time_interval;
   int m_robot_time;
+  double m_robot_trans_speed;
+  double m_robot_ang_speed;
   double m_sensing_range;
   double m_comm_range;
   bool m_verbal_flag;
@@ -68,6 +73,8 @@ private:
   vector<int> m_motion_case_rotation;
   vector<int> m_check_rotation_direction;
   vector<geometry_msgs::Pose> m_motion_primitive_pose;
+  vector<int> m_motion_trans_duration;
+  vector<int> m_motion_ang_duration;
 
   // Robot info
   geometry_msgs::Pose m_pos;
